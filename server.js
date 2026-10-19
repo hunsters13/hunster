@@ -81,26 +81,4 @@ const htmlContent = `<!DOCTYPE html>
     .auth-container { max-width: 550px; margin: 40px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .auth-container h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
     .auth-container p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 24px; }
-    .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label { font-size: 0.88rem; font-weight: 700; color: #334155; }
-    .form-input, .form-select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
-    .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: 12px; margin-top: 8px; display: none; }
-    
-    .dashboard-container { max-width: 1200px; margin: 30px auto; padding: 0 16px; }
-    .data-table-wrapper { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid var(--border); margin-top: 16px; }
-    .data-table { width: 100%; border-collapse: collapse; min-width: 750px; }
-    .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
-    .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.8rem; font-weight: 700; }
-    
-    .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: none; }
-    .status-pending { background: var(--warning-bg); color: var(--warning-text); }
-    .status-complete { background: var(--success-bg); color: var(--success); }
-    
-    .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; flex-wrap: wrap; }
-    .tab-btn { padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; background: white; border: 1px solid var(--border); cursor: pointer; color: var(--text-sub); }
-    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    footer { text-align: center; padding: 30px 20px; color: var(--text-sub); font-size: 0.85rem; border-top: 1px solid var(--border); background: white; margin-top
+    .form-grid { display:
