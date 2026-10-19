@@ -27,7 +27,6 @@ const htmlContent = `<!DOCTYPE html>
     .nav-links a { text-decoration: none; color: var(--text-sub); font-weight: 600; font-size: 0.9rem; cursor: pointer; }
     .nav-links a:hover { color: var(--primary); }
     .header-right { display: flex; gap: 12px; align-items: center; }
-    .lang-select { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 0.88rem; font-weight: 700; color: var(--text-main); outline: none; cursor: pointer; }
     .auth-actions { display: flex; gap: 8px; align-items: center; }
     .btn { padding: 8px 16px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); white-space: nowrap; }
     .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
@@ -69,7 +68,7 @@ const htmlContent = `<!DOCTYPE html>
     .data-table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); min-width: 600px; }
     .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
     .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.8rem; font-weight: 700; }
-    footer { text-align: center; padding: 40px 0; color: var(--text-sub); font-size: 0.85rem; border-top: 1px solid var(--border); background: white; margin-top: 30px; }
+    footer { text-align: center; padding: 30px 20px; color: var(--text-sub); font-size: 0.85rem; border-top: 1px solid var(--border); background: white; margin-top: 30px; line-height: 1.8; }
     @media (max-width: 768px) {
       header { padding: 0 16px; height: 70px; }
       .nav-links { display: none; }
@@ -266,90 +265,4 @@ const htmlContent = `<!DOCTYPE html>
     <div class="auth-container">
       <h2>로그인</h2>
       <p>등록하신 아이디와 비밀번호를 입력해주세요.</p>
-      <form onsubmit="handleLogin(event)">
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">아이디</label><input type="text" id="login-id" class="form-input" placeholder="아이디를 입력하세요" required></div>
-          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required></div>
-        </div>
-        <div style="margin-top: 24px;"><button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">로그인</button></div>
-        <div style="margin-top: 16px; text-align: center; font-size: 0.88rem; color: var(--text-sub);">아직 계정이 없으신가요? <a style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="switchView('view-register')">회원가입하기</a></div>
-      </form>
-    </div>
-  </div>
-
-  <div id="view-register" class="page-view">
-    <div class="auth-container" style="max-width: 600px;">
-      <h2>파트너 회원가입</h2>
-      <p>직접 계정을 생성하고 트래픽 슬롯 서비스를 시작하세요. (최소 5슬롯 이상)</p>
-      <form onsubmit="handleRegister(event)">
-        <div class="form-grid" style="gap: 14px;">
-          <div class="form-group"><label class="form-label">대표자 성명</label><input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required></div>
-          <div class="form-group"><label class="form-label">사용할 아이디</label><input type="text" id="reg-id" class="form-input" placeholder="아이디 입력" required></div>
-          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="reg-pw" class="form-input" placeholder="비밀번호 입력" required></div>
-          <div class="form-group"><label class="form-label">연락처 (전화번호)</label><input type="tel" id="reg-phone" class="form-input" placeholder="010-0000-0000" required></div>
-          <div class="form-group"><label class="form-label">사업장 주소</label><input type="text" id="reg-address" class="form-input" placeholder="주소 입력" required></div>
-          <div class="form-group">
-            <label class="form-label">이용 서비스</label>
-            <select id="service-type" class="form-select" onchange="handleServiceChange(this)" required>
-              <option value="">-- 서비스 선택 --</option>
-              <option value="coupang">쿠팡 트래픽</option>
-            </select>
-            <div id="coupang-sub-option" class="sub-option-box">
-              <label class="form-label" style="color: #1e40af; margin-bottom: 6px; display: block;">🔍 [쿠팡 상세] 상품군 선택</label>
-              <select id="coupang-sub-select" class="form-select" style="background: white;"><option value="industrial">공산품</option><option value="agricultural">농산물</option></select>
-            </div>
-          </div>
-          <div class="form-group"><label class="form-label">신청 슬롯 수량 (최소 5개)</label><input type="number" id="reg-slots" class="form-input" value="5" min="5" required></div>
-        </div>
-        <div style="margin-top: 28px; display: flex; gap: 10px;">
-          <button type="button" class="btn" style="flex: 1; padding: 12px;" onclick="switchView('view-main')">취소</button>
-          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; font-size: 0.95rem;">회원가입 완료</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="view-admin" class="page-view">
-    <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>🛡️ 관리자 통합 관제 센터</h2>
-        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
-      </div>
-      <table class="data-table">
-        <thead><tr><th>성명 및 아이디</th><th>전화번호</th><th>사업장 주소</th><th>서비스 종류</th><th>유치 슬롯량</th></tr></thead>
-        <tbody id="admin-user-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="view-user-dashboard" class="page-view">
-    <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 id="my-name">파트너님</h2>
-        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
-      </div>
-      <div class="card-box" style="background: white;">
-        <h3>📋 내 파트너 가입 정보</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; font-size: 0.92rem;">
-          <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
-          <div><strong>주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
-          <div><strong>서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
-          <div><strong>슬롯 현황:</strong> <span id="my-slots" style="color: var(--success); font-weight: 700;"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <footer><p>&copy; 2026 HUNSTER TRAFFIC Inc. All rights reserved.</p></footer>
-</body>
-</html>`;
-
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(htmlContent);
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+      <form onsubmit="handleLogin
