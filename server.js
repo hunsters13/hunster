@@ -1,8 +1,6 @@
 const http = require('http');
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(`<!DOCTYPE html>
+const htmlContent = `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -333,4 +331,25 @@ const server = http.createServer((req, res) => {
       <div class="card-box" style="background: white;">
         <h3>📋 내 파트너 가입 정보</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; font-size: 0.92rem;">
-          <div><strong>전화번호:</strong> <span id="my-phone"
+          <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
+          <div><strong>주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
+          <div><strong>서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
+          <div><strong>슬롯 현황:</strong> <span id="my-slots" style="color: var(--success); font-weight: 700;"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer><p>&copy; 2026 HUNSTER TRAFFIC Inc. All rights reserved.</p></footer>
+</body>
+</html>`;
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(htmlContent);
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
