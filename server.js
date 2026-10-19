@@ -1,7 +1,6 @@
 const http = require('http');
 
-const htmlContent = `
-<!DOCTYPE html>
+const htmlContent = `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -10,22 +9,10 @@ const htmlContent = `
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
   <style>
     :root {
-      --bg-body: #f8fafc;
-      --bg-card: #ffffff;
-      --border: #e2e8f0;
-      --border-subtle: #f1f5f9;
-      --text-main: #0f172a;
-      --text-sub: #64748b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff;
-      --success: #059669;
-      --success-bg: #ecfdf5;
-      --warning-bg: #fffbeb;
-      --warning-text: #d97706;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+      --bg-body: #f8fafc; --bg-card: #ffffff; --border: #e2e8f0; --border-subtle: #f1f5f9;
+      --text-main: #0f172a; --text-sub: #64748b; --primary: #2563eb; --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff; --success: #059669; --success-bg: #ecfdf5; --warning-bg: #fffbeb; --warning-text: #d97706;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07); --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; }
     body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
@@ -89,20 +76,16 @@ const htmlContent = `
       const subBox = document.getElementById('coupang-sub-option');
       subBox.style.display = (select.value === 'coupang') ? 'block' : 'none';
     }
-    
-    // 최소 5슬롯 및 공급가액 + 부가세(10%) 계산기 함수
     function calculatePrice(input) {
       let count = parseInt(input.value) || 5;
       if (count < 5) count = 5;
       const supplyPrice = count * 55000;
       const vat = Math.round(supplyPrice * 0.1);
       const totalPrice = supplyPrice + vat;
-      
       document.getElementById('supply-price-text').innerText = supplyPrice.toLocaleString() + '원';
       document.getElementById('vat-text').innerText = vat.toLocaleString() + '원';
       document.getElementById('total-price-text').innerText = totalPrice.toLocaleString() + '원';
     }
-
     function initStorage() {
       if (!localStorage.getItem('hunster_users')) {
         const initialUsers = [
@@ -254,7 +237,6 @@ const htmlContent = `
         </div>
       </section>
 
-      <!-- 부가세 10% 계산기가 포함된 요금제 섹션 -->
       <section id="pricing" class="pricing-section">
         <div class="section-header" style="margin-bottom: 24px;">
           <h2>💰 투명하고 합리적인 요금제 안내</h2>
@@ -300,4 +282,4 @@ const htmlContent = `
     </div>
   </div>
 
-  <div id="view-login" class="page-view">
+  <div id="view
