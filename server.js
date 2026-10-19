@@ -92,6 +92,18 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (req.method === 'POST' && url.pathname === '/api/admin/delete-user') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      const { index } = JSON.parse(body);
+      serverUsers.splice(index, 1);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ success: true }));
+    });
+    return;
+  }
+
   if (req.method === 'POST' && url.pathname === '/api/inquiry') {
     let body = '';
     req.on('data', chunk => body += chunk);
@@ -137,19 +149,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const filePath = path.join(__dirname, 'index.html');
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('Internal Server Error');
-      return;
-    }
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(data);
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+  if (req.method === 'POST' && url.pathname === '/api/admin/delete-inquiry') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      const { id } = JSON.parse(body);
+      serverInquiries = serverInquiries.filter(i => i.id != id);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ success: true }));
+    });
+    return
