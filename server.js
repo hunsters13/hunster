@@ -277,9 +277,9 @@ const server = http.createServer((req, res) => {
 
           <section class="metrics-grid">
             <div class="metric-card">
-              <div class="metric-title">현재 실시간 활성 슬롯 유치량</div>
-              <div class="metric-value">1,240 슬롯 가동중</div>
-              <div class="metric-footer">↑ 안정적인 프록시 실시간 트래픽 유입 중</div>
+              <div class="metric-title">전국 훈스터 파트너 총 슬롯 유치량</div>
+              <div class="metric-value">882 슬롯 가동중</div>
+              <div class="metric-footer">↑ 전국 각지 파트너 실시간 트래픽 유입 중</div>
             </div>
             <div class="metric-card" style="--primary: #059669;">
               <div class="metric-title">서버 시스템 안정성</div>
@@ -295,11 +295,11 @@ const server = http.createServer((req, res) => {
 
           <section id="status" class="status-section-grid">
             <div class="card-box">
-              <h3>📊 실시간 슬롯 유치 현황</h3>
-              <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">현재 전 세계 인프라 노드에서 구동 중인 실시간 트래픽 점유 현황입니다.</p>
+              <h3>📊 전국 실시간 슬롯 유치 현황</h3>
+              <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">전국적으로 훈스터에 등록 및 가동 중인 총 슬롯 점유 현황입니다.</p>
               <div style="margin-top: 24px; padding: 20px; background: var(--bg-body); border-radius: 12px; border: 1px solid var(--border);">
-                <span style="font-size: 0.88rem; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 6px;">활성 슬롯 합계</span>
-                <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">1,240 SLOT RUNNING</span>
+                <span style="font-size: 0.88rem; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 6px;">전국 가동 슬롯 합계</span>
+                <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">882 SLOT RUNNING</span>
               </div>
             </div>
 
@@ -325,49 +325,4 @@ const server = http.createServer((req, res) => {
 
           <section id="pricing" class="pricing-section">
             <div class="section-header" style="margin-bottom: 24px;">
-              <h2>💰 투명하고 합리적인 요금제 안내</h2>
-              <p>복잡한 패키지 상품은 없습니다. 필요한 슬롯 수량만큼 자유롭게 이용하세요.</p>
-            </div>
-            
-            <div class="pricing-grid">
-              <div class="price-card">
-                <div>
-                  <div class="price-title">쿠팡 트래픽 1슬롯 이용권</div>
-                  <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당</div>
-                  <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
-                  <p style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
-                </div>
-                <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 회원가입 하기</button>
-              </div>
-
-              <div class="price-card featured">
-                <div>
-                  <div class="price-title">🧮 실시간 슬롯 수량 계산기</div>
-                  <div class="price-desc">원하시는 슬롯 개수를 입력하여 총 이용 요금을 확인하세요.</div>
-                  <div style="margin: 20px 0;">
-                    <label class="form-label" style="margin-bottom: 6px; display: block;">신청할 슬롯 개수 입력</label>
-                    <input type="number" id="slot-calc-input" class="form-input" value="1" min="1" oninput="calculatePrice(this)" style="background: white;">
-                  </div>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-weight: 700;">
-                    <span>총 결제 예상 금액:</span>
-                    <span id="total-price-text" style="font-size: 1.4rem; color: var(--primary);">55,000원</span>
-                  </div>
-                </div>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
-              </div>
-            </div>
-          </section>
-
-        </div>
-      </div>
-
-      <!-- ==================== [2] 로그인 페이지 뷰 (관리자 노출 제거) ==================== -->
-      <div id="view-login" class="page-view">
-        <div class="auth-container">
-          <h2>로그인</h2>
-          <p>등록하신 아이디와 비밀번호를 입력해주세요.</p>
-          <form onsubmit="handleLogin(event)">
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="form-label">아이디</label>
-                <input type="text" id="login-id" class="form-input" placeholder="
+              <h2>💰
