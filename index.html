@@ -118,6 +118,12 @@
       holder: "김*훈"
     };
 
+    const ADMIN_INFO = {
+      name: "관리자 (김*훈)",
+      phone: "010-3672-7807",
+      company: "훈스터 (HUNSTER)"
+    };
+
     function switchView(viewId) {
       document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
       document.getElementById(viewId).classList.add('active');
@@ -298,8 +304,10 @@
 
     function calculateQuoteTotal() {
       let count = parseInt(document.getElementById('q-slots-count').value) || 5;
-      if(count < 5) count = 5;
-      let supply = count * 55000;
+      let unitPrice = parseFloat(document.getElementById('q-unit-price').value) || 55000;
+      if(count < 1) count = 1;
+
+      let supply = count * unitPrice;
       let vat = Math.round(supply * 0.1);
       let total = supply + vat;
 
@@ -312,13 +320,14 @@
     function copyQuoteToClipboard() {
       const clientName = document.getElementById('q-client-name').value || '고객님';
       const slots = document.getElementById('q-slots-count').value || 5;
+      const unitPrice = parseInt(document.getElementById('q-unit-price').value) || 55000;
       const total = document.getElementById('q-total-display').innerText;
 
       const quoteText = 
 `[ 훈스터(HUNSTER) 공식 견적서 ]
-- 공급자: 훈스터 / 연락처: 010-0000-0000
+- 공급자: ${ADMIN_INFO.company} / 연락처: ${ADMIN_INFO.phone}
 - 수신자: ${clientName} 대표님
-- 품목: 쿠팡 트래픽 고속 프록시 슬롯 (${slots}슬롯)
+- 품목: 쿠팡 트래픽 고속 프록시 슬롯 (${slots}슬롯 / 1슬롯당 ${unitPrice.toLocaleString()}원)
 - 총 합계금액 (VAT 포함): ${total}
 - 입금 계좌: ${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber} (${ACCOUNT_INFO.holder})
 
@@ -562,7 +571,7 @@
       <div id="tab-content-quote" class="tab-content">
         <div class="card-box" style="background: white;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h3>📑 고객용 공식 견적서 생성기</h3>
+            <h3>📑 고객용 공식 견적서 생성기 (단가/수량 자유 조절 가능)</h3>
             <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 원클릭 복사</button>
           </div>
 
@@ -577,7 +586,7 @@
                 <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">[ 공급자 ]</h4>
                 <div><strong>회사명:</strong> 훈스터 (HUNSTER)</div>
                 <div><strong>담당자:</strong> 관리자 (김*훈)</div>
-                <div><strong>연락처:</strong> 010-0000-0000</div>
+                <div><strong>연락처:</strong> 010-3672-7807</div>
               </div>
               <div style="border: 1px solid var(--border); padding: 14px; border-radius: 8px; background: white;">
                 <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--success); margin-bottom: 8px;">[ 공급받는 자 (고객) ]</h4>
@@ -591,15 +600,15 @@
                 <tr style="background: var(--border-subtle); border-bottom: 1px solid var(--border);">
                   <th style="padding: 10px; text-align: left;">품명 및 규격</th>
                   <th style="padding: 10px; text-align: center; width: 80px;">수량</th>
-                  <th style="padding: 10px; text-align: right; width: 100px;">단가</th>
+                  <th style="padding: 10px; text-align: right; width: 130px;">단가 (원)</th>
                   <th style="padding: 10px; text-align: right; width: 110px;">금액</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td style="padding: 12px 10px;">쿠팡 트래픽 고속 프록시 슬롯 이용권</td>
-                  <td style="padding: 12px 10px; text-align: center;"><input type="number" id="q-slots-count" value="5" min="5" oninput="calculateQuoteTotal()" class="form-input" style="width: 55px; text-align: center; padding: 4px; display:inline-block;"></td>
-                  <td style="padding: 12px 10px; text-align: right;">55,000원</td>
+                  <td style="padding: 12px 10px; text-align: center;"><input type="number" id="q-slots-count" value="5" min="1" oninput="calculateQuoteTotal()" class="form-input" style="width: 55px; text-align: center; padding: 4px; display:inline-block;"></td>
+                  <td style="padding: 12px 10px; text-align: right;"><input type="number" id="q-unit-price" value="55000" step="1000" oninput="calculateQuoteTotal()" class="form-input" style="width: 100px; text-align: right; padding: 4px; display:inline-block;"></td>
                   <td style="padding: 12px 10px; text-align: right; font-weight: 700;" id="q-supply-sub">275,000원</td>
                 </tr>
               </tbody>
