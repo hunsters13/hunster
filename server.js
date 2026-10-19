@@ -24,6 +24,8 @@ const server = http.createServer((req, res) => {
           --primary-light: #eff6ff;
           --success: #059669;
           --success-bg: #ecfdf5;
+          --warning-bg: #fffbeb;
+          --warning-text: #d97706;
           --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
           --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
           --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
@@ -47,7 +49,7 @@ const server = http.createServer((req, res) => {
         .btn-primary { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
         .btn-primary:hover { background: var(--primary-hover); }
 
-        /* 화면 뷰 컨트롤 (메인 / 로그인 / 회원가입) */
+        /* 화면 뷰 컨트롤 */
         .page-view { display: none; }
         .page-view.active { display: block; }
 
@@ -59,11 +61,6 @@ const server = http.createServer((req, res) => {
         .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-size: 0.88rem; font-weight: 700; margin-bottom: 20px; }
         .hero h1 { font-size: 3.2rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 20px; letter-spacing: -0.03em; }
         .hero p { font-size: 1.2rem; color: var(--text-sub); max-width: 700px; margin: 0 auto 36px auto; }
-
-        /* 섹션 공통 */
-        .section-header { text-align: center; margin-bottom: 40px; }
-        .section-header h2 { font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
-        .section-header p { font-size: 1.05rem; color: var(--text-sub); }
 
         /* 통계 및 상태 그리드 */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
@@ -78,19 +75,22 @@ const server = http.createServer((req, res) => {
         .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-md); }
         .card-box h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; }
         
-        .slot-bar-bg { background: var(--border-subtle); border-radius: 10px; height: 16px; width: 100%; overflow: hidden; margin: 16px 0 10px 0; border: 1px solid var(--border); }
-        .slot-bar-fill { background: linear-gradient(90deg, #2563eb, #3b82f6); height: 100%; width: 82.6%; border-radius: 10px; }
         .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); }
         .server-status-item:last-child { border-bottom: none; }
         .badge-online { background: var(--success-bg); color: var(--success); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        .badge-preparing { background: var(--warning-bg); color: var(--warning-text); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
 
-        /* 가격 테이블 */
+        /* 요금제 섹션 (슬롯 선택 계산기 포함) */
         .pricing-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 48px; box-shadow: var(--shadow-lg); }
-        .price-table { width: 100%; border-collapse: collapse; margin-top: 24px; text-align: left; }
-        .price-table th, .price-table td { padding: 18px 20px; border-bottom: 1px solid var(--border); }
-        .price-table th { color: var(--text-sub); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; background: var(--border-subtle); }
-        .price-table td { font-size: 1rem; font-weight: 500; }
-        .price-highlight { color: var(--primary); font-weight: 800; font-size: 1.15rem; }
+        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        @media(max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+        
+        .price-card { background: var(--bg-body); border: 1px solid var(--border); border-radius: 16px; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; }
+        .price-card.featured { border-color: var(--primary); background: var(--primary-light); }
+        .price-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+        .price-desc { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 20px; }
+        .price-tag { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 20px; }
+        .price-tag span { font-size: 0.9rem; color: var(--text-sub); font-weight: 500; text-decoration: line-through; margin-left: 8px; }
 
         /* 독립된 로그인 및 회원가입 모달/페이지 박스 */
         .auth-container { max-width: 500px; margin: 60px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 48px; box-shadow: var(--shadow-lg); }
@@ -108,14 +108,12 @@ const server = http.createServer((req, res) => {
         footer { text-align: center; padding: 60px 0; color: var(--text-sub); font-size: 0.9rem; border-top: 1px solid var(--border); background: white; margin-top: 40px; }
       </style>
       <script>
-        // 화면 전환 함수
         function switchView(viewId) {
           document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
           document.getElementById(viewId).classList.add('active');
           window.scrollTo(0, 0);
         }
 
-        // 쿠팡 트래픽 선택 시 세부옵션 노출
         function handleServiceChange(select) {
           const subBox = document.getElementById('coupang-sub-option');
           if (select.value === 'coupang') {
@@ -123,6 +121,14 @@ const server = http.createServer((req, res) => {
           } else {
             subBox.style.display = 'none';
           }
+        }
+
+        // 실시간 요금 계산기 함수
+        function calculatePrice(input) {
+          let count = parseInt(input.value) || 1;
+          if (count < 1) count = 1;
+          const total = count * 55000;
+          document.getElementById('total-price-text').innerText = total.toLocaleString() + '원';
         }
       </script>
     </head>
@@ -156,11 +162,12 @@ const server = http.createServer((req, res) => {
             <button class="btn btn-primary" style="padding: 16px 36px; font-size: 1.05rem;" onclick="switchView('view-register')">지금 바로 서비스 신청하기</button>
           </section>
 
+          <!-- 통계 카드 (슬롯 한계점 제거, 유치량만 표시) -->
           <section class="metrics-grid">
             <div class="metric-card">
-              <div class="metric-title">총 활성 슬롯 가동량</div>
-              <div class="metric-value">1,240 / 1,500</div>
-              <div class="metric-footer">↑ 현재 수용 용량의 82.6% 안정 가동 중</div>
+              <div class="metric-title">현재 실시간 활성 슬롯 유치량</div>
+              <div class="metric-value">1,240 슬롯 가동중</div>
+              <div class="metric-footer">↑ 안정적인 프록시 실시간 트래픽 유입 중</div>
             </div>
             <div class="metric-card" style="--primary: #059669;">
               <div class="metric-title">서버 시스템 안정성</div>
@@ -174,77 +181,71 @@ const server = http.createServer((req, res) => {
             </div>
           </section>
 
+          <!-- 서버 상태 & 서비스 준비중 섹션 -->
           <section id="status" class="status-section-grid">
             <div class="card-box">
               <h3>📊 실시간 슬롯 유치 현황</h3>
-              <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">현재 전 세계 인프라 노드에서 구동 중인 트래픽 슬롯 점유율입니다.</p>
-              <div style="margin-top: 24px;">
-                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.95rem;">
-                  <span>점유율 현황</span>
-                  <span style="color: var(--primary);">82.6% (1,240 슬롯 점유)</span>
-                </div>
-                <div class="slot-bar-bg">
-                  <div class="slot-bar-fill"></div>
-                </div>
-                <p style="color: var(--text-sub); font-size: 0.85rem; margin-top: 8px;">* 잔여 슬롯 260개 (선착순 실시간 자동 할당)</p>
+              <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">현재 전 세계 인프라 노드에서 구동 중인 실시간 트래픽 점유 현황입니다.</p>
+              <div style="margin-top: 24px; padding: 20px; background: var(--bg-body); border-radius: 12px; border: 1px solid var(--border);">
+                <span style="font-size: 0.88rem; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 6px;">활성 슬롯 합계</span>
+                <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">1,240 SLOT RUNNING</span>
               </div>
             </div>
 
             <div class="card-box">
-              <h3>🛡️ 서버 인프라 안정화 모니터</h3>
-              <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">모든 백엔드 서버 및 트래픽 엔진의 상태를 실시간 진단합니다.</p>
+              <h3>🛡️ 서비스 포트폴리오 및 인프라 모니터</h3>
+              <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">쿠팡 트래픽 서비스 정상 가동 및 확장 예정 서비스 상태입니다.</p>
               <div style="margin-top: 20px;">
                 <div class="server-status-item">
-                  <span style="font-weight: 600;">Proxy Node #01 (Seoul Cluster)</span>
-                  <span class="badge-online">● Online</span>
+                  <span style="font-weight: 600;">쿠팡 트래픽 솔루션</span>
+                  <span class="badge-online">● 정상 가동중</span>
                 </div>
                 <div class="server-status-item">
-                  <span style="font-weight: 600;">Proxy Node #02 (Global Edge)</span>
-                  <span class="badge-online">● Online</span>
+                  <span style="font-weight: 600;">네이버 리워드 서비스</span>
+                  <span class="badge-preparing">준비 중</span>
                 </div>
                 <div class="server-status-item">
-                  <span style="font-weight: 600;">Traffic Engine API Core</span>
-                  <span class="badge-online">● Online</span>
+                  <span style="font-weight: 600;">네이버 플레이스 솔루션</span>
+                  <span class="badge-preparing">준비 중</span>
                 </div>
               </div>
             </div>
           </section>
 
+          <!-- 요금제 및 가격 소개 섹션 (패키지 없음, 1슬롯 기준 5.5만 첫고객 특가, 수량 선택란) -->
           <section id="pricing" class="pricing-section">
             <div class="section-header" style="margin-bottom: 24px;">
-              <h2>💰 합리적이고 강력한 요금제 안내</h2>
-              <p>비즈니스 규모에 맞는 최적의 패키지를 선택하여 즉시 시작하세요.</p>
+              <h2>💰 투명하고 합리적인 요금제 안내</h2>
+              <p>복잡한 패키지 상품은 없습니다. 필요한 슬롯 수량만큼 자유롭게 이용하세요.</p>
             </div>
-            <table class="price-table">
-              <thead>
-                <tr>
-                  <th>패키지 상품</th>
-                  <th>슬롯 구성</th>
-                  <th>이용 요금</th>
-                  <th>추천 대상 및 특징</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>스타터 패키지 (7일)</strong></td>
-                  <td>1개 슬롯</td>
-                  <td class="price-highlight">50,000원</td>
-                  <td>신규 상품 테스트 및 입문용 셀러</td>
-                </tr>
-                <tr>
-                  <td><strong>스탠다드 패키지 (30일)</strong></td>
-                  <td>1개 슬롯</td>
-                  <td class="price-highlight">180,000원</td>
-                  <td>가장 인기 있는 기본형 상위노출 패키지</td>
-                </tr>
-                <tr>
-                  <td><strong>프로페셔널 패키지 (30일)</strong></td>
-                  <td>5개 슬롯 (묶음 할인)</td>
-                  <td class="price-highlight">800,000원</td>
-                  <td>대형 브랜드 및 전문 운영 셀러 전용</td>
-                </tr>
-              </tbody>
-            </table>
+            
+            <div class="pricing-grid">
+              <div class="price-card">
+                <div>
+                  <div class="price-title">쿠팡 트래픽 1슬롯 이용권</div>
+                  <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당</div>
+                  <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
+                  <p style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 슬롯 신청하기</button>
+              </div>
+
+              <div class="price-card featured">
+                <div>
+                  <div class="price-title">🧮 실시간 슬롯 수량 계산기</div>
+                  <div class="price-desc">원하시는 슬롯 개수를 입력하여 총 이용 요금을 확인하세요.</div>
+                  <div style="margin: 20px 0;">
+                    <label class="form-label" style="margin-bottom: 6px; display: block;">신청할 슬롯 개수 입력</label>
+                    <input type="number" id="slot-calc-input" class="form-input" value="1" min="1" oninput="calculatePrice(this)" style="background: white;">
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-weight: 700;">
+                    <span>총 결제 예상 금액:</span>
+                    <span id="total-price-text" style="font-size: 1.4rem; color: var(--primary);">55,000원</span>
+                  </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="switchView('view-register')">선택 수량으로 신청하기</button>
+              </div>
+            </div>
           </section>
 
         </div>
@@ -305,8 +306,8 @@ const server = http.createServer((req, res) => {
                 <select id="service-type" class="form-select" onchange="handleServiceChange(this)" required>
                   <option value="">-- 서비스 종류를 선택해 주세요 --</option>
                   <option value="coupang">쿠팡 트래픽</option>
-                  <option value="naver-reward">네이버 리워드</option>
-                  <option value="naver-place">네이버 플레이스</option>
+                  <option value="naver-reward" disabled>네이버 리워드 (준비 중)</option>
+                  <option value="naver-place" disabled>네이버 플레이스 (준비 중)</option>
                 </select>
 
                 <!-- 쿠팡 트래픽 선택 시 세부 카테고리 -->
