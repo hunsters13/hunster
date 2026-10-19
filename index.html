@@ -82,7 +82,8 @@
     .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-label { font-size: 0.88rem; font-weight: 700; color: #334155; }
-    .form-input, .form-select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
+    .form-textarea { resize: vertical; min-height: 100px; }
     .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: 12px; margin-top: 8px; display: none; }
     
     .dashboard-container { max-width: 1200px; margin: 30px auto; padding: 0 16px; }
@@ -176,6 +177,11 @@
           { name: '김철수', id: 'kim123', pw: '1234', phone: '010-9876-5432', address: '서울시 강남구 테헤란로 456', service: '쿠팡 트래픽 (공산품)', slots: 5, depositStatus: '입금완료', taxStatus: '발행완료' }
         ]));
       }
+      if (!localStorage.getItem('hunster_inquiries')) {
+        localStorage.setItem('hunster_inquiries', JSON.stringify([
+          { id: 1, author: '김철수 (kim123)', title: '슬롯 추가 문의드립니다.', content: '슬롯 5개 추가 연장하고 싶어요.', reply: '확인 후 처리해드리겠습니다.', status: '답변완료', date: '2026-10-19' }
+        ]));
+      }
       calculatePrice(document.getElementById('slot-calc-input'));
       trackVisitor();
     };
@@ -210,6 +216,8 @@
       switchView('view-login');
     }
 
+    let currentUser = null;
+
     function handleLogin(event) {
       event.preventDefault();
       const inputId = document.getElementById('login-id').value.trim();
@@ -224,6 +232,7 @@
       let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
       let foundUser = users.find(u => u.id === inputId && u.pw === inputPw);
       if (foundUser) {
+        currentUser = foundUser;
         trackVisitor(foundUser.name + ' (로그인)', foundUser.id);
         renderUserDashboard(foundUser);
         switchView('view-user-dashboard');
@@ -247,6 +256,19 @@
           <td><span style="color:var(--primary); font-weight:700;">${u.service}</span><br><strong>${u.slots} 슬롯</strong></td>
           <td><button class="badge-status ${depositClass}" onclick="toggleStatus(${index}, 'deposit')">${u.depositStatus}</button></td>
           <td><button class="badge-status ${taxClass}" onclick="toggleStatus(${index}, 'tax')">${u.taxStatus}</button></td>
+        </tr>`;
+      });
+
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
+      let inqTbody = document.getElementById('admin-inquiry-tbody');
+      inqTbody.innerHTML = '';
+      inquiries.forEach((inq, idx) => {
+        inqTbody.innerHTML += `<tr>
+          <td>${inq.author}</td>
+          <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
+          <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
+          <td><textarea id="reply-${idx}" class="form-input" placeholder="답변 입력..." style="font-size:0.82rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
+              <button class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="submitReply(${idx})">답변 등록</button></td>
         </tr>`;
       });
 
@@ -274,6 +296,16 @@
       renderAdminDashboard();
     }
 
+    function submitReply(idx) {
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
+      let replyText = document.getElementById('reply-' + idx).value;
+      inquiries[idx].reply = replyText;
+      inquiries[idx].status = '답변완료';
+      localStorage.setItem('hunster_inquiries', JSON.stringify(inquiries));
+      alert('답변이 등록되었습니다.');
+      renderAdminDashboard();
+    }
+
     function renderUserDashboard(user) {
       document.getElementById('my-name').innerText = user.name + ' 파트너님';
       document.getElementById('my-phone').innerText = user.phone;
@@ -286,6 +318,52 @@
       document.getElementById('my-tax-status').className = 'badge-status ' + (user.taxStatus === '발행완료' ? 'status-complete' : 'status-pending');
       
       document.getElementById('account-info-box').innerHTML = `입금 계좌: <strong>${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber}</strong> (예금주: ${ACCOUNT_INFO.holder})`;
+      renderUserInquiries(user);
+    }
+
+    function renderUserInquiries(user) {
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
+      let myInqList = inquiries.filter(i => i.author.includes(user.id));
+      let container = document.getElementById('my-inquiry-list');
+      container.innerHTML = '';
+      
+      if(myInqList.length === 0) {
+        container.innerHTML = '<p style="font-size:0.88rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
+        return;
+      }
+
+      myInqList.forEach(inq => {
+        container.innerHTML += `<div style="border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:8px; background:white;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-sub); margin-bottom:4px;">
+            <span>작성일: ${inq.date}</span>
+            <span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span>
+          </div>
+          <div style="font-weight:700; font-size:0.92rem; margin-bottom:4px;">${inq.title}</div>
+          <div style="font-size:0.88rem; color:var(--text-main); margin-bottom:8px;">${inq.content}</div>
+          ${inq.reply ? `<div style="background:var(--primary-light); padding:10px; border-radius:6px; font-size:0.85rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
+        </div>`;
+      });
+    }
+
+    function handleNewInquiry(event) {
+      event.preventDefault();
+      if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
+      
+      const title = document.getElementById('inq-title').value;
+      const content = document.getElementById('inq-content').value;
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
+      
+      inquiries.unshift({
+        id: Date.now(),
+        author: currentUser.name + ' (' + currentUser.id + ')',
+        title, content, reply: '', status: '답변대기',
+        date: new Date().toLocaleDateString()
+      });
+
+      localStorage.setItem('hunster_inquiries', JSON.stringify(inquiries));
+      alert('1:1 문의가 등록되었습니다.');
+      document.getElementById('inquiry-form').reset();
+      renderUserInquiries(currentUser);
     }
 
     function handleSlotExtension(event) {
@@ -547,6 +625,7 @@
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 및 입금/세금계산서 관리</button>
         <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">공식 견적서 발행 및 복사</button>
+        <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 고객센터 문의 관리</button>
         <button id="tab-btn-ips" class="tab-btn" onclick="switchAdminTab('ips')">실시간 방문자 IP & 회원 매칭 로그</button>
       </div>
 
@@ -630,6 +709,23 @@
         </div>
       </div>
 
+      <div id="tab-content-inquiries" class="tab-content">
+        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 파트너들이 남긴 1:1 문의 내용을 확인하고 답변을 등록할 수 있습니다.</p>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>작성자</th>
+                <th>문의 제목 및 내용</th>
+                <th>진행 상태</th>
+                <th>관리자 답변 작성</th>
+              </tr>
+            </thead>
+            <tbody id="admin-inquiry-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <div id="tab-content-ips" class="tab-content">
         <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 홈페이지에 접속한 고객의 IP 주소와 로그인/회원가입한 실명(아이디)이 정확하게 매칭되어 기록됩니다.</p>
         <div class="data-table-wrapper">
@@ -669,12 +765,26 @@
         <div id="account-info-box" style="margin-top: 20px; padding: 14px; background: var(--primary-light); border-radius: 10px; font-size: 0.9rem; color: #1e40af;"></div>
       </div>
 
-      <div class="card-box" style="background: white;">
+      <div class="card-box" style="background: white; margin-bottom: 24px;">
         <h3>⚡ 슬롯 추가 및 기간 연장 신청</h3>
         <form onsubmit="handleSlotExtension(event)" style="margin-top: 14px; display: flex; gap: 10px; max-width: 500px;">
           <input type="number" id="extend-slots-input" class="form-input" value="5" min="5" placeholder="추가 슬롯 수" required>
           <button type="submit" class="btn btn-primary" style="white-space: nowrap;">연장 신청하기</button>
         </form>
+      </div>
+
+      <div class="card-box" style="background: white;">
+        <h3>💬 1:1 고객센터 문의하기</h3>
+        <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px; max-width: 700px;">
+          <input type="text" id="inq-title" class="form-input" placeholder="문의 제목을 입력하세요" required>
+          <textarea id="inq-content" class="form-textarea" placeholder="궁금하신 점이나 요청사항을 상세히 남겨주세요." required></textarea>
+          <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 10px 20px;">문의 등록하기</button>
+        </form>
+
+        <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+          <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 12px;">📋 나의 문의 및 답변 내역</h4>
+          <div id="my-inquiry-list"></div>
+        </div>
       </div>
     </div>
   </div>
