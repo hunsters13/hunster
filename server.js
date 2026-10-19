@@ -1,6 +1,9 @@
 const http = require('http');
 
-const htmlContent = `<!DOCTYPE html>
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  
+  res.end(`<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -282,4 +285,139 @@ const htmlContent = `<!DOCTYPE html>
     </div>
   </div>
 
-  <div id="view
+  <div id="view-login" class="page-view">
+    <div class="auth-container">
+      <h2>로그인</h2>
+      <p>등록하신 아이디와 비밀번호를 입력해주세요.</p>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">아이디</label>
+            <input type="text" id="login-id" class="form-input" placeholder="아이디를 입력하세요" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">비밀번호</label>
+            <input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required>
+          </div>
+        </div>
+        <div style="margin-top: 30px;">
+          <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">로그인</button>
+        </div>
+        <div style="margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--text-sub);">
+          아직 계정이 없으신가요? <a style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="switchView('view-register')">회원가입하기</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="view-register" class="page-view">
+    <div class="auth-container" style="max-width: 650px;">
+      <h2>파트너 회원가입</h2>
+      <p>직접 계정을 생성하고 트래픽 슬롯 서비스를 시작하세요. (최소 5슬롯 이상 신청 가능)</p>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-grid" style="gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">대표자 성명</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="성함을 입력하세요" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">사용할 아이디</label>
+            <input type="text" id="reg-id" class="form-input" placeholder="로그인용 아이디 입력" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">비밀번호</label>
+            <input type="password" id="reg-pw" class="form-input" placeholder="비밀번호 입력" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">연락처 (전화번호)</label>
+            <input type="tel" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">사업장 또는 수령 주소</label>
+            <input type="text" id="reg-address" class="form-input" placeholder="도로명 주소를 상세히 입력하세요" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">이용 희망 서비스 구분</label>
+            <select id="service-type" class="form-select" onchange="handleServiceChange(this)" required>
+              <option value="">-- 서비스 종류를 선택해 주세요 --</option>
+              <option value="coupang">쿠팡 트래픽</option>
+              <option value="naver-reward" disabled>네이버 리워드 (준비 중)</option>
+              <option value="naver-place" disabled>네이버 플레이스 (준비 중)</option>
+            </select>
+            <div id="coupang-sub-option" class="sub-option-box">
+              <label class="form-label" style="color: #1e40af; margin-bottom: 6px; display: block;">🔍 [쿠팡 트래픽 상세 설정] 상품군 선택</label>
+              <select id="coupang-sub-select" class="form-select" style="background: white;">
+                <option value="industrial">공산품</option>
+                <option value="agricultural">농산물</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">신청할 초기 슬롯 수량 (최소 5개)</label>
+            <input type="number" id="reg-slots" class="form-input" value="5" min="5" required>
+          </div>
+        </div>
+        <div style="margin-top: 36px; display: flex; gap: 12px;">
+          <button type="button" class="btn" style="flex: 1; padding: 14px;" onclick="switchView('view-main')">취소</button>
+          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 14px; font-size: 1rem;">회원가입 완료</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="view-admin" class="page-view">
+    <div class="dashboard-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+          <h2>🛡️ 관리자 통합 관제 센터 (hun1 계정)</h2>
+          <p style="color: var(--text-sub);">가입된 모든 파트너 회원의 정보를 실시간 확인합니다.</p>
+        </div>
+        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>성명 및 아이디</th>
+            <th>전화번호</th>
+            <th>사업장 주소</th>
+            <th>서비스 및 상품군</th>
+            <th>유치 슬롯량</th>
+          </tr>
+        </thead>
+        <tbody id="admin-user-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="view-user-dashboard" class="page-view">
+    <div class="dashboard-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+          <h2 id="my-name">파트너님</h2>
+          <p style="color: var(--text-sub);">본인 계정의 신청 정보 및 실시간 트래픽 슬롯 가동 현황입니다.</p>
+        </div>
+        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
+      </div>
+      <div class="card-box" style="background: white; margin-bottom: 30px;">
+        <h3 style="margin-bottom: 20px;">📋 내 파트너 가입 정보</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.95rem;">
+          <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
+          <div><strong>사업장 주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
+          <div><strong>이용 서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
+          <div><strong>유치 슬롯 현황:</strong> <span id="my-slots" style="color: var(--success); font-weight: 700;"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 HUNSTER TRAFFIC Inc. All rights reserved.</p>
+  </footer>
+</body>
+</html>`);
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
