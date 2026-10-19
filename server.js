@@ -56,6 +56,18 @@ const htmlContent = `<!DOCTYPE html>
     .price-desc { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 16px; }
     .price-tag { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; }
     .price-tag span { font-size: 0.85rem; color: var(--text-sub); font-weight: 500; text-decoration: line-through; margin-left: 6px; }
+    
+    /* 신규 가이드 및 차트 섹션 스타일 */
+    .guide-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
+    .guide-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
+    .guide-section p { color: var(--text-sub); font-size: 0.95rem; margin-bottom: 24px; line-height: 1.7; }
+    .guide-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+    .guide-table th, .guide-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+    .guide-table th { background: var(--border-subtle); color: var(--text-sub); font-weight: 700; font-size: 0.85rem; }
+    .logic-box { background: var(--primary-light); border: 1px solid #bfdbfe; border-radius: 14px; padding: 24px; margin-top: 24px; }
+    .logic-box h4 { color: var(--primary); font-size: 1.05rem; font-weight: 800; margin-bottom: 10px; }
+    .logic-box ul { padding-left: 20px; color: #334155; font-size: 0.9rem; display: flex; flex-direction: column; gap: 8px; }
+
     .auth-container { max-width: 550px; margin: 40px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .auth-container h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
     .auth-container p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 24px; }
@@ -219,136 +231,30 @@ const htmlContent = `<!DOCTYPE html>
         </div>
       </section>
 
-      <section class="pricing-section">
-        <div style="margin-bottom: 20px;">
-          <h2>💰 투명하고 합리적인 요금제 안내</h2>
-          <p style="font-size: 0.92rem; color: var(--text-sub);">복잡한 패키지 상품은 없습니다. 효율적인 운영을 위해 <strong>최소 5슬롯 이상</strong>부터 신청 가능합니다.</p>
-        </div>
-        <div class="pricing-grid">
-          <div class="price-card">
-            <div>
-              <div class="price-title">쿠팡 트래픽 이용권 (1슬롯 단가 기준)</div>
-              <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당 (최소 5슬롯 구매)</div>
-              <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
-              <p style="font-size: 0.82rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
-            </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 회원가입 하기</button>
-          </div>
-          <div class="price-card featured">
-            <div>
-              <div class="price-title">🧮 실시간 슬롯 수량 및 세금계산기</div>
-              <div class="price-desc">원하시는 슬롯 개수(최소 5개)를 입력하여 부가세 포함 금액을 확인하세요.</div>
-              <div style="margin: 12px 0;">
-                <label class="form-label" style="margin-bottom: 4px; display: block;">신청할 슬롯 개수 입력 (최소 5슬롯)</label>
-                <input type="number" id="slot-calc-input" class="form-input" value="5" min="5" oninput="calculatePrice(this)" style="background: white;">
-              </div>
-              <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px; margin-top: 12px;">
-                <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
-                  <span>공급가액 (세금 미포함):</span><span id="supply-price-text" style="font-weight: 600; color: var(--text-main);">275,000원</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
-                  <span>부가세 (VAT 10%):</span><span id="vat-text" style="font-weight: 600; color: var(--text-main);">27,500원</span>
-                </div>
-                <div style="border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
-                  <span>총 결제 금액 (세금 포함):</span><span id="total-price-text" style="font-size: 1.15rem; color: var(--primary);">302,500원</span>
-                </div>
-              </div>
-            </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 16px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <div id="view-login" class="page-view">
-    <div class="auth-container">
-      <h2>로그인</h2>
-      <p>등록하신 아이디와 비밀번호를 입력해주세요.</p>
-      <form onsubmit="handleLogin(event)">
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">아이디</label><input type="text" id="login-id" class="form-input" placeholder="아이디를 입력하세요" required></div>
-          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required></div>
-        </div>
-        <div style="margin-top: 24px;"><button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">로그인</button></div>
-        <div style="margin-top: 16px; text-align: center; font-size: 0.88rem; color: var(--text-sub);">아직 계정이 없으신가요? <a style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="switchView('view-register')">회원가입하기</a></div>
-      </form>
-    </div>
-  </div>
-
-  <div id="view-register" class="page-view">
-    <div class="auth-container" style="max-width: 600px;">
-      <h2>파트너 회원가입</h2>
-      <p>직접 계정을 생성하고 트래픽 슬롯 서비스를 시작하세요. (최소 5슬롯 이상)</p>
-      <form onsubmit="handleRegister(event)">
-        <div class="form-grid" style="gap: 14px;">
-          <div class="form-group"><label class="form-label">대표자 성명</label><input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required></div>
-          <div class="form-group"><label class="form-label">사용할 아이디</label><input type="text" id="reg-id" class="form-input" placeholder="아이디 입력" required></div>
-          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="reg-pw" class="form-input" placeholder="비밀번호 입력" required></div>
-          <div class="form-group"><label class="form-label">연락처 (전화번호)</label><input type="tel" id="reg-phone" class="form-input" placeholder="010-0000-0000" required></div>
-          <div class="form-group"><label class="form-label">사업장 주소</label><input type="text" id="reg-address" class="form-input" placeholder="주소 입력" required></div>
-          <div class="form-group">
-            <label class="form-label">이용 서비스</label>
-            <select id="service-type" class="form-select" onchange="handleServiceChange(this)" required>
-              <option value="">-- 서비스 선택 --</option>
-              <option value="coupang">쿠팡 트래픽</option>
-            </select>
-            <div id="coupang-sub-option" class="sub-option-box">
-              <label class="form-label" style="color: #1e40af; margin-bottom: 6px; display: block;">🔍 [쿠팡 상세] 상품군 선택</label>
-              <select id="coupang-sub-select" class="form-select" style="background: white;"><option value="industrial">공산품</option><option value="agricultural">농산물</option></select>
-            </div>
-          </div>
-          <div class="form-group"><label class="form-label">신청 슬롯 수량 (최소 5개)</label><input type="number" id="reg-slots" class="form-input" value="5" min="5" required></div>
-        </div>
-        <div style="margin-top: 28px; display: flex; gap: 10px;">
-          <button type="button" class="btn" style="flex: 1; padding: 12px;" onclick="switchView('view-main')">취소</button>
-          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; font-size: 0.95rem;">회원가입 완료</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="view-admin" class="page-view">
-    <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>🛡️ 관리자 통합 관제 센터</h2>
-        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
-      </div>
-      <table class="data-table">
-        <thead><tr><th>성명 및 아이디</th><th>전화번호</th><th>사업장 주소</th><th>서비스 종류</th><th>유치 슬롯량</th></tr></thead>
-        <tbody id="admin-user-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="view-user-dashboard" class="page-view">
-    <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 id="my-name">파트너님</h2>
-        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
-      </div>
-      <div class="card-box" style="background: white;">
-        <h3>📋 내 파트너 가입 정보</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; font-size: 0.92rem;">
-          <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
-          <div><strong>주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
-          <div><strong>서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
-          <div><strong>슬롯 현황:</strong> <span id="my-slots" style="color: var(--success); font-weight: 700;"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <footer><p>&copy; 2026 HUNSTER TRAFFIC Inc. All rights reserved.</p></footer>
-</body>
-</html>`;
-
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(htmlContent);
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+      <!-- 쿠팡 키워드량 비례 슬롯 산정 가이드 및 알고리즘 분석 차트 섹션 -->
+      <section class="guide-section">
+        <h2>📈 쿠팡 키워드 검색량별 권장 슬롯 산정 및 로직 분석</h2>
+        <p>쿠팡 알고리즘은 검색어별 유효 트래픽 볼륨에 비례하여 순위를 부여합니다. 키워드 규모에 맞는 최적의 슬롯 분배가 상위노출의 성패를 가릅니다.</p>
+        
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>키워드 월간 검색량 규모</th>
+              <th>권장 가동 슬롯 수</th>
+              <th>전략 및 운용 가이드</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1.3만 이하</strong> (소형/세부 키워드)</td>
+              <td><span style="color: var(--primary); font-weight: 800;">약 5 슬롯</span></td>
+              <td>경쟁 강도가 낮아 최소 기본 슬롯만으로도 빠르게 상위권 진입 및 안착이 가능합니다.</td>
+            </tr>
+            <tr>
+              <td><strong>1.3만 이상 ~ 12만 이하</strong> (중형 키워드)</td>
+              <td><span style="color: var(--success); font-weight: 800;">약 10 슬롯</span></td>
+              <td>안정적인 유입 분산을 통해 알고리즘 체류 시간 지표를 극대화하는 표준 구간입니다.</td>
+            </tr>
+            <tr>
+              <td><strong>12만 이상</strong> (대형 메인 키워드)</td>
+              <td><span style="color: #7c3aed; font-weight: 800;">15 슬롯 이상 (맞
