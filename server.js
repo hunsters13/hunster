@@ -132,26 +132,35 @@ const server = http.createServer((req, res) => {
           }
         }
 
+        // 5슬롯 이상 구매 및 부가세(10%) 계산 로직
         function calculatePrice(input) {
-          let count = parseInt(input.value) || 1;
-          if (count < 1) count = 1;
-          const total = count * 55000;
-          document.getElementById('total-price-text').innerText = total.toLocaleString() + '원';
+          let count = parseInt(input.value) || 5;
+          if (count < 5) count = 5; // 최소 5슬롯 제한
+          
+          const supplyPrice = count * 55000; // 공급가액 (세금 미포함가)
+          const vat = Math.round(supplyPrice * 0.1); // 부가세 10%
+          const totalPrice = supplyPrice + vat; // 총 결제금액 (세금 포함가)
+
+          document.getElementById('supply-price-text').innerText = supplyPrice.toLocaleString() + '원';
+          document.getElementById('vat-text').innerText = vat.toLocaleString() + '원';
+          document.getElementById('total-price-text').innerText = totalPrice.toLocaleString() + '원';
         }
 
-        // 초기 데이터 세팅 (샘플 회원 데이터 저장)
+        // 초기 데이터 세팅
         function initStorage() {
           if (!localStorage.getItem('hunster_users')) {
             const initialUsers = [
               { name: '김철수', id: 'kim123', pw: '1234', phone: '010-9876-5432', address: '서울시 강남구 테헤란로 456', service: '쿠팡 트래픽 (공산품)', slots: 5 },
-              { name: '이영희', id: 'lee456', pw: '1234', phone: '010-1112-2233', address: '경기도 성남시 분당구 판교로 789', service: '쿠팡 트래픽 (농산물)', slots: 2 }
+              { name: '이영희', id: 'lee456', pw: '1234', phone: '010-1112-2233', address: '경기도 성남시 분당구 판교로 789', service: '쿠팡 트래픽 (농산물)', slots: 5 }
             ];
             localStorage.setItem('hunster_users', JSON.stringify(initialUsers));
           }
+          // 첫 로딩 시 계산기 기본값(5슬롯) 계산 수행
+          const calcInput = document.getElementById('slot-calc-input');
+          if (calcInput) calculatePrice(calcInput);
         }
         window.onload = initStorage;
 
-        // 회원가입 처리 로직
         function handleRegister(event) {
           event.preventDefault();
           const name = document.getElementById('reg-name').value;
@@ -161,7 +170,12 @@ const server = http.createServer((req, res) => {
           const address = document.getElementById('reg-address').value;
           const serviceType = document.getElementById('service-type').value;
           const coupangSub = document.getElementById('coupang-sub-select').value;
-          const slotCount = parseInt(document.getElementById('reg-slots').value) || 1;
+          const slotCount = parseInt(document.getElementById('reg-slots').value) || 5;
+
+          if (slotCount < 5) {
+            alert('슬롯은 최소 5개 이상부터 신청 가능합니다.');
+            return;
+          }
 
           let serviceStr = '쿠팡 트래픽 (' + (coupangSub === 'industrial' ? '공산품' : '농산물') + ')';
           if (serviceType === 'naver-reward') serviceStr = '네이버 리워드';
@@ -188,7 +202,6 @@ const server = http.createServer((req, res) => {
           const inputId = document.getElementById('login-id').value.trim();
           const inputPw = document.getElementById('login-pw').value.trim();
 
-          // 관리자 로그인 백그라운드 체크 (화면 노출 없음)
           if (inputId === 'hun1' && inputPw === '1234') {
             loginFailCount = 0;
             loadAdminTable();
@@ -318,14 +331,14 @@ const server = http.createServer((req, res) => {
           <section id="pricing" class="pricing-section">
             <div class="section-header" style="margin-bottom: 24px;">
               <h2>💰 투명하고 합리적인 요금제 안내</h2>
-              <p>복잡한 패키지 상품은 없습니다. 필요한 슬롯 수량만큼 자유롭게 이용하세요.</p>
+              <p>복잡한 패키지 상품은 없습니다. 효율적인 운영을 위해 <strong>최소 5슬롯 이상</strong>부터 신청 가능합니다.</p>
             </div>
             
             <div class="pricing-grid">
               <div class="price-card">
                 <div>
-                  <div class="price-title">쿠팡 트래픽 1슬롯 이용권</div>
-                  <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당</div>
+                  <div class="price-title">쿠팡 트래픽 이용권 (1슬롯 단가 기준)</div>
+                  <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당 (최소 5슬롯 구매)</div>
                   <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
                   <p style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
                 </div>
@@ -334,15 +347,26 @@ const server = http.createServer((req, res) => {
 
               <div class="price-card featured">
                 <div>
-                  <div class="price-title">🧮 실시간 슬롯 수량 계산기</div>
-                  <div class="price-desc">원하시는 슬롯 개수를 입력하여 총 이용 요금을 확인하세요.</div>
-                  <div style="margin: 20px 0;">
-                    <label class="form-label" style="margin-bottom: 6px; display: block;">신청할 슬롯 개수 입력</label>
-                    <input type="number" id="slot-calc-input" class="form-input" value="1" min="1" oninput="calculatePrice(this)" style="background: white;">
+                  <div class="price-title">🧮 실시간 슬롯 수량 및 세금계산기</div>
+                  <div class="price-desc">원하시는 슬롯 개수(최소 5개)를 입력하여 부가세 포함/미포함 금액을 확인하세요.</div>
+                  <div style="margin: 15px 0;">
+                    <label class="form-label" style="margin-bottom: 6px; display: block;">신청할 슬롯 개수 입력 (최소 5슬롯)</label>
+                    <input type="number" id="slot-calc-input" class="form-input" value="5" min="5" oninput="calculatePrice(this)" style="background: white;">
                   </div>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-weight: 700;">
-                    <span>총 결제 예상 금액:</span>
-                    <span id="total-price-text" style="font-size: 1.4rem; color: var(--primary);">55,000원</span>
+                  
+                  <div style="background: white; padding: 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px; margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
+                      <span>공급가액 (세금 미포함):</span>
+                      <span id="supply-price-text" style="font-weight: 600; color: var(--text-main);">275,000원</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
+                      <span>부가세 (VAT 10%):</span>
+                      <span id="vat-text" style="font-weight: 600; color: var(--text-main);">27,500원</span>
+                    </div>
+                    <div style="border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
+                      <span style="color: var(--text-main);">총 결제 금액 (세금 포함):</span>
+                      <span id="total-price-text" style="font-size: 1.25rem; color: var(--primary);">302,500원</span>
+                    </div>
                   </div>
                 </div>
                 <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
@@ -371,136 +395,4 @@ const server = http.createServer((req, res) => {
             <div style="margin-top: 30px;">
               <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">로그인</button>
             </div>
-            <div style="margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--text-sub);">
-              아직 계정이 없으신가요? <a style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="switchView('view-register')">회원가입하기</a>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div id="view-register" class="page-view">
-        <div class="auth-container" style="max-width: 650px;">
-          <h2>파트너 회원가입</h2>
-          <p>직접 계정을 생성하고 트래픽 슬롯 서비스를 시작하세요.</p>
-          
-          <form onsubmit="handleRegister(event)">
-            <div class="form-grid" style="gap: 16px;">
-              
-              <div class="form-group">
-                <label class="form-label">대표자 성명</label>
-                <input type="text" id="reg-name" class="form-input" placeholder="성함을 입력하세요" required>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">사용할 아이디</label>
-                <input type="text" id="reg-id" class="form-input" placeholder="로그인용 아이디 입력" required>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">비밀번호</label>
-                <input type="password" id="reg-pw" class="form-input" placeholder="비밀번호 입력" required>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">연락처 (전화번호)</label>
-                <input type="tel" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">사업장 또는 수령 주소</label>
-                <input type="text" id="reg-address" class="form-input" placeholder="도로명 주소를 상세히 입력하세요" required>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">이용 희망 서비스 구분</label>
-                <select id="service-type" class="form-select" onchange="handleServiceChange(this)" required>
-                  <option value="">-- 서비스 종류를 선택해 주세요 --</option>
-                  <option value="coupang">쿠팡 트래픽</option>
-                  <option value="naver-reward" disabled>네이버 리워드 (준비 중)</option>
-                  <option value="naver-place" disabled>네이버 플레이스 (준비 중)</option>
-                </select>
-
-                <div id="coupang-sub-option" class="sub-option-box">
-                  <label class="form-label" style="color: #1e40af; margin-bottom: 6px; display: block;">🔍 [쿠팡 트래픽 상세 설정] 상품군 선택</label>
-                  <select id="coupang-sub-select" class="form-select" style="background: white;">
-                    <option value="industrial">공산품</option>
-                    <option value="agricultural">농산물</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">신청할 초기 슬롯 수량</label>
-                <input type="number" id="reg-slots" class="form-input" value="1" min="1" required>
-              </div>
-
-            </div>
-
-            <div style="margin-top: 36px; display: flex; gap: 12px;">
-              <button type="button" class="btn" style="flex: 1; padding: 14px;" onclick="switchView('view-main')">취소</button>
-              <button type="submit" class="btn btn-primary" style="flex: 2; padding: 14px; font-size: 1rem;">회원가입 완료</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div id="view-admin" class="page-view">
-        <div class="dashboard-container">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <div>
-              <h2>🛡️ 관리자 통합 관제 센터 (hun1 계정)</h2>
-              <p style="color: var(--text-sub);">가입된 모든 파트너 회원의 연락처, 주소, 상품군(공산/농산), 유치 슬롯량을 실시간 확인합니다.</p>
-            </div>
-            <button class="btn" onclick="switchView('view-main')">로그아웃</button>
-          </div>
-
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>성명 및 아이디</th>
-                <th>전화번호</th>
-                <th>사업장 주소</th>
-                <th>서비스 및 상품군</th>
-                <th>유치 슬롯량</th>
-              </tr>
-            </thead>
-            <tbody id="admin-user-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="view-user-dashboard" class="page-view">
-        <div class="dashboard-container">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <div>
-              <h2 id="my-name">파트너님</h2>
-              <p style="color: var(--text-sub);">본인 계정의 신청 정보 및 실시간 트래픽 슬롯 가동 현황입니다.</p>
-            </div>
-            <button class="btn" onclick="switchView('view-main')">로그아웃</button>
-          </div>
-
-          <div class="card-box" style="background: white; margin-bottom: 30px;">
-            <h3 style="margin-bottom: 20px;">📋 내 파트너 가입 정보</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.95rem;">
-              <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
-              <div><strong>사업장 주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
-              <div><strong>이용 서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
-              <div><strong>유치 슬롯 현황:</strong> <span id="my-slots" style="color: var(--success); font-weight: 700;"></span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <footer>
-        <p>&copy; 2026 HUNSTER TRAFFIC Inc. All rights reserved. | Enterprise Infrastructure Division</p>
-      </footer>
-
-    </body>
-    </html>
-  `);
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+            <div style="margin-top:
