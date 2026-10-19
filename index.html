@@ -17,8 +17,7 @@
     
     header { height: 80px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 40px; background: rgba(255, 255, 255, 0.95); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
     .logo-area { display: flex; align-items: center; gap: 14px; text-decoration: none; cursor: pointer; }
-    .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1.4rem; box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); animation: pulseGlow 2s infinite ease-in-out; }
-    @keyframes pulseGlow { 0% { transform: scale(1); box-shadow: 0 0 10px rgba(37, 99, 235, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 22px rgba(37, 99, 235, 0.8); } 100% { transform: scale(1); box-shadow: 0 0 10px rgba(37, 99, 235, 0.4); } }
+    .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1.4rem; box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); }
     .logo-text-box { display: flex; flex-direction: column; }
     .logo-main-title { font-weight: 900; font-size: 1.25rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .logo-sub-title { font-size: 0.7rem; font-weight: 700; color: var(--primary); letter-spacing: 1.5px; text-transform: uppercase; }
@@ -67,11 +66,9 @@
     .price-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
     .price-desc { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 16px; }
     .price-tag { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; }
-    .price-tag span { font-size: 0.85rem; color: var(--text-sub); font-weight: 500; text-decoration: line-through; margin-left: 6px; }
     
     .guide-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .guide-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
-    .guide-section p { color: var(--text-sub); font-size: 0.95rem; margin-bottom: 24px; line-height: 1.7; }
     .guide-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
     .guide-table th, .guide-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
     .guide-table th { background: var(--border-subtle); color: var(--text-sub); font-weight: 700; font-size: 0.85rem; }
@@ -113,17 +110,10 @@
     }
   </style>
   <script>
-    const ACCOUNT_INFO = {
-      bank: "카카오뱅크",
-      accountNumber: "3333-22-922-9190",
-      holder: "김*훈"
-    };
+    const ACCOUNT_INFO = { bank: "카카오뱅크", accountNumber: "3333-22-922-9190", holder: "김*훈" };
+    const ADMIN_INFO = { name: "관리자 (김*훈)", phone: "010-3672-7807", company: "훈스터 (HUNSTER)" };
 
-    const ADMIN_INFO = {
-      name: "관리자 (김*훈)",
-      phone: "010-3672-7807",
-      company: "훈스터 (HUNSTER)"
-    };
+    let currentUser = null;
 
     function switchView(viewId) {
       document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
@@ -153,40 +143,29 @@
     }
 
     async function trackVisitor(userName = "비회원 (일반 방문)", userId = "-") {
-      let logs = JSON.parse(localStorage.getItem('hunster_ip_logs') || '[]');
       let userIp = "121.160.XXX.XX";
       try {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         userIp = data.ip;
-      } catch(e) {
-        console.log("IP fetch restricted.");
-      }
+      } catch(e) {}
       
       const now = new Date().toLocaleString();
       const device = navigator.userAgent.includes('Mobile') ? '모바일' : 'PC 웹';
       
-      logs.unshift({ ip: userIp, name: userName, id: userId, time: now, device: device });
-      if(logs.length > 50) logs.pop();
-      localStorage.setItem('hunster_ip_logs', JSON.stringify(logs));
+      await fetch('/api/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip: userIp, name: userName, id: userId, time: now, device })
+      });
     }
 
-    window.onload = function() {
-      if (!localStorage.getItem('hunster_users')) {
-        localStorage.setItem('hunster_users', JSON.stringify([
-          { name: '김철수', id: 'kim123', pw: '1234', phone: '010-9876-5432', address: '서울시 강남구 테헤란로 456', service: '쿠팡 트래픽 (공산품)', slots: 5, depositStatus: '입금완료', taxStatus: '발행완료' }
-        ]));
-      }
-      if (!localStorage.getItem('hunster_inquiries')) {
-        localStorage.setItem('hunster_inquiries', JSON.stringify([
-          { id: 1, author: '김철수 (kim123)', title: '슬롯 추가 문의드립니다.', content: '슬롯 5개 추가 연장하고 싶어요.', reply: '확인 후 처리해드리겠습니다.', status: '답변완료', date: '2026-10-19' }
-        ]));
-      }
+    window.onload = async function() {
       calculatePrice(document.getElementById('slot-calc-input'));
       trackVisitor();
     };
 
-    function handleRegister(event) {
+    async function handleRegister(event) {
       event.preventDefault();
       const name = document.getElementById('reg-name').value;
       const id = document.getElementById('reg-id').value;
@@ -197,59 +176,60 @@
       const slotCount = parseInt(document.getElementById('reg-slots').value) || 5;
       
       if (slotCount < 5) { alert('슬롯은 최소 5개 이상부터 신청 가능합니다.'); return; }
-      let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
-      if(users.some(u => u.id === id)) { alert('이미 존재하는 아이디입니다.'); return; }
       
-      const newUser = {
-        name, id, pw, phone, address,
-        service: '쿠팡 트래픽 (' + (coupangSub === 'industrial' ? '공산품' : '농산물') + ')',
-        slots: slotCount,
-        depositStatus: '입금대기',
-        taxStatus: '발행대기'
-      };
-
-      users.push(newUser);
-      localStorage.setItem('hunster_users', JSON.stringify(users));
-      trackVisitor(name + ' (회원가입)', id);
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, id, pw, phone, address, coupangSub, slots: slotCount })
+      });
       
-      alert('회원가입 완료!\n[입금 계좌]\n' + ACCOUNT_INFO.bank + ' ' + ACCOUNT_INFO.accountNumber + ' (' + ACCOUNT_INFO.holder + ')');
-      switchView('view-login');
+      const result = await response.json();
+      if(result.success) {
+        alert('회원가입 완료!\n[입금 계좌]\n' + ACCOUNT_INFO.bank + ' ' + ACCOUNT_INFO.accountNumber + ' (' + ACCOUNT_INFO.holder + ')');
+        trackVisitor(name + ' (회원가입)', id);
+        switchView('view-login');
+      } else {
+        alert(result.message);
+      }
     }
 
-    let currentUser = null;
-
-    function handleLogin(event) {
+    async function handleLogin(event) {
       event.preventDefault();
       const inputId = document.getElementById('login-id').value.trim();
       const inputPw = document.getElementById('login-pw').value.trim();
       
       if (inputId === 'hun1' && inputPw === '1234') {
-        renderAdminDashboard();
+        await loadAdminData();
         switchView('view-admin');
         return;
       }
       
-      let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
-      let foundUser = users.find(u => u.id === inputId && u.pw === inputPw);
-      if (foundUser) {
-        currentUser = foundUser;
-        trackVisitor(foundUser.name + ' (로그인)', foundUser.id);
-        renderUserDashboard(foundUser);
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: inputId, pw: inputPw })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        currentUser = data.user;
+        trackVisitor(currentUser.name + ' (로그인)', currentUser.id);
+        renderUserDashboard(currentUser);
         switchView('view-user-dashboard');
       } else {
         alert('아이디 또는 비밀번호가 일치하지 않습니다.');
       }
     }
 
-    function renderAdminDashboard() {
-      let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
+    async function loadAdminData() {
+      const res = await fetch('/api/admin/data');
+      const data = await res.json();
+      
       let tbody = document.getElementById('admin-user-tbody');
       tbody.innerHTML = '';
-      
-      users.forEach((u, index) => {
+      data.users.forEach((u, index) => {
         let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
         let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
-        
         tbody.innerHTML += `<tr>
           <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.78rem;">(${u.id})</span></td>
           <td>${u.phone}<br><span style="color:var(--text-sub); font-size:0.78rem;">${u.address}</span></td>
@@ -259,23 +239,21 @@
         </tr>`;
       });
 
-      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
       let inqTbody = document.getElementById('admin-inquiry-tbody');
       inqTbody.innerHTML = '';
-      inquiries.forEach((inq, idx) => {
+      data.inquiries.forEach((inq) => {
         inqTbody.innerHTML += `<tr>
           <td>${inq.author}</td>
           <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
           <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
-          <td><textarea id="reply-${idx}" class="form-input" placeholder="답변 입력..." style="font-size:0.82rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
-              <button class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="submitReply(${idx})">답변 등록</button></td>
+          <td><textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.82rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
+              <button class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="submitReply(${inq.id})">답변 등록</button></td>
         </tr>`;
       });
 
-      let logs = JSON.parse(localStorage.getItem('hunster_ip_logs') || '[]');
       let ipTbody = document.getElementById('admin-ip-tbody');
       ipTbody.innerHTML = '';
-      logs.forEach(log => {
+      data.ipLogs.forEach(log => {
         ipTbody.innerHTML += `<tr>
           <td><strong style="color:var(--primary);">${log.ip}</strong></td>
           <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.78rem; color:var(--text-sub);">(${log.id})</span></td>
@@ -285,28 +263,27 @@
       });
     }
 
-    function toggleStatus(index, type) {
-      let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
-      if(type === 'deposit') {
-        users[index].depositStatus = users[index].depositStatus === '입금완료' ? '입금대기' : '입금완료';
-      } else {
-        users[index].taxStatus = users[index].taxStatus === '발행완료' ? '발행대기' : '발행완료';
-      }
-      localStorage.setItem('hunster_users', JSON.stringify(users));
-      renderAdminDashboard();
+    async function toggleStatus(index, type) {
+      await fetch('/api/admin/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ index, type })
+      });
+      loadAdminData();
     }
 
-    function submitReply(idx) {
-      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
-      let replyText = document.getElementById('reply-' + idx).value;
-      inquiries[idx].reply = replyText;
-      inquiries[idx].status = '답변완료';
-      localStorage.setItem('hunster_inquiries', JSON.stringify(inquiries));
+    async function submitReply(id) {
+      let replyText = document.getElementById('reply-' + id).value;
+      await fetch('/api/admin/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, reply: replyText })
+      });
       alert('답변이 등록되었습니다.');
-      renderAdminDashboard();
+      loadAdminData();
     }
 
-    function renderUserDashboard(user) {
+    async function renderUserDashboard(user) {
       document.getElementById('my-name').innerText = user.name + ' 파트너님';
       document.getElementById('my-phone').innerText = user.phone;
       document.getElementById('my-address').innerText = user.address;
@@ -321,9 +298,9 @@
       renderUserInquiries(user);
     }
 
-    function renderUserInquiries(user) {
-      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
-      let myInqList = inquiries.filter(i => i.author.includes(user.id));
+    async function renderUserInquiries(user) {
+      const res = await fetch('/api/inquiries?id=' + user.id);
+      const myInqList = await res.json();
       let container = document.getElementById('my-inquiry-list');
       container.innerHTML = '';
       
@@ -345,22 +322,19 @@
       });
     }
 
-    function handleNewInquiry(event) {
+    async function handleNewInquiry(event) {
       event.preventDefault();
       if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
       
       const title = document.getElementById('inq-title').value;
       const content = document.getElementById('inq-content').value;
-      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries') || '[]');
       
-      inquiries.unshift({
-        id: Date.now(),
-        author: currentUser.name + ' (' + currentUser.id + ')',
-        title, content, reply: '', status: '답변대기',
-        date: new Date().toLocaleDateString()
+      await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author: currentUser.name + ' (' + currentUser.id + ')', userId: currentUser.id, title, content })
       });
 
-      localStorage.setItem('hunster_inquiries', JSON.stringify(inquiries));
       alert('1:1 문의가 등록되었습니다.');
       document.getElementById('inquiry-form').reset();
       renderUserInquiries(currentUser);
@@ -412,7 +386,7 @@
 감사합니다. 비즈니스의 성공을 응원합니다!`;
 
       navigator.clipboard.writeText(quoteText).then(() => {
-        alert('📋 견적서 텍스트가 클립보드에 복사되었습니다! 카카오톡이나 문자메시지에 바로 붙여넣기(Ctrl+V) 하세요.');
+        alert('📋 견적서 텍스트가 클립보드에 복사되었습니다!');
       }).catch(err => {
         alert('복사에 실패했습니다.');
       });
@@ -630,7 +604,7 @@
       </div>
 
       <div id="tab-content-users" class="tab-content active">
-        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 표 안의 **입금 상태**와 **세금계산서 상태** 버튼을 클릭하면 실시간으로 완료/대기 상태가 토글됩니다.</p>
+        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 서버에 등록된 파트너 현황 및 입금/세금계산서 상태를 관리합니다.</p>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
@@ -650,7 +624,7 @@
       <div id="tab-content-quote" class="tab-content">
         <div class="card-box" style="background: white;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h3>📑 고객용 공식 견적서 생성기 (단가/수량 자유 조절 가능)</h3>
+            <h3>📑 고객용 공식 견적서 생성기</h3>
             <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 원클릭 복사</button>
           </div>
 
@@ -710,7 +684,7 @@
       </div>
 
       <div id="tab-content-inquiries" class="tab-content">
-        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 파트너들이 남긴 1:1 문의 내용을 확인하고 답변을 등록할 수 있습니다.</p>
+        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 서버에 접수된 파트너들의 실시간 1:1 문의입니다.</p>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
@@ -727,7 +701,7 @@
       </div>
 
       <div id="tab-content-ips" class="tab-content">
-        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 홈페이지에 접속한 고객의 IP 주소와 로그인/회원가입한 실명(아이디)이 정확하게 매칭되어 기록됩니다.</p>
+        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 실시간 접속자 IP 및 로그인 회원 매칭 로그입니다.</p>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
