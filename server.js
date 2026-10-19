@@ -26,6 +26,8 @@ const server = http.createServer((req, res) => {
           --success-bg: #ecfdf5;
           --warning-bg: #fffbeb;
           --warning-text: #d97706;
+          --danger-bg: #fef2f2;
+          --danger-text: #dc2626;
           --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
           --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
           --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
@@ -56,7 +58,7 @@ const server = http.createServer((req, res) => {
         /* 메인 컨테이너 */
         .wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; display: flex; flex-direction: column; gap: 80px; }
 
-        /* 1. 히어로 섹션 */
+        /* 히어로 섹션 */
         .hero { text-align: center; padding: 60px 0; }
         .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-size: 0.88rem; font-weight: 700; margin-bottom: 20px; }
         .hero h1 { font-size: 3.2rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 20px; letter-spacing: -0.03em; }
@@ -80,11 +82,10 @@ const server = http.createServer((req, res) => {
         .badge-online { background: var(--success-bg); color: var(--success); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
         .badge-preparing { background: var(--warning-bg); color: var(--warning-text); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
 
-        /* 요금제 섹션 (슬롯 선택 계산기 포함) */
+        /* 요금제 섹션 */
         .pricing-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 48px; box-shadow: var(--shadow-lg); }
         .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
         @media(max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
-        
         .price-card { background: var(--bg-body); border: 1px solid var(--border); border-radius: 16px; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; }
         .price-card.featured { border-color: var(--primary); background: var(--primary-light); }
         .price-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
@@ -92,8 +93,8 @@ const server = http.createServer((req, res) => {
         .price-tag { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 20px; }
         .price-tag span { font-size: 0.9rem; color: var(--text-sub); font-weight: 500; text-decoration: line-through; margin-left: 8px; }
 
-        /* 독립된 로그인 및 회원가입 모달/페이지 박스 */
-        .auth-container { max-width: 500px; margin: 60px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 48px; box-shadow: var(--shadow-lg); }
+        /* 인증 및 폼 페이지 박스 */
+        .auth-container { max-width: 600px; margin: 60px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 48px; box-shadow: var(--shadow-lg); }
         .auth-container h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; color: #0f172a; }
         .auth-container p { color: var(--text-sub); font-size: 0.95rem; margin-bottom: 32px; }
 
@@ -104,10 +105,18 @@ const server = http.createServer((req, res) => {
         .form-input:focus, .form-select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
         
         .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 20px; border-radius: 14px; margin-top: 10px; display: none; }
+
+        /* 대시보드 테이블 */
+        .dashboard-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .data-table th, .data-table td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; }
+        .data-table td { color: var(--text-main); font-weight: 500; }
         
         footer { text-align: center; padding: 60px 0; color: var(--text-sub); font-size: 0.9rem; border-top: 1px solid var(--border); background: white; margin-top: 40px; }
       </style>
       <script>
+        // 화면 전환 함수
         function switchView(viewId) {
           document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
           document.getElementById(viewId).classList.add('active');
@@ -123,12 +132,116 @@ const server = http.createServer((req, res) => {
           }
         }
 
-        // 실시간 요금 계산기 함수
         function calculatePrice(input) {
           let count = parseInt(input.value) || 1;
           if (count < 1) count = 1;
           const total = count * 55000;
           document.getElementById('total-price-text').innerText = total.toLocaleString() + '원';
+        }
+
+        // 초기 데이터 세팅 (샘플 회원 데이터 저장)
+        function initStorage() {
+          if (!localStorage.getItem('hunster_users')) {
+            const initialUsers = [
+              { name: '김철수', id: 'kim123', pw: '1234', phone: '010-9876-5432', address: '서울시 강남구 테헤란로 456', service: '쿠팡 트래픽 (공산품)', slots: 5 },
+              { name: '이영희', id: 'lee456', pw: '1234', phone: '010-1112-2233', address: '경기도 성남시 분당구 판교로 789', service: '쿠팡 트래픽 (농산물)', slots: 2 }
+            ];
+            localStorage.setItem('hunster_users', JSON.stringify(initialUsers));
+          }
+        }
+        window.onload = initStorage;
+
+        // 회원가입 처리 로직
+        function handleRegister(event) {
+          event.preventDefault();
+          const name = document.getElementById('reg-name').value;
+          const id = document.getElementById('reg-id').value;
+          const pw = document.getElementById('reg-pw').value;
+          const phone = document.getElementById('reg-phone').value;
+          const address = document.getElementById('reg-address').value;
+          const serviceType = document.getElementById('service-type').value;
+          const coupangSub = document.getElementById('coupang-sub-select').value;
+          const slotCount = parseInt(document.getElementById('reg-slots').value) || 1;
+
+          let serviceStr = '쿠팡 트래픽 (' + (coupangSub === 'industrial' ? '공산품' : '농산물') + ')';
+          if (serviceType === 'naver-reward') serviceStr = '네이버 리워드';
+          if (serviceType === 'naver-place') serviceStr = '네이버 플레이스';
+
+          let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
+          
+          // 중복 아이디 체크
+          if(users.some(u => u.id === id)) {
+            alert('이미 존재하는 아이디입니다. 다른 아이디를 입력해주세요.');
+            return;
+          }
+
+          users.push({ name, id, pw, phone, address, service: serviceStr, slots: slotCount });
+          localStorage.setItem('hunster_users', JSON.stringify(users));
+
+          alert('회원가입이 성공적으로 완료되었습니다! 로그인 후 이용해주세요.');
+          switchView('view-login');
+        }
+
+        // 로그인 실패 제한 관리 (최대 5회)
+        let loginFailCount = 0;
+
+        // 로그인 처리 로직
+        function handleLogin(event) {
+          event.preventDefault();
+          const inputId = document.getElementById('login-id').value.trim();
+          const inputPw = document.getElementById('login-pw').value.trim();
+
+          // 1. 관리자 체크 (hun1 / 1234)
+          if (inputId === 'hun1' && inputPw === '1234') {
+            loginFailCount = 0; // 성공 시 카운트 초기화
+            loadAdminTable();
+            switchView('view-admin');
+            return;
+          }
+
+          // 2. 일반 회원 체크 (localStorage 대조)
+          let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
+          let foundUser = users.find(u => u.id === inputId && u.pw === inputPw);
+
+          if (foundUser) {
+            loginFailCount = 0;
+            // 회원 마이페이지 정보 세팅
+            document.getElementById('my-name').innerText = foundUser.name + ' 파트너님';
+            document.getElementById('my-phone').innerText = foundUser.phone;
+            document.getElementById('my-address').innerText = foundUser.address;
+            document.getElementById('my-service').innerText = foundUser.service;
+            document.getElementById('my-slots').innerText = foundUser.slots + ' 슬롯 활성 가동 중';
+            switchView('view-user-dashboard');
+          } else {
+            loginFailCount++;
+            let remaining = 5 - loginFailCount;
+            if (remaining <= 0) {
+              alert('로그인 5회 실패로 보안상 계정이 차단되었습니다. 관리자에게 문의하세요.');
+              document.getElementById('login-btn').disabled = true;
+              document.getElementById('login-btn').style.background = '#cbd5e1';
+            } else {
+              alert('아이디 또는 비밀번호가 일치하지 않습니다. (남은 시도 횟수: ' + remaining + '회)');
+            }
+          }
+        }
+
+        // 관리자 테이블 동적 렌더링
+        function loadAdminTable() {
+          let users = JSON.parse(localStorage.getItem('hunster_users') || '[]');
+          let tbody = document.getElementById('admin-user-tbody');
+          tbody.innerHTML = '';
+
+          users.forEach(u => {
+            let tr = document.createElement('tr');
+            tr.innerHTML = \`
+              <td><strong>\${u.name}</strong> (\${u.id})</td>
+              <td>\${u.phone}</td>
+              <td>\${u.address}</td>
+              <td><span style="color: var(--primary); font-weight: 700;">\${u.service}</span></td>
+              <td><strong style="color: var(--success);">\${u.slots} 슬롯</strong></td>
+            \`;
+            tbody.appendChild(tr);
+          });
         }
       </script>
     </head>
@@ -159,10 +272,9 @@ const server = http.createServer((req, res) => {
             <span class="hero-badge">⚡ PREMIUM TRAFFIC & SLOT SOLUTION</span>
             <h1>쿠팡 상위노출을 위한<br>압도적인 실시간 트래픽 솔루션</h1>
             <p>안정적인 프록시 분산 서버와 지능형 슬롯 관리 시스템으로 비즈니스의 한계를 뛰어넘으세요.</p>
-            <button class="btn btn-primary" style="padding: 16px 36px; font-size: 1.05rem;" onclick="switchView('view-register')">지금 바로 서비스 신청하기</button>
+            <button class="btn btn-primary" style="padding: 16px 36px; font-size: 1.05rem;" onclick="switchView('view-register')">지금 바로 회원가입 하기</button>
           </section>
 
-          <!-- 통계 카드 (슬롯 한계점 제거, 유치량만 표시) -->
           <section class="metrics-grid">
             <div class="metric-card">
               <div class="metric-title">현재 실시간 활성 슬롯 유치량</div>
@@ -181,7 +293,6 @@ const server = http.createServer((req, res) => {
             </div>
           </section>
 
-          <!-- 서버 상태 & 서비스 준비중 섹션 -->
           <section id="status" class="status-section-grid">
             <div class="card-box">
               <h3>📊 실시간 슬롯 유치 현황</h3>
@@ -212,7 +323,6 @@ const server = http.createServer((req, res) => {
             </div>
           </section>
 
-          <!-- 요금제 및 가격 소개 섹션 (패키지 없음, 1슬롯 기준 5.5만 첫고객 특가, 수량 선택란) -->
           <section id="pricing" class="pricing-section">
             <div class="section-header" style="margin-bottom: 24px;">
               <h2>💰 투명하고 합리적인 요금제 안내</h2>
@@ -227,7 +337,7 @@ const server = http.createServer((req, res) => {
                   <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
                   <p style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
                 </div>
-                <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 슬롯 신청하기</button>
+                <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 회원가입 하기</button>
               </div>
 
               <div class="price-card featured">
@@ -243,7 +353,7 @@ const server = http.createServer((req, res) => {
                     <span id="total-price-text" style="font-size: 1.4rem; color: var(--primary);">55,000원</span>
                   </div>
                 </div>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="switchView('view-register')">선택 수량으로 신청하기</button>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
               </div>
             </div>
           </section>
@@ -255,20 +365,20 @@ const server = http.createServer((req, res) => {
       <div id="view-login" class="page-view">
         <div class="auth-container">
           <h2>로그인</h2>
-          <p>HUNSTER 계정으로 로그인하여 슬롯을 관리하세요.</p>
-          <form onsubmit="event.preventDefault(); alert('로그인 기능은 준비 중입니다.');">
+          <p>등록하신 아이디와 비밀번호를 입력해주세요.<br>(관리자 로그인: <strong>hun1</strong> / <strong>1234</strong>)</p>
+          <form onsubmit="handleLogin(event)">
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label">아이디 (이메일)</label>
-                <input type="text" class="form-input" placeholder="아이디를 입력하세요" required>
+                <label class="form-label">아이디</label>
+                <input type="text" id="login-id" class="form-input" placeholder="아이디를 입력하세요" required>
               </div>
               <div class="form-group">
                 <label class="form-label">비밀번호</label>
-                <input type="password" class="form-input" placeholder="비밀번호를 입력하세요" required>
+                <input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required>
               </div>
             </div>
             <div style="margin-top: 30px;">
-              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">로그인</button>
+              <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">로그인</button>
             </div>
             <div style="margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--text-sub);">
               아직 계정이 없으신가요? <a style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="switchView('view-register')">회원가입하기</a>
@@ -277,28 +387,38 @@ const server = http.createServer((req, res) => {
         </div>
       </div>
 
-      <!-- ==================== [3] 회원가입 페이지 뷰 (요청하신 상세 폼) ==================== -->
+      <!-- ==================== [3] 회원가입 페이지 뷰 (본인 직접 가입) ==================== -->
       <div id="view-register" class="page-view">
         <div class="auth-container" style="max-width: 650px;">
           <h2>파트너 회원가입</h2>
-          <p>서비스 이용을 위한 필수 정보를 정확하게 입력해 주세요.</p>
+          <p>직접 계정을 생성하고 트래픽 슬롯 서비스를 시작하세요.</p>
           
-          <form onsubmit="event.preventDefault(); alert('회원가입 및 서비스 신청이 성공적으로 접수되었습니다!'); switchView('view-main');">
+          <form onsubmit="handleRegister(event)">
             <div class="form-grid" style="gap: 16px;">
               
               <div class="form-group">
                 <label class="form-label">대표자 성명</label>
-                <input type="text" class="form-input" placeholder="성함을 입력하세요" required>
+                <input type="text" id="reg-name" class="form-input" placeholder="성함을 입력하세요" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">사용할 아이디</label>
+                <input type="text" id="reg-id" class="form-input" placeholder="로그인용 아이디 입력" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">비밀번호</label>
+                <input type="password" id="reg-pw" class="form-input" placeholder="비밀번호 입력" required>
               </div>
 
               <div class="form-group">
                 <label class="form-label">연락처 (전화번호)</label>
-                <input type="tel" class="form-input" placeholder="010-0000-0000" required>
+                <input type="tel" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
               </div>
 
               <div class="form-group">
                 <label class="form-label">사업장 또는 수령 주소</label>
-                <input type="text" class="form-input" placeholder="도로명 주소를 상세히 입력하세요" required>
+                <input type="text" id="reg-address" class="form-input" placeholder="도로명 주소를 상세히 입력하세요" required>
               </div>
 
               <div class="form-group">
@@ -310,23 +430,78 @@ const server = http.createServer((req, res) => {
                   <option value="naver-place" disabled>네이버 플레이스 (준비 중)</option>
                 </select>
 
-                <!-- 쿠팡 트래픽 선택 시 세부 카테고리 -->
                 <div id="coupang-sub-option" class="sub-option-box">
                   <label class="form-label" style="color: #1e40af; margin-bottom: 6px; display: block;">🔍 [쿠팡 트래픽 상세 설정] 상품군 선택</label>
-                  <select class="form-select" style="background: white;">
+                  <select id="coupang-sub-select" class="form-select" style="background: white;">
                     <option value="industrial">공산품</option>
                     <option value="agricultural">농산물</option>
                   </select>
                 </div>
               </div>
 
+              <div class="form-group">
+                <label class="form-label">신청할 초기 슬롯 수량</label>
+                <input type="number" id="reg-slots" class="form-input" value="1" min="1" required>
+              </div>
+
             </div>
 
             <div style="margin-top: 36px; display: flex; gap: 12px;">
               <button type="button" class="btn" style="flex: 1; padding: 14px;" onclick="switchView('view-main')">취소</button>
-              <button type="submit" class="btn btn-primary" style="flex: 2; padding: 14px; font-size: 1rem;">가입 및 서비스 신청 완료</button>
+              <button type="submit" class="btn btn-primary" style="flex: 2; padding: 14px; font-size: 1rem;">회원가입 완료</button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <!-- ==================== [4] 관리자 페이지 뷰 (아이디 hun1 / 비번 1234) ==================== -->
+      <div id="view-admin" class="page-view">
+        <div class="dashboard-container">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <h2>🛡️ 관리자 통합 관제 센터 (hun1 계정)</h2>
+              <p style="color: var(--text-sub);">가입된 모든 파트너 회원의 연락처, 주소, 상품군(공산/농산), 유치 슬롯량을 실시간 확인합니다.</p>
+            </div>
+            <button class="btn" onclick="switchView('view-main')">로그아웃</button>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>성명 및 아이디</th>
+                <th>전화번호</th>
+                <th>사업장 주소</th>
+                <th>서비스 및 상품군</th>
+                <th>유치 슬롯량</th>
+              </tr>
+            </thead>
+            <tbody id="admin-user-tbody">
+              <!-- 자바스크립트로 동적 렌더링됨 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== [5] 회원 전용 마이페이지 뷰 (본인 현황만 확인) ==================== -->
+      <div id="view-user-dashboard" class="page-view">
+        <div class="dashboard-container">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <h2 id="my-name">파트너님</h2>
+              <p style="color: var(--text-sub);">본인 계정의 신청 정보 및 실시간 트래픽 슬롯 가동 현황입니다.</p>
+            </div>
+            <button class="btn" onclick="switchView('view-main')">로그아웃</button>
+          </div>
+
+          <div class="card-box" style="background: white; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px;">📋 내 파트너 가입 정보</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.95rem;">
+              <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
+              <div><strong>사업장 주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
+              <div><strong>이용 서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
+              <div><strong>유치 슬롯 현황:</strong> <span id="my-slots" style="color: var(--success); font-weight: 700;"></span></div>
+            </div>
+          </div>
         </div>
       </div>
 
