@@ -18,56 +18,81 @@ const server = http.createServer((req, res) => {
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07); --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; }
-    body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
-    header { height: 80px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 60px; background: rgba(255, 255, 255, 0.95); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
-    .logo-area { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.25rem; color: #0f172a; text-decoration: none; cursor: pointer; }
-    .logo-icon { width: 38px; height: 38px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
-    .nav-links { display: flex; gap: 32px; align-items: center; }
-    .nav-links a { text-decoration: none; color: var(--text-sub); font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+    body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; word-break: keep-all; }
+
+    /* 반응형 헤더 */
+    header { height: 80px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 40px; background: rgba(255, 255, 255, 0.95); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+    .logo-area { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.15rem; color: #0f172a; text-decoration: none; cursor: pointer; }
+    .logo-icon { width: 34px; height: 34px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--text-sub); font-weight: 600; font-size: 0.9rem; cursor: pointer; }
     .nav-links a:hover { color: var(--primary); }
-    .auth-actions { display: flex; gap: 12px; align-items: center; }
-    .btn { padding: 10px 22px; border-radius: 10px; font-size: 0.92rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); }
+    .auth-actions { display: flex; gap: 8px; align-items: center; }
+    .btn { padding: 8px 16px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); white-space: nowrap; }
     .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
+
     .page-view { display: none; }
     .page-view.active { display: block; }
-    .wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; display: flex; flex-direction: column; gap: 80px; }
-    .hero { text-align: center; padding: 60px 0; }
-    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-size: 0.88rem; font-weight: 700; margin-bottom: 20px; }
-    .hero h1 { font-size: 3.2rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 20px; }
-    .hero p { font-size: 1.2rem; color: var(--text-sub); max-width: 700px; margin: 0 auto 36px auto; }
-    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .metric-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+    .wrapper { max-width: 1200px; margin: 0 auto; padding: 40px 20px; display: flex; flex-direction: column; gap: 60px; }
+
+    /* 히어로 섹션 */
+    .hero { text-align: center; padding: 40px 0; }
+    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; margin-bottom: 16px; }
+    .hero h1 { font-size: 2.5rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 16px; }
+    .hero p { font-size: 1.05rem; color: var(--text-sub); max-width: 700px; margin: 0 auto 28px auto; }
+
+    /* 그리드 시스템 */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .metric-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
     .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
-    .metric-title { font-size: 0.92rem; font-weight: 700; color: var(--text-sub); margin-bottom: 12px; }
-    .metric-value { font-size: 2.3rem; font-weight: 800; color: #0f172a; }
-    .metric-footer { font-size: 0.88rem; color: var(--success); font-weight: 600; margin-top: 12px; }
-    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-md); }
-    .card-box h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); }
-    .badge-online { background: var(--success-bg); color: var(--success); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
-    .badge-preparing { background: var(--warning-bg); color: var(--warning-text); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
-    .pricing-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 48px; box-shadow: var(--shadow-lg); }
-    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
-    .price-card { background: var(--bg-body); border: 1px solid var(--border); border-radius: 16px; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; }
+    .metric-title { font-size: 0.88rem; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; }
+    .metric-value { font-size: 2rem; font-weight: 800; color: #0f172a; }
+    .metric-footer { font-size: 0.82rem; color: var(--success); font-weight: 600; margin-top: 8px; }
+
+    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); }
+    .card-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 16px; }
+    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.92rem; }
+    .badge-online { background: var(--success-bg); color: var(--success); padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+    .badge-preparing { background: var(--warning-bg); color: var(--warning-text); padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+
+    /* 요금제 섹션 */
+    .pricing-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+    .price-card { background: var(--bg-body); border: 1px solid var(--border); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
     .price-card.featured { border-color: var(--primary); background: var(--primary-light); }
-    .price-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
-    .price-desc { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 20px; }
-    .price-tag { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 20px; }
-    .price-tag span { font-size: 0.9rem; color: var(--text-sub); font-weight: 500; text-decoration: line-through; margin-left: 8px; }
-    .auth-container { max-width: 600px; margin: 60px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 48px; box-shadow: var(--shadow-lg); }
-    .auth-container h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; color: #0f172a; }
-    .auth-container p { color: var(--text-sub); font-size: 0.95rem; margin-bottom: 32px; }
-    .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 0.92rem; font-weight: 700; color: #334155; }
-    .form-input, .form-select { width: 100%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
-    .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 20px; border-radius: 14px; margin-top: 10px; display: none; }
-    .dashboard-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
-    .data-table th, .data-table td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
-    .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.85rem; font-weight: 700; }
-    footer { text-align: center; padding: 60px 0; color: var(--text-sub); font-size: 0.9rem; border-top: 1px solid var(--border); background: white; margin-top: 40px; }
+    .price-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+    .price-desc { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 16px; }
+    .price-tag { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; }
+    .price-tag span { font-size: 0.85rem; color: var(--text-sub); font-weight: 500; text-decoration: line-through; margin-left: 6px; }
+
+    /* 인증 및 폼 컨테이너 */
+    .auth-container { max-width: 550px; margin: 40px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
+    .auth-container h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
+    .auth-container p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 24px; }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 0.88rem; font-weight: 700; color: #334155; }
+    .form-input, .form-select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
+    .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: 12px; margin-top: 8px; display: none; }
+
+    .dashboard-container { max-width: 1100px; margin: 30px auto; padding: 0 16px; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); min-width: 600px; }
+    .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.8rem; font-weight: 700; }
+
+    footer { text-align: center; padding: 40px 0; color: var(--text-sub); font-size: 0.85rem; border-top: 1px solid var(--border); background: white; margin-top: 30px; }
+
+    /* 모바일 반응형 미디어 쿼리 (화면 폭 768px 이하) */
+    @media (max-width: 768px) {
+      header { padding: 0 16px; height: 70px; }
+      .nav-links { display: none; } /* 모바일에서는 상단 네비 숨김 (햄버거 메뉴 대체 또는 간소화) */
+      .hero h1 { font-size: 1.9rem; }
+      .hero p { font-size: 0.95rem; }
+      .status-section-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .wrapper { padding: 20px 14px; gap: 40px; }
+      .auth-container, .card-box, .pricing-section { padding: 20px 16px; }
+    }
   </style>
   <script>
     function switchView(viewId) {
@@ -199,7 +224,7 @@ const server = http.createServer((req, res) => {
         <span class="hero-badge">⚡ PREMIUM TRAFFIC & SLOT SOLUTION</span>
         <h1>쿠팡 상위노출을 위한<br>압도적인 실시간 트래픽 솔루션</h1>
         <p>안정적인 프록시 분산 서버와 지능형 슬롯 관리 시스템으로 비즈니스의 한계를 뛰어넘으세요.</p>
-        <button class="btn btn-primary" style="padding: 16px 36px; font-size: 1.05rem;" onclick="switchView('view-register')">지금 바로 회원가입 하기</button>
+        <button class="btn btn-primary" style="padding: 14px 30px; font-size: 1rem;" onclick="switchView('view-register')">지금 바로 회원가입 하기</button>
       </section>
 
       <section class="metrics-grid">
@@ -223,16 +248,16 @@ const server = http.createServer((req, res) => {
       <section id="status" class="status-section-grid">
         <div class="card-box">
           <h3>📊 전국 실시간 슬롯 유치 현황</h3>
-          <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">전국적으로 훈스터에 슬롯 유치하신 분들 토대로 882 슬롯 등록 및 가동 중입니다.</p>
-          <div style="margin-top: 24px; padding: 20px; background: var(--bg-body); border-radius: 12px; border: 1px solid var(--border);">
-            <span style="font-size: 0.88rem; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 6px;">전국 가동 슬롯 합계</span>
-            <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">882 SLOT RUNNING</span>
+          <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 6px;">전국적으로 훈스터에 슬롯 유치하신 분들 토대로 882 슬롯 등록 및 가동 중입니다.</p>
+          <div style="margin-top: 20px; padding: 16px; background: var(--bg-body); border-radius: 10px; border: 1px solid var(--border);">
+            <span style="font-size: 0.85rem; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 4px;">전국 가동 슬롯 합계</span>
+            <span style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">882 SLOT RUNNING</span>
           </div>
         </div>
         <div class="card-box">
           <h3>🛡️ 서비스 포트폴리오 및 인프라 모니터</h3>
-          <p style="color: var(--text-sub); font-size: 0.92rem; margin-top: 6px;">쿠팡 트래픽 서비스 정상 가동 및 확장 예정 서비스 상태입니다.</p>
-          <div style="margin-top: 20px;">
+          <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 6px;">쿠팡 트래픽 서비스 정상 가동 및 확장 예정 서비스 상태입니다.</p>
+          <div style="margin-top: 16px;">
             <div class="server-status-item"><span style="font-weight: 600;">쿠팡 트래픽 솔루션</span><span class="badge-online">● 정상 가동중</span></div>
             <div class="server-status-item"><span style="font-weight: 600;">네이버 리워드 서비스</span><span class="badge-preparing">준비 중</span></div>
             <div class="server-status-item"><span style="font-weight: 600;">네이버 플레이스 솔루션</span><span class="badge-preparing">준비 중</span></div>
@@ -241,9 +266,9 @@ const server = http.createServer((req, res) => {
       </section>
 
       <section id="pricing" class="pricing-section">
-        <div class="section-header" style="margin-bottom: 24px;">
+        <div class="section-header" style="margin-bottom: 20px;">
           <h2>💰 투명하고 합리적인 요금제 안내</h2>
-          <p>복잡한 패키지 상품은 없습니다. 효율적인 운영을 위해 <strong>최소 5슬롯 이상</strong>부터 신청 가능합니다.</p>
+          <p style="font-size: 0.92rem; color: var(--text-sub);">복잡한 패키지 상품은 없습니다. 효율적인 운영을 위해 <strong>최소 5슬롯 이상</strong>부터 신청 가능합니다.</p>
         </div>
         <div class="pricing-grid">
           <div class="price-card">
@@ -251,7 +276,7 @@ const server = http.createServer((req, res) => {
               <div class="price-title">쿠팡 트래픽 이용권 (1슬롯 단가 기준)</div>
               <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당 (최소 5슬롯 구매)</div>
               <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
-              <p style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
+              <p style="font-size: 0.82rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 회원가입 하기</button>
           </div>
@@ -259,11 +284,11 @@ const server = http.createServer((req, res) => {
             <div>
               <div class="price-title">🧮 실시간 슬롯 수량 및 세금계산기</div>
               <div class="price-desc">원하시는 슬롯 개수(최소 5개)를 입력하여 부가세 포함/미포함 금액을 확인하세요.</div>
-              <div style="margin: 15px 0;">
-                <label class="form-label" style="margin-bottom: 6px; display: block;">신청할 슬롯 개수 입력 (최소 5슬롯)</label>
+              <div style="margin: 12px 0;">
+                <label class="form-label" style="margin-bottom: 4px; display: block;">신청할 슬롯 개수 입력 (최소 5슬롯)</label>
                 <input type="number" id="slot-calc-input" class="form-input" value="5" min="5" oninput="calculatePrice(this)" style="background: white;">
               </div>
-              <div style="background: white; padding: 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px; margin-top: 15px;">
+              <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px; margin-top: 12px;">
                 <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
                   <span>공급가액 (세금 미포함):</span>
                   <span id="supply-price-text" style="font-weight: 600; color: var(--text-main);">275,000원</span>
@@ -274,11 +299,11 @@ const server = http.createServer((req, res) => {
                 </div>
                 <div style="border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
                   <span style="color: var(--text-main);">총 결제 금액 (세금 포함):</span>
-                  <span id="total-price-text" style="font-size: 1.25rem; color: var(--primary);">302,500원</span>
+                  <span id="total-price-text" style="font-size: 1.15rem; color: var(--primary);">302,500원</span>
                 </div>
               </div>
             </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 16px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
           </div>
         </div>
       </section>
@@ -300,10 +325,10 @@ const server = http.createServer((req, res) => {
             <input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required>
           </div>
         </div>
-        <div style="margin-top: 30px;">
-          <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">로그인</button>
+        <div style="margin-top: 24px;">
+          <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">로그인</button>
         </div>
-        <div style="margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--text-sub);">
+        <div style="margin-top: 16px; text-align: center; font-size: 0.88rem; color: var(--text-sub);">
           아직 계정이 없으신가요? <a style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="switchView('view-register')">회원가입하기</a>
         </div>
       </form>
@@ -311,11 +336,11 @@ const server = http.createServer((req, res) => {
   </div>
 
   <div id="view-register" class="page-view">
-    <div class="auth-container" style="max-width: 650px;">
+    <div class="auth-container" style="max-width: 600px;">
       <h2>파트너 회원가입</h2>
       <p>직접 계정을 생성하고 트래픽 슬롯 서비스를 시작하세요. (최소 5슬롯 이상 신청 가능)</p>
       <form onsubmit="handleRegister(event)">
-        <div class="form-grid" style="gap: 16px;">
+        <div class="form-grid" style="gap: 14px;">
           <div class="form-group">
             <label class="form-label">대표자 성명</label>
             <input type="text" id="reg-name" class="form-input" placeholder="성함을 입력하세요" required>
@@ -357,9 +382,9 @@ const server = http.createServer((req, res) => {
             <input type="number" id="reg-slots" class="form-input" value="5" min="5" required>
           </div>
         </div>
-        <div style="margin-top: 36px; display: flex; gap: 12px;">
-          <button type="button" class="btn" style="flex: 1; padding: 14px;" onclick="switchView('view-main')">취소</button>
-          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 14px; font-size: 1rem;">회원가입 완료</button>
+        <div style="margin-top: 28px; display: flex; gap: 10px;">
+          <button type="button" class="btn" style="flex: 1; padding: 12px;" onclick="switchView('view-main')">취소</button>
+          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; font-size: 0.95rem;">회원가입 완료</button>
         </div>
       </form>
     </div>
@@ -367,10 +392,10 @@ const server = http.createServer((req, res) => {
 
   <div id="view-admin" class="page-view">
     <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
-          <h2>🛡️ 관리자 통합 관제 센터 (hun1 계정)</h2>
-          <p style="color: var(--text-sub);">가입된 모든 파트너 회원의 정보를 실시간 확인합니다.</p>
+          <h2>🛡️ 관리자 통합 관제 센터</h2>
+          <p style="color: var(--text-sub); font-size: 0.9rem;">가입된 모든 파트너 회원의 정보를 실시간 확인합니다.</p>
         </div>
         <button class="btn" onclick="switchView('view-main')">로그아웃</button>
       </div>
@@ -391,16 +416,16 @@ const server = http.createServer((req, res) => {
 
   <div id="view-user-dashboard" class="page-view">
     <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
           <h2 id="my-name">파트너님</h2>
-          <p style="color: var(--text-sub);">본인 계정의 신청 정보 및 실시간 트래픽 슬롯 가동 현황입니다.</p>
+          <p style="color: var(--text-sub); font-size: 0.9rem;">본인 계정의 신청 정보 및 실시간 트래픽 슬롯 가동 현황입니다.</p>
         </div>
         <button class="btn" onclick="switchView('view-main')">로그아웃</button>
       </div>
       <div class="card-box" style="background: white; margin-bottom: 30px;">
-        <h3 style="margin-bottom: 20px;">📋 내 파트너 가입 정보</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.95rem;">
+        <h3 style="margin-bottom: 16px;">📋 내 파트너 가입 정보</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; font-size: 0.92rem;">
           <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
           <div><strong>사업장 주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
           <div><strong>이용 서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
