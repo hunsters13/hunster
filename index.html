@@ -331,6 +331,40 @@
             inqTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>`;
           }
         }
+
+        let ipTbody = document.getElementById('admin-ip-tbody');
+        if(ipTbody && data.ipLogs) {
+          ipTbody.innerHTML = '';
+          if(data.ipLogs.length > 0) {
+            data.ipLogs.forEach(log => {
+              ipTbody.innerHTML += `<tr>
+                <td><strong style="color:var(--primary);">${log.ip}</strong></td>
+                <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.78rem; color:var(--text-sub);">(${log.id})</span></td>
+                <td>${log.device}</td>
+                <td style="color:var(--text-sub);">${log.time}</td>
+              </tr>`;
+            });
+          } else {
+            ipTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">접속 로그가 없습니다.</td></tr>`;
+          }
+        }
+
+        let statusLogTbody = document.getElementById('admin-status-log-tbody');
+        if(statusLogTbody && data.statusLogs) {
+          statusLogTbody.innerHTML = '';
+          if(data.statusLogs.length > 0) {
+            data.statusLogs.forEach(sLog => {
+              statusLogTbody.innerHTML += `<tr>
+                <td><strong>${sLog.name}</strong> <span style="font-size:0.78rem; color:var(--text-sub);">(${sLog.userId})</span></td>
+                <td><span style="color:var(--primary); font-weight:700;">${sLog.type}</span></td>
+                <td>${sLog.status}</td>
+                <td style="color:var(--text-sub);">${sLog.time}</td>
+              </tr>`;
+            });
+          } else {
+            statusLogTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>`;
+          }
+        }
       } catch(err) {}
     }
 
@@ -377,7 +411,6 @@
     }
 
     async function renderUserDashboard(user) {
-      // 서버에서 최신 상태를 강제로 가져와서 동기화
       try {
         const res = await fetch('/api/admin/data');
         const data = await res.json();
@@ -670,6 +703,7 @@
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 답변</button>
         <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">견적서 간편 생성기</button>
+        <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">실시간 접속 및 상태 로그</button>
       </div>
 
       <!-- 탭 1: 파트너 회원 관리 -->
@@ -730,6 +764,31 @@
           <textarea id="quote-textarea-box" class="form-textarea" style="height: 220px; font-family: monospace; font-size: 0.85rem;" readonly></textarea>
         </div>
         <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
+      </div>
+
+      <!-- 탭 4: 실시간 로그 -->
+      <div id="tab-content-logs" class="tab-content card-box">
+        <h3 style="margin-bottom: 16px;">📊 실시간 접속 IP 및 상태 변경 이력</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <h4 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-sub);">최근 방문 및 로그인 IP 로그</h4>
+            <div class="data-table-wrapper" style="margin-top: 0;">
+              <table class="data-table">
+                <thead><tr><th>IP</th><th>사용자</th><th>기기</th><th>시간</th></tr></thead>
+                <tbody id="admin-ip-tbody"><tr><td colspan="4" style="text-align:center; padding:15px;">로그 없음</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h4 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-sub);">입금/세금계산서 상태 변경 이력</h4>
+            <div class="data-table-wrapper" style="margin-top: 0;">
+              <table class="data-table">
+                <thead><tr><th>대상</th><th>항목</th><th>변경상태</th><th>시간</th></tr></thead>
+                <tbody id="admin-status-log-tbody"><tr><td colspan="4" style="text-align:center; padding:15px;">이력 없음</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
