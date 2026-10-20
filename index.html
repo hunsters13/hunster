@@ -461,6 +461,7 @@
       document.getElementById('q-total-display').innerText = total.toLocaleString() + '원';
     }
 
+    // ⭐ 카카오톡 및 문자 전송에 최적화된 가독성 높은 견적서 텍스트 생성
     function copyQuoteToClipboard() {
       const senderCompany = document.getElementById('q-sender-company').value || '훈스터';
       const senderName = document.getElementById('q-sender-name').value || '김*훈';
@@ -470,31 +471,44 @@
       const clientName = document.getElementById('q-client-name').value || '고객님';
       const slots = document.getElementById('q-slots-count').value || 5;
       const unitPrice = parseInt(document.getElementById('q-unit-price').value || 55000);
+      const supply = (slots * unitPrice).toLocaleString();
+      const vat = Math.round((slots * unitPrice) * 0.1).toLocaleString();
       const total = document.getElementById('q-total-display').innerText;
 
       const quoteText = 
-`[ ${senderCompany} 공식 견적서 ]
-----------------------------------------
-■ [공급자 (발신자) 정보]
-- 상호명: ${senderCompany}
-- 대표자명: ${senderName}
-- 연락처: ${senderPhone}
-- 이메일: ${senderEmail}
+`📋 [${senderCompany} 공식 견적서]
 
-■ [수신자 (고객) 정보]
-- 수신자: ${clientName} 대표님
-----------------------------------------
-■ [견적 내용]
-- 품목: 쿠팡 트래픽 고속 프록시 슬롯 
-- 상세: (${slots}슬롯 / 1슬롯당 ${unitPrice.toLocaleString()}원)
-- 총 합계금액 (VAT 포함): ${total}
-- 입금 계좌: ${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber} (${ACCOUNT_INFO.holder})
-----------------------------------------
-본 견적서는 발행일로부터 7일간 유효합니다.
-감사합니다. 비즈니스의 성공을 응원합니다!`;
+안녕하세요, ${clientName} 대표님!
+요청하신 쿠팡 트래픽 솔루션 견적서 보내드립니다.
+
+━━━━━━━━━━━━━━━━━━━
+🏢 [공급자 정보]
+• 상호명: ${senderCompany}
+• 대표자: ${senderName}
+• 연락처: ${senderPhone}
+• 이메일: ${senderEmail}
+
+👤 [수신자 정보]
+• 고객명: ${clientName} 대표님
+
+📦 [상품 견적 내역]
+• 품목: 쿠팡 트래픽 고속 프록시 슬롯
+• 수량: ${slots} 슬롯 (1슬롯당 ${unitPrice.toLocaleString()}원)
+• 공급가액: ${supply}원
+• 부가세(VAT 10%): ${vat}원
+• 총 합계금액: ${total} (VAT 포함)
+
+💳 [입금 계좌 안내]
+• 은행: ${ACCOUNT_INFO.bank}
+• 계좌: ${ACCOUNT_INFO.accountNumber}
+• 예금주: ${ACCOUNT_INFO.holder}
+━━━━━━━━━━━━━━━━━━━
+
+💡 본 견적서는 발행일로부터 7일간 유효합니다.
+감사합니다. 비즈니스의 성공을 진심으로 응원합니다!`;
 
       navigator.clipboard.writeText(quoteText).then(() => {
-        alert('📋 발신자 및 수신자 정보가 반영된 완벽한 견적서가 복사되었습니다!');
+        alert('📋 카카오톡·문자 전송 최적화 견적서가 복사되었습니다!\n원하시는 채팅창에 바로 붙여넣기(Ctrl+V) 하세요.');
       }).catch(err => {
         alert('복사에 실패했습니다.');
       });
@@ -530,7 +544,7 @@
     <a onclick="switchView('view-register')" style="font-weight:700; color:var(--primary); text-decoration:none;">회원가입</a>
   </div>
 
-  <!-- 메인 홈 뷰 (검색량별 권장 슬롯 및 요금제 계산기 복구 완료) -->
+  <!-- 메인 홈 뷰 -->
   <div id="view-main" class="page-view active">
     <div class="wrapper">
       <section class="hero">
@@ -663,195 +677,4 @@
           <div class="form-group">
             <label class="form-label">서비스 선택</label>
             <select id="reg-slots" class="form-select">
-              <option value="coupang">쿠팡 트래픽 솔루션</option>
-            </select>
-          </div>
-          <div id="coupang-sub-option" class="sub-option-box">
-            <label class="form-label">쿠팡 카테고리 세부 선택</label>
-            <select id="coupang-sub-select" class="form-select">
-              <option value="industrial">공산품 트래픽</option>
-              <option value="agricultural">농산물 트래픽</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-primary" style="padding: 12px; margin-top: 8px;">가입 완료하기</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- 파트너 대시보드 뷰 -->
-  <div id="view-user-dashboard" class="page-view">
-    <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h2 id="my-name" style="font-size: 1.5rem; font-weight: 800;">파트너님</h2>
-        <button class="btn btn-danger" onclick="handleLogout()">로그아웃</button>
-      </div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div class="card-box" style="margin-bottom:0;">
-          <div class="metric-title">연락처 / 주소</div>
-          <div style="font-size: 1rem; font-weight: 700; margin-top: 6px;" id="my-phone"></div>
-          <div style="font-size: 0.9rem; color: var(--text-sub); margin-top: 2px;" id="my-address"></div>
-        </div>
-        <div class="card-box" style="--primary: #059669; margin-bottom:0;">
-          <div class="metric-title">활성 서비스 및 슬롯</div>
-          <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-top: 6px;" id="my-service"></div>
-          <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 2px;" id="my-slots"></div>
-        </div>
-        <div class="card-box" style="margin-bottom:0;">
-          <div class="metric-title">입금 및 세금계산서 상태</div>
-          <div style="display: flex; gap: 8px; margin-top: 10px;">
-            <span id="my-deposit-status" class="badge-status">입금대기</span>
-            <span id="my-tax-status" class="badge-status">발행대기</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-box" style="background: var(--primary-light); border-color: #bfdbfe;">
-        <h3 style="font-size: 1.05rem; margin-bottom: 8px;">💳 입금 안내 계좌</h3>
-        <p id="account-info-box" style="font-size: 0.95rem; color: #1e40af;"></p>
-      </div>
-      <div class="card-box">
-        <h3>💬 1:1 문의 및 지원</h3>
-        <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-top: 16px;">
-          <div class="form-group" style="margin-bottom: 12px;"><input type="text" id="inq-title" class="form-input" required placeholder="문의 제목"></div>
-          <div class="form-group" style="margin-bottom: 12px;"><textarea id="inq-content" class="form-textarea" required placeholder="문의 내용 작성..."></textarea></div>
-          <button type="submit" class="btn btn-primary">문의 등록하기</button>
-        </form>
-        <div style="margin-top: 24px;">
-          <h4 style="font-size: 1rem; margin-bottom: 12px;">나의 문의 내역</h4>
-          <div id="my-inquiry-list"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 관리자 대시보드 뷰 -->
-  <div id="view-admin" class="page-view">
-    <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h2 style="font-size: 1.5rem; font-weight: 800;">🛠️ 최고 관리자 대시보드</h2>
-        <button class="btn btn-danger" onclick="handleLogout()">관리자 로그아웃</button>
-      </div>
-      
-      <div class="tab-menu">
-        <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
-        <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">📝 견적서 발행</button>
-        <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">입금/세금 변경 이력</button>
-        <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 관리</button>
-        <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">방문자 접속 로그</button>
-      </div>
-
-      <!-- 탭 1: 파트너 관리 -->
-      <div id="tab-content-users" class="tab-content active card-box">
-        <h3>전체 파트너 목록 및 상태 관리</h3>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>파트너 정보</th>
-                <th>연락처 / 주소</th>
-                <th>서비스 및 슬롯</th>
-                <th>입금 상태</th>
-                <th>세금계산서</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody id="admin-user-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 탭 2: 견적서 발행 -->
-      <div id="tab-content-quote" class="tab-content card-box">
-        <h3>📝 훈스터 공식 견적서 발행</h3>
-        <p style="font-size:0.9rem; color:var(--text-sub); margin-bottom:20px;">발신자 정보 및 수신자 정보를 자유롭게 수정하여 완벽한 맞춤형 견적서를 생성하세요.</p>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <div class="form-grid" style="gap: 12px;">
-            <h4 style="font-size: 0.95rem; color: var(--primary); margin-bottom: -4px;">1. 발신자 (공급자) 정보 수정</h4>
-            <div class="form-group"><label class="form-label">상호명</label><input type="text" id="q-sender-company" class="form-input" value="훈스터 (HUNSTER)"></div>
-            <div class="form-group"><label class="form-label">대표자명</label><input type="text" id="q-sender-name" class="form-input" value="김*훈"></div>
-            <div class="form-group"><label class="form-label">연락처</label><input type="text" id="q-sender-phone" class="form-input" value="010-3672-7807"></div>
-            <div class="form-group"><label class="form-label">이메일</label><input type="text" id="q-sender-email" class="form-input" value="support@hunster.co.kr"></div>
-
-            <h4 style="font-size: 0.95rem; color: var(--primary); margin-top: 10px; margin-bottom: -4px;">2. 수신자 및 상품 정보 입력</h4>
-            <div class="form-group"><label class="form-label">수신자명</label><input type="text" id="q-client-name" class="form-input" value="김고객" oninput="calculateQuoteTotal()"></div>
-            <div class="form-group"><label class="form-label">슬롯 수량</label><input type="number" id="q-slots-count" class="form-input" value="5" min="1" oninput="calculateQuoteTotal()"></div>
-            <div class="form-group"><label class="form-label">1슬롯 단가 (원)</label><input type="number" id="q-unit-price" class="form-input" value="55000" oninput="calculateQuoteTotal()"></div>
-          </div>
-
-          <div style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="background: var(--bg-body); padding: 20px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.9rem; display: flex; flex-direction: column; gap: 10px;">
-              <h4 style="font-size: 0.95rem; margin-bottom: 4px;">💰 금액 산정 결과</h4>
-              <div style="display: flex; justify-content: space-between;"><span>공급가액:</span><span id="q-supply-sub" style="font-weight:600;">275,000원</span></div>
-              <div style="display: flex; justify-content: space-between;"><span>부가세 (VAT 10%):</span><span id="q-vat-sub" style="font-weight:600;">27,500원</span></div>
-              <div style="border-top: 1px solid var(--border); padding-top: 10px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.15rem; color: var(--primary);">
-                <span>총 합계금액:</span><span id="q-total-display">302,500원</span>
-              </div>
-            </div>
-            
-            <button type="button" class="btn btn-primary" style="padding: 16px; font-size: 1rem; width: 100%; margin-top: 20px;" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 탭 3: 상태 변경 이력 -->
-      <div id="tab-content-statuslogs" class="tab-content card-box">
-        <h3>파트너 입금 및 세금계산서 변경 이력</h3>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>파트너 이름 (아이디)</th>
-                <th>관리 항목</th>
-                <th>변경 내용</th>
-                <th>처리 시간</th>
-              </tr>
-            </thead>
-            <tbody id="admin-status-log-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 탭 4: 문의 관리 -->
-      <div id="tab-content-inquiries" class="tab-content card-box">
-        <h3>1:1 문의 응대</h3>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>작성자</th>
-                <th>제목 및 내용</th>
-                <th>처리 상태</th>
-                <th>답변 관리</th>
-              </tr>
-            </thead>
-            <tbody id="admin-inquiry-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 탭 5: 방문자 로그 -->
-      <div id="tab-content-logs" class="tab-content card-box">
-        <h3>실시간 방문자 접속 로그</h3>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>접속 IP</th>
-                <th>방문자 / 회원</th>
-                <th>접속 기기</th>
-                <th>접속 시간</th>
-              </tr>
-            </thead>
-            <tbody id="admin-ip-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <p>&copy; 2026 HUNSTER (훈스터). All rights reserved.</p>
-  </footer>
-</body>
-</html>
+              <option value="coupang
