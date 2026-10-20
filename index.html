@@ -40,7 +40,6 @@
     .btn-danger { background: var(--danger-bg); border-color: #fca5a5; color: var(--danger); font-weight: 700; }
     .btn-danger:hover { background: #fee2e2; }
     
-    /* 뷰 전환 핵심 스타일 */
     .page-view { display: none !important; }
     .page-view.active { display: block !important; }
 
@@ -104,6 +103,11 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
+    /* 견적서 표 전용 스타일 */
+    .quote-preview-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin-top: 10px; font-size: 0.88rem; }
+    .quote-preview-table th, .quote-preview-table td { padding: 10px 14px; border: 1px solid var(--border); text-align: left; }
+    .quote-preview-table th { background: var(--border-subtle); color: var(--text-sub); width: 25%; font-weight: 700; }
+
     footer { text-align: center; padding: 30px 20px; color: var(--text-sub); font-size: 0.85rem; border-top: 1px solid var(--border); background: white; margin-top: 30px; }
     
     @media (max-width: 768px) {
@@ -121,13 +125,9 @@
     let currentUser = null;
 
     function switchView(viewId) {
-      document.querySelectorAll('.page-view').forEach(el => {
-        el.classList.remove('active');
-      });
+      document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(viewId);
-      if(target) {
-        target.classList.add('active');
-      }
+      if(target) target.classList.add('active');
       const mobileNav = document.getElementById('mobile-nav');
       if(mobileNav) mobileNav.classList.remove('active');
       window.scrollTo(0, 0);
@@ -458,14 +458,31 @@
       if(content) content.classList.add('active');
     }
 
+    // 견적 금액 계산 및 화면 표(Table) 실시간 업데이트 함수
     function calculateQuoteTotal() {
-      let count = parseInt(document.getElementById('q-slots-count').value) || 5;
-      let unitPrice = parseFloat(document.getElementById('q-unit-price').value) || 55000;
-      if(count < 1) count = 1;
+      const senderCompany = document.getElementById('q-sender-company').value || '훈스터';
+      const senderName = document.getElementById('q-sender-name').value || '김*훈';
+      const senderPhone = document.getElementById('q-sender-phone').value || '';
+      const senderEmail = document.getElementById('q-sender-email').value || '';
 
-      let supply = count * unitPrice;
+      const clientName = document.getElementById('q-client-name').value || '고객님';
+      const slots = parseInt(document.getElementById('q-slots-count').value) || 5;
+      const unitPrice = parseFloat(document.getElementById('q-unit-price').value) || 55000;
+      if(slots < 1) slots = 1;
+
+      let supply = slots * unitPrice;
       let vat = Math.round(supply * 0.1);
       let total = supply + vat;
+
+      // 화면 표(Table)에 실시간 반영
+      document.getElementById('preview-company').innerText = senderCompany + ' (' + senderName + ')';
+      document.getElementById('preview-phone').innerText = senderPhone + ' / ' + senderEmail;
+      document.getElementById('preview-client').innerText = clientName + ' 대표님';
+      document.getElementById('preview-item').innerText = `쿠팡 트래픽 고속 프록시 슬롯 (${slots}슬롯)`;
+      document.getElementById('preview-supply').innerText = supply.toLocaleString() + '원';
+      document.getElementById('preview-vat').innerText = vat.toLocaleString() + '원';
+      document.getElementById('preview-total').innerText = total.toLocaleString() + '원';
+      document.getElementById('preview-account').innerText = `${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber} (예금주: ${ACCOUNT_INFO.holder})`;
 
       document.getElementById('q-supply-sub').innerText = supply.toLocaleString() + '원';
       document.getElementById('q-vat-sub').innerText = vat.toLocaleString() + '원';
@@ -523,6 +540,11 @@
         alert('복사에 실패했습니다.');
       });
     }
+
+    // 페이지 로드 시 견적서 표 초기화 실행
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(calculateQuoteTotal, 100);
+    });
   </script>
 </head>
 <body>
@@ -776,7 +798,7 @@
       
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
-        <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">📝 견적서 발행</button>
+        <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">📝 견적서 발행 (표 형식)</button>
         <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">입금/세금 변경 이력</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 관리</button>
         <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">방문자 접속 로그</button>
@@ -802,18 +824,19 @@
         </div>
       </div>
 
-      <!-- 탭 2: 견적서 발행 -->
+      <!-- 탭 2: 견적서 발행 (실시간 표 미리보기 기능 추가) -->
       <div id="tab-content-quote" class="tab-content card-box">
-        <h3>📝 훈스터 공식 견적서 발행 (카카오톡·문자 최적화)</h3>
-        <p style="font-size:0.9rem; color:var(--text-sub); margin-bottom:20px;">정보를 입력하고 버튼을 누르면 카톡이나 문자에 곧바로 붙여넣기 좋은 깔끔한 서식으로 복사됩니다.</p>
+        <h3>📝 훈스터 공식 견적서 발행 및 표(Table) 미리보기</h3>
+        <p style="font-size:0.9rem; color:var(--text-sub); margin-bottom:20px;">정보를 수정하면 아래의 **정식 견적서 표 양식**에 실시간 반영되며, 카톡·문자 최적화 복사도 가능합니다.</p>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- 왼쪽: 입력 폼 -->
           <div class="form-grid" style="gap: 12px;">
             <h4 style="font-size: 0.95rem; color: var(--primary); margin-bottom: -4px;">1. 발신자 (공급자) 정보 수정</h4>
-            <div class="form-group"><label class="form-label">상호명</label><input type="text" id="q-sender-company" class="form-input" value="훈스터 (HUNSTER)"></div>
-            <div class="form-group"><label class="form-label">대표자명</label><input type="text" id="q-sender-name" class="form-input" value="김*훈"></div>
-            <div class="form-group"><label class="form-label">연락처</label><input type="text" id="q-sender-phone" class="form-input" value="010-3672-7807"></div>
-            <div class="form-group"><label class="form-label">이메일</label><input type="text" id="q-sender-email" class="form-input" value="support@hunster.co.kr"></div>
+            <div class="form-group"><label class="form-label">상호명</label><input type="text" id="q-sender-company" class="form-input" value="훈스터 (HUNSTER)" oninput="calculateQuoteTotal()"></div>
+            <div class="form-group"><label class="form-label">대표자명</label><input type="text" id="q-sender-name" class="form-input" value="김*훈" oninput="calculateQuoteTotal()"></div>
+            <div class="form-group"><label class="form-label">연락처</label><input type="text" id="q-sender-phone" class="form-input" value="010-3672-7807" oninput="calculateQuoteTotal()"></div>
+            <div class="form-group"><label class="form-label">이메일</label><input type="text" id="q-sender-email" class="form-input" value="support@hunster.co.kr" oninput="calculateQuoteTotal()"></div>
 
             <h4 style="font-size: 0.95rem; color: var(--primary); margin-top: 10px; margin-bottom: -4px;">2. 수신자 및 상품 정보 입력</h4>
             <div class="form-group"><label class="form-label">수신자명</label><input type="text" id="q-client-name" class="form-input" value="김고객" oninput="calculateQuoteTotal()"></div>
@@ -821,14 +844,20 @@
             <div class="form-group"><label class="form-label">1슬롯 단가 (원)</label><input type="number" id="q-unit-price" class="form-input" value="55000" oninput="calculateQuoteTotal()"></div>
           </div>
 
+          <!-- 오른쪽: 실시간 표 미리보기 및 복사 버튼 -->
           <div style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="background: var(--bg-body); padding: 20px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.9rem; display: flex; flex-direction: column; gap: 10px;">
-              <h4 style="font-size: 0.95rem; margin-bottom: 4px;">💰 금액 산정 결과</h4>
-              <div style="display: flex; justify-content: space-between;"><span>공급가액:</span><span id="q-supply-sub" style="font-weight:600;">275,000원</span></div>
-              <div style="display: flex; justify-content: space-between;"><span>부가세 (VAT 10%):</span><span id="q-vat-sub" style="font-weight:600;">27,500원</span></div>
-              <div style="border-top: 1px solid var(--border); padding-top: 10px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.15rem; color: var(--primary);">
-                <span>총 합계금액:</span><span id="q-total-display">302,500원</span>
-              </div>
+            <div>
+              <h4 style="font-size: 0.95rem; margin-bottom: 6px; color: var(--text-main);">📊 견적서 표 미리보기</h4>
+              <table class="quote-preview-table">
+                <tr><th>공급자</th><td id="preview-company">-</td></tr>
+                <tr><th>연락처/메일</th><td id="preview-phone" style="font-size:0.82rem;">-</td></tr>
+                <tr><th>수신자</th><td id="preview-client" style="font-weight:700; color:var(--primary);">-</td></tr>
+                <tr><th>품목 및 상세</th><td id="preview-item">-</td></tr>
+                <tr><th>공급가액</th><td id="preview-supply">-</td></tr>
+                <tr><th>부가세 (VAT)</th><td id="preview-vat">-</td></tr>
+                <tr><th>총 합계금액</th><td id="preview-total" style="font-weight:800; color:var(--danger);">-</td></tr>
+                <tr><th>입금 계좌</th><td id="preview-account" style="font-size:0.82rem;">-</td></tr>
+              </table>
             </div>
             
             <button type="button" class="btn btn-primary" style="padding: 16px; font-size: 1rem; width: 100%; margin-top: 20px;" onclick="copyQuoteToClipboard()">💬 카톡·문자용 견적서 텍스트 복사하기</button>
