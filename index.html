@@ -64,6 +64,12 @@
     .price-desc { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 16px; }
     .price-tag { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; }
 
+    .guide-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
+    .guide-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
+    .guide-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+    .guide-table th, .guide-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+    .guide-table th { background: var(--border-subtle); color: var(--text-sub); font-weight: 700; font-size: 0.85rem; }
+
     .auth-container { max-width: 550px; margin: 40px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .auth-container h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
     .auth-container p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 24px; }
@@ -98,6 +104,7 @@
       .nav-links, .header-right .auth-actions { display: none; }
       .mobile-menu-btn { display: block; }
       .hero h1 { font-size: 1.9rem; }
+      .pricing-grid { grid-template-columns: 1fr; }
     }
   </style>
   <script>
@@ -523,7 +530,7 @@
     <a onclick="switchView('view-register')" style="font-weight:700; color:var(--primary); text-decoration:none;">회원가입</a>
   </div>
 
-  <!-- 메인 홈 뷰 -->
+  <!-- 메인 홈 뷰 (검색량별 권장 슬롯 및 요금제 계산기 복구 완료) -->
   <div id="view-main" class="page-view active">
     <div class="wrapper">
       <section class="hero">
@@ -548,6 +555,79 @@
           <div class="metric-title">평균 트래픽 응답 속도</div>
           <div class="metric-value">24ms</div>
           <div class="metric-footer">초고속 프록시 네트워크 컨디션 유지</div>
+        </div>
+      </section>
+
+      <!-- 쿠팡 키워드 검색량별 권장 슬롯 산정 및 로직 분석 테이블 -->
+      <section class="guide-section">
+        <h2>📈 쿠팡 키워드 검색량별 권장 슬롯 산정 및 로직 분석</h2>
+        <p>쿠팡 알고리즘은 검색어별 유효 트래픽 볼륨에 비례하여 순위를 부여합니다. 키워드 규모에 맞는 최적의 슬롯 분배가 상위노출의 성패를 가릅니다.</p>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>키워드 월간 검색량 규모</th>
+              <th>권장 가동 슬롯 수</th>
+              <th>전략 및 운용 가이드</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1.3만 이하</strong> (소형/세부 키워드)</td>
+              <td><span style="color: var(--primary); font-weight: 800;">약 5 슬롯</span></td>
+              <td>경쟁 강도가 낮아 최소 기본 슬롯만으로도 빠르게 상위권 진입 및 안착이 가능합니다.</td>
+            </tr>
+            <tr>
+              <td><strong>1.3만 이상 ~ 12만 이하</strong> (중형 키워드)</td>
+              <td><span style="color: var(--success); font-weight: 800;">약 10 슬롯</span></td>
+              <td>안정적인 유입 분산을 통해 알고리즘 체류 시간 지표를 극대화하는 표준 구간입니다.</td>
+            </tr>
+            <tr>
+              <td><strong>12만 이상</strong> (대형 메인 키워드)</td>
+              <td><span style="color: #7c3aed; font-weight: 800;">15 슬롯 이상 (맞춤 상담 필수)</span></td>
+              <td>경쟁이 매우 치열하므로, 제품 지수 진단 후 1:1 맞춤형 컨설팅 및 복합 전략이 반드시 필요합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 투명한 요금제 안내 및 실시간 세금계산기 섹션 -->
+      <section class="pricing-section">
+        <div style="margin-bottom: 20px;">
+          <h2>💰 투명하고 합리적인 요금제 안내</h2>
+          <p style="font-size: 0.92rem; color: var(--text-sub);">복잡한 패키지 상품은 없습니다. 효율적인 운영을 위해 <strong>최소 5슬롯 이상</strong>부터 신청 가능합니다.</p>
+        </div>
+        <div class="pricing-grid">
+          <div class="price-card">
+            <div>
+              <div class="price-title">쿠팡 트래픽 이용권 (1슬롯 단가 기준)</div>
+              <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당 (최소 5슬롯 구매)</div>
+              <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
+              <p style="font-size: 0.82rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 회원가입 하기</button>
+          </div>
+          <div class="price-card featured">
+            <div>
+              <div class="price-title">🧮 실시간 슬롯 수량 및 세금계산기</div>
+              <div class="price-desc">원하시는 슬롯 개수(최소 5개)를 입력하여 부가세 포함 금액을 확인하세요.</div>
+              <div style="margin: 12px 0;">
+                <label class="form-label" style="margin-bottom: 4px; display: block;">신청할 슬롯 개수 입력 (최소 5슬롯)</label>
+                <input type="number" id="slot-calc-input" class="form-input" value="5" min="5" oninput="calculatePrice(this)" style="background: white;">
+              </div>
+              <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px; margin-top: 12px;">
+                <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
+                  <span>공급가액 (세금 미포함):</span><span id="supply-price-text" style="font-weight: 600; color: var(--text-main);">275,000원</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
+                  <span>부가세 (VAT 10%):</span><span id="vat-text" style="font-weight: 600; color: var(--text-main);">27,500원</span>
+                </div>
+                <div style="border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
+                  <span>총 결제 금액 (세금 포함):</span><span id="total-price-text" style="font-size: 1.15rem; color: var(--primary);">302,500원</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 16px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
+          </div>
         </div>
       </section>
     </div>
