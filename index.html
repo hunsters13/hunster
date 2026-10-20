@@ -63,12 +63,6 @@
     .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.92rem; }
     .badge-online { background: var(--success-bg); color: var(--success); padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
 
-    .guide-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
-    .guide-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
-    .guide-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-    .guide-table th, .guide-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
-    .guide-table th { background: var(--border-subtle); color: var(--text-sub); font-weight: 700; font-size: 0.85rem; }
-
     .auth-container { max-width: 550px; margin: 40px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .auth-container h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
     .auth-container p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 24px; }
@@ -337,40 +331,6 @@
             inqTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>`;
           }
         }
-
-        let ipTbody = document.getElementById('admin-ip-tbody');
-        if(ipTbody && data.ipLogs) {
-          ipTbody.innerHTML = '';
-          if(data.ipLogs.length > 0) {
-            data.ipLogs.forEach(log => {
-              ipTbody.innerHTML += `<tr>
-                <td><strong style="color:var(--primary);">${log.ip}</strong></td>
-                <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.78rem; color:var(--text-sub);">(${log.id})</span></td>
-                <td>${log.device}</td>
-                <td style="color:var(--text-sub);">${log.time}</td>
-              </tr>`;
-            });
-          } else {
-            ipTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">접속 로그가 없습니다.</td></tr>`;
-          }
-        }
-
-        let statusLogTbody = document.getElementById('admin-status-log-tbody');
-        if(statusLogTbody && data.statusLogs) {
-          statusLogTbody.innerHTML = '';
-          if(data.statusLogs.length > 0) {
-            data.statusLogs.forEach(sLog => {
-              statusLogTbody.innerHTML += `<tr>
-                <td><strong>${sLog.name}</strong> <span style="font-size:0.78rem; color:var(--text-sub);">(${sLog.userId})</span></td>
-                <td><span style="color:var(--primary); font-weight:700;">${sLog.type}</span></td>
-                <td>${sLog.status}</td>
-                <td style="color:var(--text-sub);">${sLog.time}</td>
-              </tr>`;
-            });
-          } else {
-            statusLogTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>`;
-          }
-        }
       } catch(err) {}
     }
 
@@ -384,13 +344,13 @@
     }
 
     async function deleteUser(userId, name) {
-      if(!confirm(`정말 "${name}" 파트너 계정을 삭제(탈퇴 처리)하시겠습니까?`)) return;
+      if(!confirm(`정말 "${name}" 파트너 계정을 삭제하시겠습니까?`)) return;
       await fetch('/api/admin/delete-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId })
       });
-      alert(`"${name}" 파트너가 탈퇴 처리되었습니다.`);
+      alert(`"${name}" 파트너가 삭제되었습니다.`);
       loadAdminData();
     }
 
@@ -573,9 +533,9 @@
       try {
         const successful = document.execCommand('copy');
         if (successful) {
-          alert('📋 견적서 내용이 클립보드에 완벽하게 복사되었습니다!\n카카오톡이나 문자 창에 바로 붙여넣기(Ctrl+V) 하세요.');
+          alert('📋 견적서 내용이 클립보드에 완벽하게 복사되었습니다!');
         } else {
-          alert('복사에 실패했습니다. 아래 박스 안의 텍스트를 직접 드래그해서 복사해주세요.');
+          alert('복사에 실패했습니다.');
         }
       } catch (err) {
         alert('이 브라우저는 복사 기능을 지원하지 않습니다.');
@@ -611,44 +571,6 @@
         <h1>쿠팡 상위노출을 위한<br>압도적인 실시간 트래픽 솔루션</h1>
         <p>안정적인 프록시 분산 서버와 지능형 슬롯 관리 시스템으로 비즈니스의 한계를 뛰어넘으세요.</p>
         <button class="btn btn-primary" style="padding: 14px 30px; font-size: 1rem;" onclick="switchView('view-register')">지금 바로 회원가입 하기</button>
-      </section>
-
-      <section class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-title">전국 훈스터 파트너 총 슬롯 유치량</div>
-          <div class="metric-value">882 슬롯 가동중</div>
-          <div class="metric-footer">↑ 전국 각지 파트너 실시간 트래픽 유입 중</div>
-        </div>
-        <div class="metric-card" style="--primary: #059669;">
-          <div class="metric-title">서버 시스템 안정성</div>
-          <div class="metric-value">99.98%</div>
-          <div class="metric-footer">Stable (무중단 24시간 모니터링)</div>
-        </div>
-        <div class="metric-card" style="--primary: #7c3aed;">
-          <div class="metric-title">평균 트래픽 응답 속도</div>
-          <div class="metric-value">24ms</div>
-          <div class="metric-footer">초고속 프록시 네트워크 컨디션 유지</div>
-        </div>
-      </section>
-
-      <section class="status-section-grid">
-        <div class="card-box">
-          <h3>📊 전국 실시간 슬롯 유치 현황</h3>
-          <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 6px;">전국적으로 훈스터에 슬롯 유치하신 분들 토대로 882 슬롯 등록 및 가동 중입니다.</p>
-          <div style="margin-top: 20px; padding: 16px; background: var(--bg-body); border-radius: 10px; border: 1px solid var(--border);">
-            <span style="font-size: 0.85rem; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 4px;">전국 가동 슬롯 합계</span>
-            <span style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">882 SLOT RUNNING</span>
-          </div>
-        </div>
-        <div class="card-box">
-          <h3>🛡️ 서비스 포트폴리오 및 인프라 모니터</h3>
-          <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 6px;">쿠팡 트래픽 서비스 정상 가동 및 확장 예정 서비스 상태입니다.</p>
-          <div style="margin-top: 16px;">
-            <div class="server-status-item"><span style="font-weight: 600;">쿠팡 트래픽 솔루션</span><span class="badge-online">● 정상 가동중</span></div>
-            <div class="server-status-item"><span style="font-weight: 600;">네이버 리워드 서비스</span><span style="color: var(--warning-text); font-weight: 700; font-size: 0.78rem;">준비 중</span></div>
-            <div class="server-status-item"><span style="font-weight: 600;">네이버 플레이스 솔루션</span><span style="color: var(--warning-text); font-weight: 700; font-size: 0.78rem;">준비 중</span></div>
-          </div>
-        </div>
       </section>
     </div>
   </div>
@@ -741,14 +663,13 @@
     <div class="dashboard-container">
       <div class="card-box" style="background: #0f172a; color: white;">
         <h2 style="font-size: 1.8rem; margin-bottom: 6px; color: white;">👑 HUNSTER 통합 관리자 센터</h2>
-        <p style="opacity: 0.8; font-size: 0.95rem;">파트너 회원 관리, 실시간 입금/세금계산서 상태 토글 및 1:1 문의 답변 센터입니다.</p>
+        <p style="opacity: 0.8; font-size: 0.95rem;">파트너 회원 관리, 입금/세금계산서 상태 토글 및 1:1 문의 답변 센터입니다.</p>
       </div>
 
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 답변</button>
         <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">견적서 간편 생성기</button>
-        <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">실시간 접속 및 상태 로그</button>
       </div>
 
       <!-- 탭 1: 파트너 회원 관리 -->
@@ -809,31 +730,6 @@
           <textarea id="quote-textarea-box" class="form-textarea" style="height: 220px; font-family: monospace; font-size: 0.85rem;" readonly></textarea>
         </div>
         <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
-      </div>
-
-      <!-- 탭 4: 실시간 로그 -->
-      <div id="tab-content-logs" class="tab-content card-box">
-        <h3 style="margin-bottom: 16px;">📊 실시간 접속 및 상태 변경 이력</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-sub);">최근 방문 및 로그인 로그</h4>
-            <div class="data-table-wrapper" style="margin-top: 0;">
-              <table class="data-table">
-                <thead><tr><th>IP</th><th>사용자</th><th>기기</th><th>시간</th></tr></thead>
-                <tbody id="admin-ip-tbody"><tr><td colspan="4" style="text-align:center; padding:15px;">로그 없음</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-sub);">입금/세금계산서 상태 변경 이력</h4>
-            <div class="data-table-wrapper" style="margin-top: 0;">
-              <table class="data-table">
-                <thead><tr><th>대상</th><th>항목</th><th>변경상태</th><th>시간</th></tr></thead>
-                <tbody id="admin-status-log-tbody"><tr><td colspan="4" style="text-align:center; padding:15px;">이력 없음</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
       </div>
 
     </div>
