@@ -5,12 +5,9 @@ const { SolapiMessageService } = require('solapi');
 // 미들웨어 설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public')); // 정적 파일 제공 (필요시)
+app.use(express.static('public'));
 
-// 솔라피 메시지 서비스 초기화 (필요시 API 키 입력)
-// const messageService = new SolapiMessageService('YOUR_API_KEY', 'YOUR_API_SECRET');
-
-// 인메모리 데이터 저장소 (서버 메모리 DB)
+// 인메모리 데이터 저장소
 let users = [];
 let inquiries = [];
 let ipLogs = [];
@@ -28,7 +25,6 @@ app.post('/api/log', (req, res) => {
 app.post('/api/register', async (req, res) => {
   const { name, id, pw, phone, address, coupangSub, slots } = req.body;
   
-  // 아이디 중복 체크
   const existing = users.find(u => u.id === id);
   if (existing) {
     return res.json({ success: false, message: '이미 존재하는 아이디입니다.' });
@@ -48,13 +44,13 @@ app.post('/api/register', async (req, res) => {
 
   users.push(newUser);
 
-  // 회원가입 시 카카오톡/문자 자동 전송 로직 (추후 API 키 입력 후 활성화 가능)
   try {
     /*
+    const messageService = new SolapiMessageService('API_KEY', 'API_SECRET');
     await messageService.send({
       to: phone,
-      from: '발신번호등록번호',
-      text: `[훈스터] ${name} 파트너님, 회원가입이 완료되었습니다. 안내된 계좌로 입금을 진행해주세요.`
+      from: '발신번호',
+      text: `[훈스터] ${name} 파트너님, 회원가입이 완료되었습니다.`
     });
     */
   } catch (err) {
@@ -94,7 +90,6 @@ app.post('/api/admin/status', (req, res) => {
       changedStatus = user.taxStatus;
     }
 
-    // 상태 변경 이력 추가
     statusLogs.unshift({
       name: user.name,
       userId: user.id,
