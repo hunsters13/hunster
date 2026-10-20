@@ -63,12 +63,6 @@
     .price-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
     .price-desc { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 16px; }
     .price-tag { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; }
-    
-    .guide-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
-    .guide-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
-    .guide-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-    .guide-table th, .guide-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
-    .guide-table th { background: var(--border-subtle); color: var(--text-sub); font-weight: 700; font-size: 0.85rem; }
 
     .auth-container { max-width: 550px; margin: 40px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .auth-container h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
@@ -78,9 +72,10 @@
     .form-label { font-size: 0.88rem; font-weight: 700; color: #334155; }
     .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
     .form-textarea { resize: vertical; min-height: 100px; }
-    .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: 12px; margin-top: 8px; display: none; }
+    .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: 12px; margin-top: 8px; display: block; }
     
     .dashboard-container { max-width: 1200px; margin: 30px auto; padding: 0 16px; }
+    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); margin-bottom: 24px; }
     .data-table-wrapper { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid var(--border); margin-top: 16px; }
     .data-table { width: 100%; border-collapse: collapse; min-width: 750px; }
     .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
@@ -204,7 +199,7 @@
         trackVisitor(name + ' (회원가입)', id);
         switchView('view-login');
       } else {
-        alert(result.message); // 탈퇴된 번호일 경우 경고 문구 출력
+        alert(result.message);
       }
     }
 
@@ -445,7 +440,6 @@
       if(content) content.classList.add('active');
     }
 
-    // 🧮 견적서 계산 및 생성 함수 복구
     function calculateQuoteTotal() {
       let count = parseInt(document.getElementById('q-slots-count').value) || 5;
       let unitPrice = parseFloat(document.getElementById('q-unit-price').value) || 55000;
@@ -457,28 +451,43 @@
 
       document.getElementById('q-supply-sub').innerText = supply.toLocaleString() + '원';
       document.getElementById('q-vat-sub').innerText = vat.toLocaleString() + '원';
-      document.getElementById('q-total-sub').innerText = total.toLocaleString() + '원';
       document.getElementById('q-total-display').innerText = total.toLocaleString() + '원';
     }
 
     function copyQuoteToClipboard() {
+      const senderCompany = document.getElementById('q-sender-company').value || '훈스터';
+      const senderName = document.getElementById('q-sender-name').value || '김*훈';
+      const senderPhone = document.getElementById('q-sender-phone').value || '';
+      const senderEmail = document.getElementById('q-sender-email').value || '';
+
       const clientName = document.getElementById('q-client-name').value || '고객님';
       const slots = document.getElementById('q-slots-count').value || 5;
-      const unitPrice = parseInt(document.getElementById('q-unit-price').value) || 55000;
+      const unitPrice = parseInt(document.getElementById('q-unit-price').value || 55000);
       const total = document.getElementById('q-total-display').innerText;
 
       const quoteText = 
-`[ 훈스터(HUNSTER) 공식 견적서 ]
-- 공급자: ${ADMIN_INFO.company} / 연락처: ${ADMIN_INFO.phone}
+`[ ${senderCompany} 공식 견적서 ]
+----------------------------------------
+■ [공급자 (발신자) 정보]
+- 상호명: ${senderCompany}
+- 대표자명: ${senderName}
+- 연락처: ${senderPhone}
+- 이메일: ${senderEmail}
+
+■ [수신자 (고객) 정보]
 - 수신자: ${clientName} 대표님
-- 품목: 쿠팡 트래픽 고속 프록시 슬롯 (${slots}슬롯 / 1슬롯당 ${unitPrice.toLocaleString()}원)
+----------------------------------------
+■ [견적 내용]
+- 품목: 쿠팡 트래픽 고속 프록시 슬롯 
+- 상세: (${slots}슬롯 / 1슬롯당 ${unitPrice.toLocaleString()}원)
 - 총 합계금액 (VAT 포함): ${total}
 - 입금 계좌: ${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber} (${ACCOUNT_INFO.holder})
-
+----------------------------------------
+본 견적서는 발행일로부터 7일간 유효합니다.
 감사합니다. 비즈니스의 성공을 응원합니다!`;
 
       navigator.clipboard.writeText(quoteText).then(() => {
-        alert('📋 견적서 텍스트가 클립보드에 복사되었습니다!');
+        alert('📋 발신자 및 수신자 정보가 반영된 완벽한 견적서가 복사되었습니다!');
       }).catch(err => {
         alert('복사에 실패했습니다.');
       });
@@ -577,7 +586,7 @@
               <option value="coupang">쿠팡 트래픽 솔루션</option>
             </select>
           </div>
-          <div id="coupang-sub-option" class="sub-option-box" style="display: block;">
+          <div id="coupang-sub-option" class="sub-option-box">
             <label class="form-label">쿠팡 카테고리 세부 선택</label>
             <select id="coupang-sub-select" class="form-select">
               <option value="industrial">공산품 트래픽</option>
@@ -598,17 +607,17 @@
         <button class="btn btn-danger" onclick="handleLogout()">로그아웃</button>
       </div>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div class="card-box">
+        <div class="card-box" style="margin-bottom:0;">
           <div class="metric-title">연락처 / 주소</div>
           <div style="font-size: 1rem; font-weight: 700; margin-top: 6px;" id="my-phone"></div>
           <div style="font-size: 0.9rem; color: var(--text-sub); margin-top: 2px;" id="my-address"></div>
         </div>
-        <div class="card-box" style="--primary: #059669;">
+        <div class="card-box" style="--primary: #059669; margin-bottom:0;">
           <div class="metric-title">활성 서비스 및 슬롯</div>
           <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-top: 6px;" id="my-service"></div>
           <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 2px;" id="my-slots"></div>
         </div>
-        <div class="card-box">
+        <div class="card-box" style="margin-bottom:0;">
           <div class="metric-title">입금 및 세금계산서 상태</div>
           <div style="display: flex; gap: 8px; margin-top: 10px;">
             <span id="my-deposit-status" class="badge-status">입금대기</span>
@@ -616,7 +625,7 @@
           </div>
         </div>
       </div>
-      <div class="card-box" style="margin-bottom: 24px; background: var(--primary-light); border-color: #bfdbfe;">
+      <div class="card-box" style="background: var(--primary-light); border-color: #bfdbfe;">
         <h3 style="font-size: 1.05rem; margin-bottom: 8px;">💳 입금 안내 계좌</h3>
         <p id="account-info-box" style="font-size: 0.95rem; color: #1e40af;"></p>
       </div>
@@ -635,7 +644,7 @@
     </div>
   </div>
 
-  <!-- 관리자 대시보드 뷰 (견적서 탭 포함) -->
+  <!-- 관리자 대시보드 뷰 -->
   <div id="view-admin" class="page-view">
     <div class="dashboard-container">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
@@ -671,33 +680,37 @@
         </div>
       </div>
 
-      <!-- 탭 2: 견적서 발행 (복구됨) -->
+      <!-- 탭 2: 견적서 발행 -->
       <div id="tab-content-quote" class="tab-content card-box">
         <h3>📝 훈스터 공식 견적서 발행</h3>
-        <p style="font-size:0.9rem; color:var(--text-sub); margin-bottom:20px;">고객 맞춤형 견적서를 간편하게 생성하고 클립보드에 복사할 수 있습니다.</p>
-        <div class="form-grid" style="max-width: 600px; gap: 14px;">
-          <div class="form-group">
-            <label class="form-label">수신자 (고객/대표자명)</label>
-            <input type="text" id="q-client-name" class="form-input" placeholder="예: 홍길동" value="김고객" oninput="calculateQuoteTotal()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">슬롯 수량</label>
-            <input type="number" id="q-slots-count" class="form-input" value="5" min="1" oninput="calculateQuoteTotal()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">1슬롯 단가 (원)</label>
-            <input type="number" id="q-unit-price" class="form-input" value="55000" oninput="calculateQuoteTotal()">
-          </div>
-          
-          <div style="background: var(--bg-body); padding: 16px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px;">
-            <div style="display: flex; justify-content: space-between;"><span>공급가액:</span><span id="q-supply-sub" style="font-weight:600;">275,000원</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>부가세 (VAT 10%):</span><span id="q-vat-sub" style="font-weight:600;">27,500원</span></div>
-            <div style="border-top: 1px solid var(--border); padding-top: 8px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; color: var(--primary);">
-              <span>총 합계금액 (VAT 포함):</span><span id="q-total-display">302,500원</span>
-            </div>
+        <p style="font-size:0.9rem; color:var(--text-sub); margin-bottom:20px;">발신자 정보 및 수신자 정보를 자유롭게 수정하여 완벽한 맞춤형 견적서를 생성하세요.</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-grid" style="gap: 12px;">
+            <h4 style="font-size: 0.95rem; color: var(--primary); margin-bottom: -4px;">1. 발신자 (공급자) 정보 수정</h4>
+            <div class="form-group"><label class="form-label">상호명</label><input type="text" id="q-sender-company" class="form-input" value="훈스터 (HUNSTER)"></div>
+            <div class="form-group"><label class="form-label">대표자명</label><input type="text" id="q-sender-name" class="form-input" value="김*훈"></div>
+            <div class="form-group"><label class="form-label">연락처</label><input type="text" id="q-sender-phone" class="form-input" value="010-3672-7807"></div>
+            <div class="form-group"><label class="form-label">이메일</label><input type="text" id="q-sender-email" class="form-input" value="support@hunster.co.kr"></div>
+
+            <h4 style="font-size: 0.95rem; color: var(--primary); margin-top: 10px; margin-bottom: -4px;">2. 수신자 및 상품 정보 입력</h4>
+            <div class="form-group"><label class="form-label">수신자명</label><input type="text" id="q-client-name" class="form-input" value="김고객" oninput="calculateQuoteTotal()"></div>
+            <div class="form-group"><label class="form-label">슬롯 수량</label><input type="number" id="q-slots-count" class="form-input" value="5" min="1" oninput="calculateQuoteTotal()"></div>
+            <div class="form-group"><label class="form-label">1슬롯 단가 (원)</label><input type="number" id="q-unit-price" class="form-input" value="55000" oninput="calculateQuoteTotal()"></div>
           </div>
 
-          <button type="button" class="btn btn-primary" style="padding: 12px; margin-top: 8px;" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="background: var(--bg-body); padding: 20px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.9rem; display: flex; flex-direction: column; gap: 10px;">
+              <h4 style="font-size: 0.95rem; margin-bottom: 4px;">💰 금액 산정 결과</h4>
+              <div style="display: flex; justify-content: space-between;"><span>공급가액:</span><span id="q-supply-sub" style="font-weight:600;">275,000원</span></div>
+              <div style="display: flex; justify-content: space-between;"><span>부가세 (VAT 10%):</span><span id="q-vat-sub" style="font-weight:600;">27,500원</span></div>
+              <div style="border-top: 1px solid var(--border); padding-top: 10px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.15rem; color: var(--primary);">
+                <span>총 합계금액:</span><span id="q-total-display">302,500원</span>
+              </div>
+            </div>
+            
+            <button type="button" class="btn btn-primary" style="padding: 16px; font-size: 1rem; width: 100%; margin-top: 20px;" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
+          </div>
         </div>
       </div>
 
