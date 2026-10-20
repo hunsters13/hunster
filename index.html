@@ -77,7 +77,6 @@
     .form-label { font-size: 0.88rem; font-weight: 700; color: #334155; }
     .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
     .form-textarea { resize: vertical; min-height: 100px; }
-    .sub-option-box { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: 12px; margin-top: 8px; display: block; }
     
     .dashboard-container { max-width: 1200px; margin: 30px auto; padding: 0 16px; }
     .data-table-wrapper { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid var(--border); margin-top: 16px; }
@@ -109,7 +108,6 @@
     const ACCOUNT_INFO = { bank: "카카오뱅크", accountNumber: "3333-22-922-9190", holder: "김*훈" };
     let currentUser = null;
 
-    // 상단 헤더의 우측 버튼 영역을 로그인 상태에 따라 동적으로 렌더링하는 함수
     function updateHeaderAuthUI() {
       const authActions = document.getElementById('auth-actions-container');
       const mobileNav = document.getElementById('mobile-nav');
@@ -119,14 +117,12 @@
       if (!authActions) return;
 
       if (savedRole === 'admin' || savedUser) {
-        // 로그인 상태: 로그아웃 버튼만 노출
         authActions.innerHTML = `<button class="btn btn-danger" onclick="handleLogout()">로그아웃</button>`;
         if (mobileNav) {
           mobileNav.innerHTML = `<a onclick="goHome()" style="font-weight:700; color:var(--text-main); text-decoration:none; cursor:pointer;">홈</a>
                                  <a onclick="handleLogout()" style="font-weight:700; color:var(--danger); text-decoration:none; cursor:pointer;">로그아웃</a>`;
         }
       } else {
-        // 비로그인 상태: 로그인, 회원가입 버튼 노출
         authActions.innerHTML = `
           <button class="btn" onclick="switchView('view-login')">로그인</button>
           <button class="btn btn-primary" onclick="switchView('view-register')">회원가입</button>
@@ -141,7 +137,6 @@
       }
     }
 
-    // 홈 버튼 클릭 시 세션 초기화 없이 로그인 상태면 대시보드로, 비로그인이면 메인으로 이동
     function goHome() {
       const savedRole = localStorage.getItem('hunster_role');
       const savedUser = localStorage.getItem('hunster_user');
@@ -580,14 +575,14 @@
     </div>
     <div class="header-right">
       <div id="auth-actions-container" class="auth-actions">
-        <!-- 동적으로 로그인 상태에 따라 변경됨 -->
+        <!-- 동적 렌더링 -->
       </div>
     </div>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
   </header>
 
   <div id="mobile-nav" class="mobile-nav">
-    <!-- 모바일 네비게이션도 동적으로 변경됨 -->
+    <!-- 동적 렌더링 -->
   </div>
 
   <!-- 메인 홈 뷰 -->
@@ -636,6 +631,42 @@
             <div class="server-status-item"><span style="font-weight: 600;">네이버 플레이스 솔루션</span><span style="color: var(--warning-text); font-weight: 700; font-size: 0.78rem;">준비 중</span></div>
           </div>
         </div>
+      </section>
+
+      <!-- 슬롯 유치 근거 및 가이드 분석 섹션 -->
+      <section class="guide-section">
+        <h2>📈 쿠팡 키워드 검색량별 권장 슬롯 산정 및 로직 분석</h2>
+        <p>쿠팡 알고리즘은 검색어별 유효 트래픽 볼륨에 비례하여 순위를 부여합니다. 키워드 규모에 맞는 최적의 슬롯 분배가 상위노출의 성패를 가릅니다.</p>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>키워드 월간 검색량</th>
+              <th>경쟁 강도</th>
+              <th>권장 슬롯 수</th>
+              <th>기대 상위노출 효과</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1만 이하</strong> (소형 키워드)</td>
+              <td><span style="color: var(--success); font-weight: 700;">낮음 / 보통</span></td>
+              <td><strong>5 ~ 10 슬롯</strong></td>
+              <td>진입 후 3~5일 내 1~3위 장악</td>
+            </tr>
+            <tr>
+              <td><strong>1만 ~ 5만</strong> (중형 키워드)</td>
+              <td><span style="color: var(--warning-text); font-weight: 700;">보통 / 높음</span></td>
+              <td><strong>15 ~ 30 슬롯</strong></td>
+              <td>안정적인 1페이지 상단 고정 노출</td>
+            </tr>
+            <tr>
+              <td><strong>5만 이상</strong> (대형 메인 키워드)</td>
+              <td><span style="color: var(--danger); font-weight: 700;">매우 높음</span></td>
+              <td><strong>40 슬롯 이상</strong></td>
+              <td>실시간 트래픽 급상승을 통한 최상단 독점</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
     </div>
   </div>
