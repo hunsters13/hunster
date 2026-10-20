@@ -50,18 +50,9 @@
     .hero h1 { font-size: 2.5rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 16px; }
     .hero p { font-size: 1.05rem; color: var(--text-sub); max-width: 700px; margin: 0 auto 28px auto; }
     
-    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-    .metric-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
-    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
-    .metric-title { font-size: 0.88rem; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; }
-    .metric-value { font-size: 2rem; font-weight: 800; color: #0f172a; }
-    .metric-footer { font-size: 0.82rem; color: var(--success); font-weight: 600; margin-top: 8px; }
-    
-    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); margin-bottom: 24px; }
     .card-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 16px; }
     .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.92rem; }
-    .badge-online { background: var(--success-bg); color: var(--success); padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
 
     .auth-container { max-width: 550px; margin: 40px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .auth-container h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
@@ -95,7 +86,6 @@
       .nav-links, .header-right .auth-actions { display: none; }
       .mobile-menu-btn { display: block; }
       .hero h1 { font-size: 1.9rem; }
-      .status-section-grid { grid-template-columns: 1fr; }
     }
   </style>
   <script>
@@ -288,6 +278,7 @@
         const res = await fetch('/api/admin/data');
         const data = await res.json();
         
+        // 1. 파트너 회원 명단
         let tbody = document.getElementById('admin-user-tbody');
         if(tbody) {
           tbody.innerHTML = '';
@@ -309,6 +300,7 @@
           }
         }
 
+        // 2. 1:1 문의 답변
         let inqTbody = document.getElementById('admin-inquiry-tbody');
         if(inqTbody) {
           inqTbody.innerHTML = '';
@@ -332,6 +324,7 @@
           }
         }
 
+        // 3. 실시간 접속 IP 로그
         let ipTbody = document.getElementById('admin-ip-tbody');
         if(ipTbody && data.ipLogs) {
           ipTbody.innerHTML = '';
@@ -349,6 +342,7 @@
           }
         }
 
+        // 4. 입금/세금계산서 상태 변경 이력
         let statusLogTbody = document.getElementById('admin-status-log-tbody');
         if(statusLogTbody && data.statusLogs) {
           statusLogTbody.innerHTML = '';
@@ -660,7 +654,7 @@
         <p style="opacity: 0.9; font-size: 0.95rem;" id="my-slots">5 슬롯 활성 가동 중</p>
       </div>
 
-      <div class="status-section-grid">
+      <div class="status-section-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         <div class="card-box">
           <h3>📦 내 파트너십 정보</h3>
           <div class="server-status-item"><span style="font-weight: 600;">연락처</span><span id="my-phone" style="color:var(--text-sub);">-</span></div>
@@ -699,11 +693,13 @@
         <p style="opacity: 0.8; font-size: 0.95rem;">파트너 회원 관리, 입금/세금계산서 상태 토글 및 1:1 문의 답변 센터입니다.</p>
       </div>
 
+      <!-- 총 5개의 탭 메뉴 -->
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 답변</button>
         <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">견적서 간편 생성기</button>
-        <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">실시간 접속 및 상태 로그</button>
+        <button id="tab-btn-iplogs" class="tab-btn" onclick="switchAdminTab('iplogs')">실시간 접속 IP 로그</button>
+        <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">입금/세금계산서 상태 변경 이력</button>
       </div>
 
       <!-- 탭 1: 파트너 회원 관리 -->
@@ -766,28 +762,43 @@
         <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
       </div>
 
-      <!-- 탭 4: 실시간 로그 -->
-      <div id="tab-content-logs" class="tab-content card-box">
-        <h3 style="margin-bottom: 16px;">📊 실시간 접속 IP 및 상태 변경 이력</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-sub);">최근 방문 및 로그인 IP 로그</h4>
-            <div class="data-table-wrapper" style="margin-top: 0;">
-              <table class="data-table">
-                <thead><tr><th>IP</th><th>사용자</th><th>기기</th><th>시간</th></tr></thead>
-                <tbody id="admin-ip-tbody"><tr><td colspan="4" style="text-align:center; padding:15px;">로그 없음</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-sub);">입금/세금계산서 상태 변경 이력</h4>
-            <div class="data-table-wrapper" style="margin-top: 0;">
-              <table class="data-table">
-                <thead><tr><th>대상</th><th>항목</th><th>변경상태</th><th>시간</th></tr></thead>
-                <tbody id="admin-status-log-tbody"><tr><td colspan="4" style="text-align:center; padding:15px;">이력 없음</td></tr></tbody>
-              </table>
-            </div>
-          </div>
+      <!-- 탭 4: 실시간 접속 IP 로그 -->
+      <div id="tab-content-iplogs" class="tab-content card-box">
+        <h3 style="margin-bottom: 16px;">📊 최근 방문 및 로그인 IP 로그</h3>
+        <div class="data-table-wrapper" style="margin-top: 0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>접속 IP</th>
+                <th>사용자 정보</th>
+                <th>기기 환경</th>
+                <th>접속 시간</th>
+              </tr>
+            </thead>
+            <tbody id="admin-ip-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">로그 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 탭 5: 입금/세금계산서 상태 변경 이력 -->
+      <div id="tab-content-statuslogs" class="tab-content card-box">
+        <h3 style="margin-bottom: 16px;">📜 입금 및 세금계산서 상태 변경 이력</h3>
+        <div class="data-table-wrapper" style="margin-top: 0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너 대상</th>
+                <th>변경 항목</th>
+                <th>변경된 상태</th>
+                <th>처리 시간</th>
+              </tr>
+            </thead>
+            <tbody id="admin-status-log-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">이력 없음</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
