@@ -122,17 +122,14 @@
       document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(viewId);
       if(target) target.classList.add('active');
-      document.getElementById('mobile-nav').classList.remove('active');
+      const mobileNav = document.getElementById('mobile-nav');
+      if(mobileNav) mobileNav.classList.remove('active');
       window.scrollTo(0, 0);
     }
 
     function toggleMobileMenu() {
-      document.getElementById('mobile-nav').classList.toggle('active');
-    }
-
-    function handleServiceChange(select) {
-      const subBox = document.getElementById('coupang-sub-option');
-      if(subBox) subBox.style.display = (select.value === 'coupang') ? 'block' : 'none';
+      const mobileNav = document.getElementById('mobile-nav');
+      if(mobileNav) mobileNav.classList.toggle('active');
     }
 
     function calculatePrice(input) {
@@ -151,24 +148,21 @@
     }
 
     async function trackVisitor(userName = "비회원 (일반 방문)", userId = "-") {
-      let userIp = "121.160.XXX.XX";
       try {
+        let userIp = "121.160.XXX.XX";
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         userIp = data.ip;
+        
+        await fetch('/api/log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ip: userIp, name: userName, id: userId, time: new Date().toLocaleString(), device: navigator.userAgent.includes('Mobile') ? '모바일' : 'PC 웹' })
+        });
       } catch(e) {}
-      
-      const now = new Date().toLocaleString();
-      const device = navigator.userAgent.includes('Mobile') ? '모바일' : 'PC 웹';
-      
-      await fetch('/api/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ip: userIp, name: userName, id: userId, time: now, device })
-      });
     }
 
-    // ⭐ 새로고침 시 로그인 유지 기능 (localStorage 연동)
+    // ⭐ 새로고침 시 로그인 유지 로직 보완
     window.onload = async function() {
       const calcInput = document.getElementById('slot-calc-input');
       if(calcInput) calculatePrice(calcInput);
@@ -180,10 +174,16 @@
         await loadAdminData();
         switchView('view-admin');
       } else if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        renderUserDashboard(currentUser);
-        switchView('view-user-dashboard');
+        try {
+          currentUser = JSON.parse(savedUser);
+          renderUserDashboard(currentUser);
+          switchView('view-user-dashboard');
+        } catch(e) {
+          localStorage.removeItem('hunster_user');
+          switchView('view-main');
+        }
       } else {
+        switchView('view-main');
         trackVisitor();
       }
     };
@@ -265,70 +265,81 @@
     }
 
     async function loadAdminData() {
-      const res = await fetch('/api/admin/data');
-      const data = await res.json();
-      
-      let tbody = document.getElementById('admin-user-tbody');
-      if(tbody) {
-        tbody.innerHTML = '';
-        data.users.forEach((u, index) => {
-          let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
-          let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
-          tbody.innerHTML += `<tr>
-            <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.78rem;">(${u.id})</span></td>
-            <td>${u.phone}<br><span style="color:var(--text-sub); font-size:0.78rem;">${u.address}</span></td>
-            <td><span style="color:var(--primary); font-weight:700;">${u.service}</span><br><strong>${u.slots} 슬롯</strong></td>
-            <td><button class="badge-status ${depositClass}" onclick="toggleStatus('${u.id}', 'deposit')">${u.depositStatus}</button></td>
-            <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus}</button></td>
-            <td><button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteUser('${u.id}', '${u.name}')">회원 삭제</button></td>
-          </tr>`;
-        });
-      }
+      try {
+        const res = await fetch('/api/admin/data');
+        const data = await res.json();
+        
+        let tbody = document.getElementById('admin-user-tbody');
+        if(tbody) {
+          tbody.innerHTML = '';
+          if(data.users && data.users.length > 0) {
+            data.users.forEach((u) => {
+              let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
+              let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
+              tbody.innerHTML += `<tr>
+                <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.78rem;">(${u.id})</span></td>
+                <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.78rem;">${u.address || '-'}</span></td>
+                <td><span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span><br><strong>${u.slots || 5} 슬롯</strong></td>
+                <td><button class="badge-status ${depositClass}" onclick="toggleStatus('${u.id}', 'deposit')">${u.depositStatus || '입금대기'}</button></td>
+                <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus || '발행대기'}</button></td>
+                <td><button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteUser('${u.id}', '${u.name}')">회원 삭제</button></td>
+              </tr>`;
+            });
+          } else {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
+          }
+        }
 
-      let inqTbody = document.getElementById('admin-inquiry-tbody');
-      if(inqTbody) {
-        inqTbody.innerHTML = '';
-        data.inquiries.forEach((inq) => {
-          inqTbody.innerHTML += `<tr>
-            <td>${inq.author}</td>
-            <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
-            <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
-            <td>
-              <textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.82rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
-              <div style="display:flex; gap:6px;">
-                <button class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="submitReply(${inq.id})">답변 등록</button>
-                <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteInquiry(${inq.id})">문의 삭제</button>
-              </div>
-            </td>
-          </tr>`;
-        });
-      }
+        let inqTbody = document.getElementById('admin-inquiry-tbody');
+        if(inqTbody) {
+          inqTbody.innerHTML = '';
+          if(data.inquiries && data.inquiries.length > 0) {
+            data.inquiries.forEach((inq) => {
+              inqTbody.innerHTML += `<tr>
+                <td>${inq.author}</td>
+                <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
+                <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
+                <td>
+                  <textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.82rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="submitReply(${inq.id})">답변 등록</button>
+                    <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteInquiry(${inq.id})">문의 삭제</button>
+                  </div>
+                </td>
+              </tr>`;
+            });
+          } else {
+            inqTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>`;
+          }
+        }
 
-      let ipTbody = document.getElementById('admin-ip-tbody');
-      if(ipTbody) {
-        ipTbody.innerHTML = '';
-        data.ipLogs.forEach(log => {
-          ipTbody.innerHTML += `<tr>
-            <td><strong style="color:var(--primary);">${log.ip}</strong></td>
-            <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.78rem; color:var(--text-sub);">(${log.id})</span></td>
-            <td>${log.device}</td>
-            <td style="color:var(--text-sub);">${log.time}</td>
-          </tr>`;
-        });
-      }
+        let ipTbody = document.getElementById('admin-ip-tbody');
+        if(ipTbody && data.ipLogs) {
+          ipTbody.innerHTML = '';
+          data.ipLogs.forEach(log => {
+            ipTbody.innerHTML += `<tr>
+              <td><strong style="color:var(--primary);">${log.ip}</strong></td>
+              <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.78rem; color:var(--text-sub);">(${log.id})</span></td>
+              <td>${log.device}</td>
+              <td style="color:var(--text-sub);">${log.time}</td>
+            </tr>`;
+          });
+        }
 
-      // 파트너 상태 변경 확인 로그 출력
-      let statusLogTbody = document.getElementById('admin-status-log-tbody');
-      if(statusLogTbody && data.statusLogs) {
-        statusLogTbody.innerHTML = '';
-        data.statusLogs.forEach(sLog => {
-          statusLogTbody.innerHTML += `<tr>
-            <td><strong>${sLog.name}</strong> <span style="font-size:0.78rem; color:var(--text-sub);">(${sLog.userId})</span></td>
-            <td><span style="color:var(--primary); font-weight:700;">${sLog.type}</span></td>
-            <td>${sLog.status}</td>
-            <td style="color:var(--text-sub);">${sLog.time}</td>
-          </tr>`;
-        });
+        let statusLogTbody = document.getElementById('admin-status-log-tbody');
+        if(statusLogTbody && data.statusLogs) {
+          statusLogTbody.innerHTML = '';
+          data.statusLogs.forEach(sLog => {
+            statusLogTbody.innerHTML += `<tr>
+              <td><strong>${sLog.name}</strong> <span style="font-size:0.78rem; color:var(--text-sub);">(${sLog.userId})</span></td>
+              <td><span style="color:var(--primary); font-weight:700;">${sLog.type}</span></td>
+              <td>${sLog.status}</td>
+              <td style="color:var(--text-sub);">${sLog.time}</td>
+            </tr>`;
+          });
+        }
+      } catch(err) {
+        console.error("관리자 데이터 로드 실패", err);
       }
     }
 
@@ -394,27 +405,29 @@
     }
 
     async function renderUserInquiries(user) {
-      const res = await fetch('/api/inquiries?id=' + user.id);
-      const myInqList = await res.json();
-      let container = document.getElementById('my-inquiry-list');
-      container.innerHTML = '';
-      
-      if(myInqList.length === 0) {
-        container.innerHTML = '<p style="font-size:0.88rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
-        return;
-      }
+      try {
+        const res = await fetch('/api/inquiries?id=' + user.id);
+        const myInqList = await res.json();
+        let container = document.getElementById('my-inquiry-list');
+        container.innerHTML = '';
+        
+        if(!myInqList || myInqList.length === 0) {
+          container.innerHTML = '<p style="font-size:0.88rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
+          return;
+        }
 
-      myInqList.forEach(inq => {
-        container.innerHTML += `<div style="border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:8px; background:white;">
-          <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-sub); margin-bottom:4px;">
-            <span>작성일: ${inq.date}</span>
-            <span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span>
-          </div>
-          <div style="font-weight:700; font-size:0.92rem; margin-bottom:4px;">${inq.title}</div>
-          <div style="font-size:0.88rem; color:var(--text-main); margin-bottom:8px;">${inq.content}</div>
-          ${inq.reply ? `<div style="background:var(--primary-light); padding:10px; border-radius:6px; font-size:0.85rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
-        </div>`;
-      });
+        myInqList.forEach(inq => {
+          container.innerHTML += `<div style="border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:8px; background:white;">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-sub); margin-bottom:4px;">
+              <span>작성일: ${inq.date}</span>
+              <span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span>
+            </div>
+            <div style="font-weight:700; font-size:0.92rem; margin-bottom:4px;">${inq.title}</div>
+            <div style="font-size:0.88rem; color:var(--text-main); margin-bottom:8px;">${inq.content}</div>
+            ${inq.reply ? `<div style="background:var(--primary-light); padding:10px; border-radius:6px; font-size:0.85rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
+          </div>`;
+        });
+      } catch(e) {}
     }
 
     async function handleNewInquiry(event) {
@@ -433,6 +446,15 @@
       alert('1:1 문의가 등록되었습니다.');
       document.getElementById('inquiry-form').reset();
       renderUserInquiries(currentUser);
+    }
+
+    function switchAdminTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const btn = document.getElementById('tab-btn-' + tabName);
+      const content = document.getElementById('tab-content-' + tabName);
+      if(btn) btn.classList.add('active');
+      if(content) content.classList.add('active');
     }
   </script>
 </head>
@@ -566,7 +588,7 @@
           <div class="form-group"><label class="form-label">사업장 주소</label><input type="text" id="reg-address" class="form-input" required placeholder="주소 입력"></div>
           <div class="form-group">
             <label class="form-label">서비스 선택</label>
-            <select id="reg-slots" class="form-select" onchange="handleServiceChange(this)">
+            <select id="reg-slots" class="form-select">
               <option value="coupang">쿠팡 트래픽 솔루션</option>
             </select>
           </div>
@@ -635,3 +657,92 @@
         <h2 style="font-size: 1.5rem; font-weight: 800;">🛠️ 최고 관리자 대시보드</h2>
         <button class="btn btn-danger" onclick="handleLogout()">관리자 로그아웃</button>
       </div>
+      
+      <div class="tab-menu">
+        <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
+        <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">입금/세금 변경 이력</button>
+        <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 관리</button>
+        <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">방문자 접속 로그</button>
+      </div>
+
+      <!-- 탭 1: 파트너 관리 -->
+      <div id="tab-content-users" class="tab-content active card-box">
+        <h3>전체 파트너 목록 및 상태 관리</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너 정보</th>
+                <th>연락처 / 주소</th>
+                <th>서비스 및 슬롯</th>
+                <th>입금 상태</th>
+                <th>세금계산서</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-user-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 탭 2: 파트너 확인용 상태 변경 로그 -->
+      <div id="tab-content-statuslogs" class="tab-content card-box">
+        <h3>파트너 입금 및 세금계산서 변경 이력</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너 이름 (아이디)</th>
+                <th>관리 항목</th>
+                <th>변경 내용</th>
+                <th>처리 시간</th>
+              </tr>
+            </thead>
+            <tbody id="admin-status-log-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 탭 3: 문의 관리 -->
+      <div id="tab-content-inquiries" class="tab-content card-box">
+        <h3>1:1 문의 응대</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>작성자</th>
+                <th>제목 및 내용</th>
+                <th>처리 상태</th>
+                <th>답변 관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-inquiry-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 탭 4: 방문자 로그 -->
+      <div id="tab-content-logs" class="tab-content card-box">
+        <h3>실시간 방문자 접속 로그</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>접속 IP</th>
+                <th>방문자 / 회원</th>
+                <th>접속 기기</th>
+                <th>접속 시간</th>
+              </tr>
+            </thead>
+            <tbody id="admin-ip-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 HUNSTER (훈스터). All rights reserved.</p>
+  </footer>
+</body>
+</html>
