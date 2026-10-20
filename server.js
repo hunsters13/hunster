@@ -5,7 +5,6 @@ const crypto = require('crypto');
 
 const DATA_FILE = path.join(__dirname, 'data.json');
 
-// 서버가 켜질 때 data.json 파일이 있으면 불러오고, 없으면 기본값으로 생성
 let db = {
   users: [
     { 
@@ -24,37 +23,29 @@ let db = {
       createdAt: new Date().toISOString()
     }
   ],
-  inquiries: [
-    { id: 1, author: '김철수 (kim123)', userId: 'kim123', title: '슬롯 추가 문의', content: '슬롯 연장하고 싶어요.', reply: '확인했습니다.', status: '답변완료', date: '2026-10-19' }
-  ],
+  inquiries: [],
   ipLogs: [],
-  statusLogs: []
+  statusLogs: [],
+  withdrawnPhones: [] // 탈퇴된 회원의 전화번호 블랙리스트 저장소
 };
 
-// 파일에서 데이터 불러오기 함수
 function loadData() {
   if (fs.existsSync(DATA_FILE)) {
     try {
-      const data = fs.readFileSync(DATA_FILE, 'utf8');
-      db = JSON.parse(data);
-    } catch (e) {
-      console.log('파일 읽기 오류, 기본값 사용');
-    }
+      db = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+      if(!db.withdrawnPhones) db.withdrawnPhones = [];
+    } catch (e) {}
   } else {
     saveData();
   }
 }
 
-// 파일에 데이터 저장하기 함수 (데이터가 바뀔 때마다 자동 저장)
 function saveData() {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2), 'utf8');
-  } catch (e) {
-    console.log('파일 저장 오류');
-  }
+  } catch (e) {}
 }
 
-// 서버 시작 시 데이터 로드
 loadData();
 
 const server = http.createServer((req, res) => {
@@ -70,10 +61,16 @@ const server = http.createServer((req, res) => {
       res.end(JSON.stringify(payload));
     };
 
-    // 회원가입
+    // 회원가입 (탈퇴된 전화번호/아이디 재가입 차단 로직 포함)
     if (req.method === 'POST' && url.pathname === '/api/register') {
+      if (db.withdrawnPhones.includes(data.phone)) {
+        return sendJson(200, { success: false, message: '탈퇴 처리된 이력 이 있는 전화번호입니다. 재가입이 제한됩니다.' });
+      }
       if (db.users.some(u => u.id === data.id)) {
         return sendJson(200, { success: false, message: '이미 존재하는 아이디입니다.' });
+      }
+      if (db.users.some(u => u.phone === data.phone)) {
+        return sendJson(200, { success: false, message: '이미 등록된 연락처입니다.' });
       }
       
       const hashedPw = crypto.createHash('sha256').update(data.pw).digest('hex');
@@ -85,23 +82,26 @@ const server = http.createServer((req, res) => {
         phone: data.phone,
         address: data.address,
         service: '쿠팡 트래픽 (' + (data.coupangSub === 'industrial' ? '공산품' : '농산물') + ')',
-        slots: 5,
+        slots: data.slots || 5,
         depositStatus: '입금대기',
         depositTime: '',
         taxStatus: '발행대기',
         taxTime: '',
         createdAt: new Date().toISOString()
       });
-      saveData(); // 변경사항 파일에 즉시 저장
+      saveData();
       return sendJson(200, { success: true });
     }
 
-    // 로그인
+    // 로그인 (탈퇴된 계정인지 한 번 더 체크)
     if (req.method === 'POST' && url.pathname === '/api/login') {
       const hashedPw = crypto.createHash('sha256').update(data.pw).digest('hex');
       const found = db.users.find(u => u.id === data.id && u.pw === hashedPw);
       
       if (found) {
+        if (db.withdrawnPhones.includes(found.phone)) {
+          return sendJson(200, { success: false, message: '관리자에 의해 탈퇴 처리된 계정입니다.' });
+        }
         const userSafe = { ...found };
         delete userSafe.pw;
         return sendJson(200, { success: true, user: userSafe });
@@ -110,7 +110,7 @@ const server = http.createServer((req, res) => {
       }
     }
 
-    // 접속 로그 수집
+    // 방문자 로그
     if (req.method === 'POST' && url.pathname === '/api/log') {
       db.ipLogs.unshift(data);
       if (db.ipLogs.length > 50) db.ipLogs.pop();
@@ -120,34 +120,18 @@ const server = http.createServer((req, res) => {
 
     // 관리자 데이터 조회
     if (req.method === 'GET' && url.pathname === '/api/admin/data') {
-      const search = url.searchParams.get('search') || '';
-      const page = parseInt(url.searchParams.get('page') || '1');
-      const limit = parseInt(url.searchParams.get('limit') || '10');
-
-      const filteredUsers = db.users.filter(u => 
-        u.id.includes(search) || u.name.includes(search)
-      );
-
-      const startIndex = (page - 1) * limit;
-      const paginatedUsers = filteredUsers.slice(startIndex, startIndex + limit);
-
       return sendJson(200, {
-        users: paginatedUsers,
-        totalUsers: filteredUsers.length,
+        users: db.users,
+        totalUsers: db.users.length,
         inquiries: db.inquiries,
         ipLogs: db.ipLogs,
         statusLogs: db.statusLogs
       });
     }
 
-    // 입금 / 세금계산서 상태 토글
+    // 상태 토글
     if (req.method === 'POST' && url.pathname === '/api/admin/status') {
-      const targetUser = db.users.find(u => 
-        u.idNum === String(data.userId) || 
-        u.id === data.userId || 
-        db.users.indexOf(u) === Number(data.index)
-      );
-
+      const targetUser = db.users.find(u => u.idNum === String(data.userId) || u.id === data.userId);
       if (targetUser) {
         const nowTime = new Date().toLocaleString();
         let actionDescription = '';
@@ -172,15 +156,21 @@ const server = http.createServer((req, res) => {
         });
         if (db.statusLogs.length > 50) db.statusLogs.pop();
 
-        saveData(); // 변경사항 즉시 저장
+        saveData();
         return sendJson(200, { success: true });
       }
-      return sendJson(200, { success: false, message: '대상을 찾을 수 없습니다.' });
+      return sendJson(200, { success: false });
     }
 
-    // 회원 삭제
+    // 회원 삭제 (탈퇴 처리 및 전화번호 블랙리스트 등록)
     if (req.method === 'POST' && url.pathname === '/api/admin/delete-user') {
-      db.users = db.users.filter(u => u.idNum !== data.userId && u.id !== data.userId);
+      const targetUser = db.users.find(u => u.idNum === String(data.userId) || u.id === data.userId);
+      if (targetUser) {
+        if (targetUser.phone && !db.withdrawnPhones.includes(targetUser.phone)) {
+          db.withdrawnPhones.push(targetUser.phone);
+        }
+      }
+      db.users = db.users.filter(u => u.idNum !== String(data.userId) && u.id !== data.userId);
       saveData();
       return sendJson(200, { success: true });
     }
@@ -201,14 +191,12 @@ const server = http.createServer((req, res) => {
       return sendJson(200, { success: true });
     }
 
-    // 문의 조회
     if (req.method === 'GET' && url.pathname === '/api/inquiries') {
       const userId = url.searchParams.get('id');
       const userInquiries = userId ? db.inquiries.filter(i => i.author.includes(userId) || i.userId === userId) : db.inquiries;
       return sendJson(200, userInquiries);
     }
 
-    // 관리자 문의 답변
     if (req.method === 'POST' && url.pathname === '/api/admin/reply') {
       const target = db.inquiries.find(i => i.id == data.id);
       if (target) {
@@ -219,14 +207,12 @@ const server = http.createServer((req, res) => {
       return sendJson(200, { success: true });
     }
 
-    // 관리자 문의 삭제
     if (req.method === 'POST' && url.pathname === '/api/admin/delete-inquiry') {
       db.inquiries = db.inquiries.filter(i => i.id != data.id);
       saveData();
       return sendJson(200, { success: true });
     }
 
-    // 정적 파일 서빙
     fs.readFile(path.join(__dirname, 'index.html'), (err, content) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
