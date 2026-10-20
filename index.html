@@ -803,11 +803,13 @@
         <h2>🛠️ 훈스터 통합 관리자 대시보드</h2>
         <p style="color: var(--text-sub); margin-bottom: 20px;">파트너 회원 관리, 입금/세금계산서 토글 및 1:1 문의 답변 시스템입니다.</p>
 
+        <!-- 5개의 독립된 상단 탭 메뉴 -->
         <div class="tab-menu">
           <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
           <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 관리</button>
           <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">견적서 작성 도구</button>
-          <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">접속 및 변경 로그</button>
+          <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">접속 로그</button>
+          <button id="tab-btn-status-logs" class="tab-btn" onclick="switchAdminTab('status-logs')">⚡ 입금/세금계산서 상태 변경 이력</button>
         </div>
 
         <!-- 1. 파트너 회원 관리 탭 -->
@@ -897,48 +899,41 @@
           </div>
         </div>
 
-        <!-- 4. 접속 및 변경 로그 탭 (입금/세금계산서 변경 이력을 하단에 독립된 섹션으로 분리) -->
+        <!-- 4. 접속 로그 탭 -->
         <div id="tab-content-logs" class="tab-content">
-          <div style="display: flex; flex-direction: column; gap: 30px;">
-            <!-- 방문자 접속 로그 섹션 -->
-            <div style="background: var(--bg-body); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-              <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 14px;">🌐 최근 방문자 접속 로그 (최대 50개)</h4>
-              <div class="data-table-wrapper" style="margin-top:0;">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>IP 주소</th>
-                      <th>방문자명 (ID)</th>
-                      <th>접속 환경</th>
-                      <th>시간</th>
-                    </tr>
-                  </thead>
-                  <tbody id="admin-ip-tbody">
-                    <!-- 동적 렌더링 -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div class="data-table-wrapper" style="margin-top:0;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>IP 주소</th>
+                  <th>방문자명 (ID)</th>
+                  <th>접속 환경</th>
+                  <th>시간</th>
+                </tr>
+              </thead>
+              <tbody id="admin-ip-tbody">
+                <!-- 동적 렌더링 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-            <!-- 입금/세금계산서 상태 변경 이력 독립 섹션 -->
-            <div style="background: var(--bg-body); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-              <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 14px;">⚡ 입금/세금계산서 상태 변경 이력</h4>
-              <div class="data-table-wrapper" style="margin-top:0;">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>대상 파트너</th>
-                      <th>관리 항목</th>
-                      <th>변경 내용</th>
-                      <th>시간</th>
-                    </tr>
-                  </thead>
-                  <tbody id="admin-status-log-tbody">
-                    <!-- 동적 렌더링 -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
+        <!-- 5. ⚡ 입금/세금계산서 상태 변경 이력 탭 -->
+        <div id="tab-content-status-logs" class="tab-content">
+          <div class="data-table-wrapper" style="margin-top:0;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>대상 파트너</th>
+                  <th>관리 항목</th>
+                  <th>변경 내용</th>
+                  <th>시간</th>
+                </tr>
+              </thead>
+              <tbody id="admin-status-log-tbody">
+                <!-- 동적 렌더링 -->
+              </tbody>
+            </table>
           </div>
         </div>
 
