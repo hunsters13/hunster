@@ -56,12 +56,6 @@
     .metric-value { font-size: 2rem; font-weight: 800; color: #0f172a; }
     .metric-footer { font-size: 0.82rem; color: var(--success); font-weight: 600; margin-top: 8px; }
     
-    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); }
-    .card-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 16px; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.92rem; }
-    .badge-online { background: var(--success-bg); color: var(--success); padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
-    
     .pricing-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg); }
     .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
     .price-card { background: var(--bg-body); border: 1px solid var(--border); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -109,7 +103,6 @@
       .nav-links, .header-right .auth-actions { display: none; }
       .mobile-menu-btn { display: block; }
       .hero h1 { font-size: 1.9rem; }
-      .status-section-grid, .pricing-grid { grid-template-columns: 1fr; }
     }
   </style>
   <script>
@@ -162,7 +155,6 @@
       } catch(e) {}
     }
 
-    // ⭐ 새로고침 시 로그인 유지 로직 보완
     window.onload = async function() {
       const calcInput = document.getElementById('slot-calc-input');
       if(calcInput) calculatePrice(calcInput);
@@ -212,7 +204,7 @@
         trackVisitor(name + ' (회원가입)', id);
         switchView('view-login');
       } else {
-        alert(result.message);
+        alert(result.message); // 탈퇴된 번호일 경우 경고 문구 출력
       }
     }
 
@@ -221,7 +213,6 @@
       const inputId = document.getElementById('login-id').value.trim();
       const inputPw = document.getElementById('login-pw').value.trim();
       
-      // 관리자 로그인 처리
       if (inputId === 'hun1' && inputPw === '1234') {
         localStorage.setItem('hunster_role', 'admin');
         localStorage.removeItem('hunster_user');
@@ -231,7 +222,6 @@
         return;
       }
       
-      // 파트너 회원 로그인 처리
       try {
         const res = await fetch('/api/login', {
           method: 'POST',
@@ -249,7 +239,7 @@
           renderUserDashboard(currentUser);
           switchView('view-user-dashboard');
         } else {
-          alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+          alert(data.message || '아이디 또는 비밀번호가 일치하지 않습니다.');
         }
       } catch (err) {
         alert('서버 통신 중 오류가 발생했습니다.');
@@ -338,9 +328,7 @@
             </tr>`;
           });
         }
-      } catch(err) {
-        console.error("관리자 데이터 로드 실패", err);
-      }
+      } catch(err) {}
     }
 
     async function toggleStatus(userId, type) {
@@ -353,13 +341,13 @@
     }
 
     async function deleteUser(userId, name) {
-      if(!confirm(`정말 "${name}" 파트너 계정을 삭제하시겠습니까?`)) return;
+      if(!confirm(`정말 "${name}" 파트너 계정을 삭제(탈퇴 처리)하시겠습니까?\n※ 해당 파트너의 전화번호는 재가입이 차단됩니다.`)) return;
       await fetch('/api/admin/delete-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId })
       });
-      alert('파트너 계정이 삭제되었습니다.');
+      alert(`"${name}" 파트너가 탈퇴 처리되었으며, 해당 연락처로의 재가입이 차단되었습니다.`);
       loadAdminData();
     }
 
@@ -456,6 +444,45 @@
       if(btn) btn.classList.add('active');
       if(content) content.classList.add('active');
     }
+
+    // 🧮 견적서 계산 및 생성 함수 복구
+    function calculateQuoteTotal() {
+      let count = parseInt(document.getElementById('q-slots-count').value) || 5;
+      let unitPrice = parseFloat(document.getElementById('q-unit-price').value) || 55000;
+      if(count < 1) count = 1;
+
+      let supply = count * unitPrice;
+      let vat = Math.round(supply * 0.1);
+      let total = supply + vat;
+
+      document.getElementById('q-supply-sub').innerText = supply.toLocaleString() + '원';
+      document.getElementById('q-vat-sub').innerText = vat.toLocaleString() + '원';
+      document.getElementById('q-total-sub').innerText = total.toLocaleString() + '원';
+      document.getElementById('q-total-display').innerText = total.toLocaleString() + '원';
+    }
+
+    function copyQuoteToClipboard() {
+      const clientName = document.getElementById('q-client-name').value || '고객님';
+      const slots = document.getElementById('q-slots-count').value || 5;
+      const unitPrice = parseInt(document.getElementById('q-unit-price').value) || 55000;
+      const total = document.getElementById('q-total-display').innerText;
+
+      const quoteText = 
+`[ 훈스터(HUNSTER) 공식 견적서 ]
+- 공급자: ${ADMIN_INFO.company} / 연락처: ${ADMIN_INFO.phone}
+- 수신자: ${clientName} 대표님
+- 품목: 쿠팡 트래픽 고속 프록시 슬롯 (${slots}슬롯 / 1슬롯당 ${unitPrice.toLocaleString()}원)
+- 총 합계금액 (VAT 포함): ${total}
+- 입금 계좌: ${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber} (${ACCOUNT_INFO.holder})
+
+감사합니다. 비즈니스의 성공을 응원합니다!`;
+
+      navigator.clipboard.writeText(quoteText).then(() => {
+        alert('📋 견적서 텍스트가 클립보드에 복사되었습니다!');
+      }).catch(err => {
+        alert('복사에 실패했습니다.');
+      });
+    }
   </script>
 </head>
 <body>
@@ -514,39 +541,6 @@
           <div class="metric-footer">초고속 프록시 네트워크 컨디션 유지</div>
         </div>
       </section>
-
-      <section class="pricing-section">
-        <div style="margin-bottom: 20px;">
-          <h2>💰 투명하고 합리적인 요금제 안내</h2>
-          <p style="font-size: 0.92rem; color: var(--text-sub);">복잡한 패키지 상품은 없습니다. 효율적인 운영을 위해 <strong>최소 5슬롯 이상</strong>부터 신청 가능합니다.</p>
-        </div>
-        <div class="pricing-grid">
-          <div class="price-card">
-            <div>
-              <div class="price-title">쿠팡 트래픽 이용권 (1슬롯 단가 기준)</div>
-              <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당</div>
-              <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
-            </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 회원가입 하기</button>
-          </div>
-          <div class="price-card featured">
-            <div>
-              <div class="price-title">🧮 실시간 슬롯 수량 및 세금계산기</div>
-              <div class="price-desc">원하시는 슬롯 개수를 입력하여 부가세 포함 금액을 확인하세요.</div>
-              <div style="margin: 12px 0;">
-                <label class="form-label" style="margin-bottom: 4px; display: block;">신청할 슬롯 개수 입력</label>
-                <input type="number" id="slot-calc-input" class="form-input" value="5" min="5" oninput="calculatePrice(this)" style="background: white;">
-              </div>
-              <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px;">
-                <div style="display: flex; justify-content: space-between; color: var(--text-sub);"><span>공급가액:</span><span id="supply-price-text">275,000원</span></div>
-                <div style="display: flex; justify-content: space-between; color: var(--text-sub);"><span>부가세 (VAT):</span><span id="vat-text">27,500원</span></div>
-                <div style="border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between; font-weight: 700;"><span>총 결제금액:</span><span id="total-price-text" style="color: var(--primary);">302,500원</span></div>
-              </div>
-            </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 16px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
-          </div>
-        </div>
-      </section>
     </div>
   </div>
 
@@ -557,20 +551,11 @@
       <p>등록하신 아이디와 비밀번호를 입력해주세요.</p>
       <form onsubmit="handleLogin(event)">
         <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">아이디</label>
-            <input type="text" id="login-id" class="form-input" required placeholder="아이디 입력">
-          </div>
-          <div class="form-group">
-            <label class="form-label">비밀번호</label>
-            <input type="password" id="login-pw" class="form-input" required placeholder="비밀번호 입력">
-          </div>
+          <div class="form-group"><label class="form-label">아이디</label><input type="text" id="login-id" class="form-input" required placeholder="아이디 입력"></div>
+          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="login-pw" class="form-input" required placeholder="비밀번호 입력"></div>
           <button type="submit" class="btn btn-primary" style="padding: 12px; margin-top: 8px;">로그인하기</button>
         </div>
       </form>
-      <div style="margin-top: 16px; text-align: center; font-size: 0.88rem;">
-        계정이 없으신가요? <a onclick="switchView('view-register')" style="color: var(--primary); font-weight: 700; cursor: pointer;">회원가입하기</a>
-      </div>
     </div>
   </div>
 
@@ -650,7 +635,7 @@
     </div>
   </div>
 
-  <!-- 관리자 대시보드 뷰 -->
+  <!-- 관리자 대시보드 뷰 (견적서 탭 포함) -->
   <div id="view-admin" class="page-view">
     <div class="dashboard-container">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
@@ -660,6 +645,7 @@
       
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
+        <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">📝 견적서 발행</button>
         <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">입금/세금 변경 이력</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 관리</button>
         <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">방문자 접속 로그</button>
@@ -685,7 +671,37 @@
         </div>
       </div>
 
-      <!-- 탭 2: 파트너 확인용 상태 변경 로그 -->
+      <!-- 탭 2: 견적서 발행 (복구됨) -->
+      <div id="tab-content-quote" class="tab-content card-box">
+        <h3>📝 훈스터 공식 견적서 발행</h3>
+        <p style="font-size:0.9rem; color:var(--text-sub); margin-bottom:20px;">고객 맞춤형 견적서를 간편하게 생성하고 클립보드에 복사할 수 있습니다.</p>
+        <div class="form-grid" style="max-width: 600px; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">수신자 (고객/대표자명)</label>
+            <input type="text" id="q-client-name" class="form-input" placeholder="예: 홍길동" value="김고객" oninput="calculateQuoteTotal()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">슬롯 수량</label>
+            <input type="number" id="q-slots-count" class="form-input" value="5" min="1" oninput="calculateQuoteTotal()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">1슬롯 단가 (원)</label>
+            <input type="number" id="q-unit-price" class="form-input" value="55000" oninput="calculateQuoteTotal()">
+          </div>
+          
+          <div style="background: var(--bg-body); padding: 16px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between;"><span>공급가액:</span><span id="q-supply-sub" style="font-weight:600;">275,000원</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>부가세 (VAT 10%):</span><span id="q-vat-sub" style="font-weight:600;">27,500원</span></div>
+            <div style="border-top: 1px solid var(--border); padding-top: 8px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; color: var(--primary);">
+              <span>총 합계금액 (VAT 포함):</span><span id="q-total-display">302,500원</span>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" style="padding: 12px; margin-top: 8px;" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
+        </div>
+      </div>
+
+      <!-- 탭 3: 상태 변경 이력 -->
       <div id="tab-content-statuslogs" class="tab-content card-box">
         <h3>파트너 입금 및 세금계산서 변경 이력</h3>
         <div class="data-table-wrapper">
@@ -703,7 +719,7 @@
         </div>
       </div>
 
-      <!-- 탭 3: 문의 관리 -->
+      <!-- 탭 4: 문의 관리 -->
       <div id="tab-content-inquiries" class="tab-content card-box">
         <h3>1:1 문의 응대</h3>
         <div class="data-table-wrapper">
@@ -721,7 +737,7 @@
         </div>
       </div>
 
-      <!-- 탭 4: 방문자 로그 -->
+      <!-- 탭 5: 방문자 로그 -->
       <div id="tab-content-logs" class="tab-content card-box">
         <h3>실시간 방문자 접속 로그</h3>
         <div class="data-table-wrapper">
