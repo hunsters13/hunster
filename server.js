@@ -5,7 +5,11 @@ const { SolapiMessageService } = require('solapi');
 // 미들웨어 설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+
+// 루트 경로 접속 시 index.html 파일 바로 렌더링
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
 
 // 인메모리 데이터 저장소
 let users = [];
