@@ -100,8 +100,8 @@
     .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; flex-wrap: wrap; }
     .tab-btn { padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; background: white; border: 1px solid var(--border); cursor: pointer; color: var(--text-sub); }
     .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .tab-content { display: none !important; }
+    .tab-content.active { display: block !important; }
 
     footer { text-align: center; padding: 30px 20px; color: var(--text-sub); font-size: 0.85rem; border-top: 1px solid var(--border); background: white; margin-top: 30px; }
     
@@ -451,7 +451,6 @@
       if(content) content.classList.add('active');
     }
 
-    // 견적서 텍스트 생성 및 화면에 실시간 반영 함수
     function calculateQuoteTotal() {
       const senderCompany = document.getElementById('q-sender-company').value || '훈스터';
       const senderName = document.getElementById('q-sender-name').value || '김*훈';
@@ -499,20 +498,18 @@
 💡 본 견적서는 발행일로부터 7일간 유효합니다.
 감사합니다. 비즈니스의 성공을 진심으로 응원합니다!`;
 
-      // 텍스트 박스에 실시간 반영
       const textareaBox = document.getElementById('quote-textarea-box');
       if(textareaBox) {
         textareaBox.value = quoteText;
       }
     }
 
-    // 100% 확실하게 복사해주는 함수 (텍스트 박스 내용 선택 후 복사)
     function copyQuoteToClipboard() {
       const textareaBox = document.getElementById('quote-textarea-box');
       if (!textareaBox) return;
 
       textareaBox.select();
-      textareaBox.setSelectionRange(0, 99999); // 모바일 대응
+      textareaBox.setSelectionRange(0, 99999);
 
       try {
         const successful = document.execCommand('copy');
@@ -781,31 +778,4 @@
       </div>
       
       <div class="tab-menu">
-        <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
-        <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">📝 견적서 발행 (복사 최적화)</button>
-        <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">입금/세금 변경 이력</button>
-        <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 관리</button>
-        <button id="tab-btn-logs" class="tab-btn" onclick="switchAdminTab('logs')">방문자 접속 로그</button>
-      </div>
-
-      <!-- 탭 1: 파트너 관리 -->
-      <div id="tab-content-users" class="tab-content active card-box">
-        <h3>전체 파트너 목록 및 상태 관리</h3>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>파트너 정보</th>
-                <th>연락처 / 주소</th>
-                <th>서비스 및 슬롯</th>
-                <th>입금 상태</th>
-                <th>세금계산서</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody id="admin-user-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 탭 2:
+        <button id="tab-btn-users" class
