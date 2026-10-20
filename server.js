@@ -1,21 +1,22 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto'); // 내장 암호화 모듈
+const crypto = require('crypto');
 
-// 1. 데이터 저장소 및 보안/페이징 상태 관리
 let users = [
   { 
     idNum: '1', 
     name: '김철수', 
     id: 'kim123', 
-    pw: crypto.createHash('sha256').update('1234').digest('hex'), // 비밀번호 암호화 저장
+    pw: crypto.createHash('sha256').update('1234').digest('hex'), 
     phone: '010-9876-5432', 
     address: '서울시 강남구', 
     service: '쿠팡 트래픽 (공산품)', 
     slots: 5, 
-    depositStatus: '입금완료', 
-    taxStatus: '발행완료',
+    depositStatus: '입금대기', 
+    depositTime: '',
+    taxStatus: '발행대기',
+    taxTime: '',
     createdAt: new Date().toISOString()
   }
 ];
@@ -25,7 +26,8 @@ let inquiries = [
 ];
 
 let ipLogs = [];
-let sessions = {}; // 로그인 세션 토큰 관리 (JWT 대체)
+let statusLogs = []; // 파트너들이 입금/세금계산서 변경 내역을 명확히 확인할 수 있는 로그 저장소
+let sessions = {};
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -35,13 +37,12 @@ const server = http.createServer((req, res) => {
   req.on('end', () => {
     const data = body ? JSON.parse(body) : {};
 
-    // 공통 응답 헬퍼 함수
     const sendJson = (statusCode, payload) => {
       res.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
       res.end(JSON.stringify(payload));
     };
 
-    // --- [1, 2] 회원가입 (비밀번호 SHA-256 암호화 적용) ---
+    // 회원가입
     if (req.method === 'POST' && url.pathname === '/api/register') {
       if (users.some(u => u.id === data.id)) {
         return sendJson(200, { success: false, message: '이미 존재하는 아이디입니다.' });
@@ -58,48 +59,47 @@ const server = http.createServer((req, res) => {
         service: '쿠팡 트래픽 (' + (data.coupangSub === 'industrial' ? '공산품' : '농산물') + ')',
         slots: 5,
         depositStatus: '입금대기',
+        depositTime: '',
         taxStatus: '발행대기',
+        taxTime: '',
         createdAt: new Date().toISOString()
       });
       return sendJson(200, { success: true });
     }
 
-    // --- [3] 로그인 (세션 토큰 발급) ---
+    // 로그인
     if (req.method === 'POST' && url.pathname === '/api/login') {
       const hashedPw = crypto.createHash('sha256').update(data.pw).digest('hex');
       const found = users.find(u => u.id === data.id && u.pw === hashedPw);
       
       if (found) {
-        const token = crypto.randomBytes(16).toString('hex'); // 간이 세션 토큰 생성
+        const token = crypto.randomBytes(16).toString('hex');
         sessions[token] = found.id;
-        
         const userSafe = { ...found };
-        delete userSafe.pw; // 비밀번호 제외하고 전달
+        delete userSafe.pw;
         return sendJson(200, { success: true, token, user: userSafe });
       } else {
         return sendJson(200, { success: false, message: '아이디 또는 비밀번호가 틀렸습니다.' });
       }
     }
 
-    // --- [4] 접속 로그 수집 (최대 50개 유지) ---
+    // 접속 로그 수집
     if (req.method === 'POST' && url.pathname === '/api/log') {
       ipLogs.unshift(data);
       if (ipLogs.length > 50) ipLogs.pop();
       return sendJson(200, { success: true });
     }
 
-    // --- [5] 관리자 데이터 조회 (검색 및 페이징 기능 포함) ---
+    // 관리자 데이터 조회 (상태 변경 로그 목록도 함께 전달하여 파트너들이 확인 가능하게 함)
     if (req.method === 'GET' && url.pathname === '/api/admin/data') {
       const search = url.searchParams.get('search') || '';
       const page = parseInt(url.searchParams.get('page') || '1');
       const limit = parseInt(url.searchParams.get('limit') || '10');
 
-      // 검색어 필터링 (아이디 또는 이름 기준)
       const filteredUsers = users.filter(u => 
         u.id.includes(search) || u.name.includes(search)
       );
 
-      // 페이징 처리
       const startIndex = (page - 1) * limit;
       const paginatedUsers = filteredUsers.slice(startIndex, startIndex + limit);
 
@@ -107,25 +107,51 @@ const server = http.createServer((req, res) => {
         users: paginatedUsers,
         totalUsers: filteredUsers.length,
         inquiries,
-        ipLogs
+        ipLogs,
+        statusLogs // 파트너 확인용 상태 변경 이력 전달
       });
     }
 
-    // 관리자: 입금 / 세금계산서 상태 변경 토글
+    // ⭐ [핵심 수정] 입금 / 세금계산서 상태 토글 (버그 해결 및 상세 로그 기록)
     if (req.method === 'POST' && url.pathname === '/api/admin/status') {
-      const targetUser = users.find(u => u.idNum === data.userId || u.id === data.userId);
+      // index, userId, 또는 id 중 어떤 값으로 넘어와도 정확히 매칭되도록 보완
+      const targetUser = users.find(u => 
+        u.idNum === String(data.userId) || 
+        u.id === data.userId || 
+        users.indexOf(u) === Number(data.index)
+      );
+
       if (targetUser) {
+        const nowTime = new Date().toLocaleString();
+        let actionDescription = '';
+
         if (data.type === 'deposit') {
           targetUser.depositStatus = targetUser.depositStatus === '입금완료' ? '입금대기' : '입금완료';
+          targetUser.depositTime = targetUser.depositStatus === '입금완료' ? nowTime : '';
+          actionDescription = `입금 상태가 [${targetUser.depositStatus}] (으)로 변경됨`;
         } else {
           targetUser.taxStatus = targetUser.taxStatus === '발행완료' ? '발행대기' : '발행완료';
+          targetUser.taxTime = targetUser.taxStatus === '발행완료' ? nowTime : '';
+          actionDescription = `세금계산서 상태가 [${targetUser.taxStatus}] (으)로 변경됨`;
         }
+
+        // 파트너들이 명확히 볼 수 있도록 상태 변경 로그에 추가
+        statusLogs.unshift({
+          id: Date.now(),
+          name: targetUser.name,
+          userId: targetUser.id,
+          type: data.type === 'deposit' ? '입금 관리' : '세금계산서 관리',
+          status: actionDescription,
+          time: nowTime
+        });
+        if (statusLogs.length > 50) statusLogs.pop();
+
         return sendJson(200, { success: true });
       }
       return sendJson(200, { success: false, message: '대상을 찾을 수 없습니다.' });
     }
 
-    // 관리자: 회원 삭제
+    // 회원 삭제
     if (req.method === 'POST' && url.pathname === '/api/admin/delete-user') {
       users = users.filter(u => u.idNum !== data.userId && u.id !== data.userId);
       return sendJson(200, { success: true });
@@ -153,7 +179,7 @@ const server = http.createServer((req, res) => {
       return sendJson(200, userInquiries);
     }
 
-    // 관리자: 문의 답변
+    // 관리자 문의 답변
     if (req.method === 'POST' && url.pathname === '/api/admin/reply') {
       const target = inquiries.find(i => i.id == data.id);
       if (target) {
@@ -163,13 +189,13 @@ const server = http.createServer((req, res) => {
       return sendJson(200, { success: true });
     }
 
-    // 관리자: 문의 삭제
+    // 관리자 문의 삭제
     if (req.method === 'POST' && url.pathname === '/api/admin/delete-inquiry') {
       inquiries = inquiries.filter(i => i.id != data.id);
       return sendJson(200, { success: true });
     }
 
-    // 정적 파일(index.html) 서빙
+    // 정적 파일 서빙
     fs.readFile(path.join(__dirname, 'index.html'), (err, content) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
