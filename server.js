@@ -15,14 +15,19 @@ const DB_FILE = './database.json';
 let db = {
   users: [],
   inquiries: [],
-  ipLogs: []
+  ipLogs: [],
+  statusLogs: []
 };
 
-// 서버 켜질 때 데이터 로드 (없으면 기본 빈 배열)
+// 🛡️ [데이터 보존 안전장치] 서버 재시작 시 기존 데이터 유실 방지
 if (fs.existsSync(DB_FILE)) {
   try {
     const data = fs.readFileSync(DB_FILE, 'utf8');
-    db = JSON.parse(data);
+    const parsed = JSON.parse(data);
+    db.users = parsed.users || [];
+    db.inquiries = parsed.inquiries || [];
+    db.ipLogs = parsed.ipLogs || [];
+    db.statusLogs = parsed.statusLogs || [];
   } catch (err) {
     console.error('DB 로드 에러:', err);
   }
@@ -38,7 +43,7 @@ function saveDatabase() {
   }
 }
 
-// 방문 로그
+// 방문 및 접속 IP 로그 기록
 app.post('/api/log', (req, res) => {
   const { ip, name, id, time, device } = req.body;
   db.ipLogs.unshift({ ip, name, id, time, device });
@@ -69,7 +74,7 @@ app.post('/api/register', (req, res) => {
   };
 
   db.users.push(newUser);
-  saveDatabase(); // 즉시 파일 저장
+  saveDatabase(); // 즉시 파일에 영구 기록
 
   res.json({ success: true, message: '회원가입이 완료되었습니다.' });
 });
@@ -90,20 +95,37 @@ app.get('/api/admin/data', (req, res) => {
   res.json({ 
     users: db.users, 
     inquiries: db.inquiries, 
-    ipLogs: db.ipLogs 
+    ipLogs: db.ipLogs,
+    statusLogs: db.statusLogs 
   });
 });
 
-// 상태 토글 (입금 / 세금계산서)
+// 입금 / 세금계산서 상태 토글 및 이력 기록
 app.post('/api/admin/status', (req, res) => {
   const { userId, type } = req.body;
   const user = db.users.find(u => u.id === userId);
   if (user) {
+    let statusText = '';
+    let typeName = '';
     if (type === 'deposit') {
       user.depositStatus = user.depositStatus === '입금대기' ? '입금완료' : '입금대기';
+      typeName = '입금 상태';
+      statusText = user.depositStatus;
     } else if (type === 'tax') {
       user.taxStatus = user.taxStatus === '발행대기' ? '발행완료' : '발행대기';
+      typeName = '세금계산서';
+      statusText = user.taxStatus;
     }
+    
+    db.statusLogs.unshift({
+      name: user.name,
+      userId: user.id,
+      type: typeName,
+      status: statusText,
+      time: new Date().toLocaleString()
+    });
+    if (db.statusLogs.length > 50) db.statusLogs.pop();
+
     saveDatabase();
     res.json({ success: true, user });
   } else {
@@ -164,7 +186,7 @@ app.post('/api/admin/delete-inquiry', (req, res) => {
   res.json({ success: true });
 });
 
-// 서버 실행 및 렌더 절전 방지 (Self-Ping)
+// 서버 실행 및 ⚡ [Self-Ping] 14분마다 서버 깨우기
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`HUNSTER Server running on port ${PORT}`);
