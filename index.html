@@ -633,7 +633,7 @@
         </div>
       </section>
 
-      <!-- 슬롯 유치 근거 및 가이드 분석 섹션 -->
+      <!-- 키워드 검색량별 권장 슬롯 산정 및 로직 분석 테이블 -->
       <section class="guide-section">
         <h2>📈 쿠팡 키워드 검색량별 권장 슬롯 산정 및 로직 분석</h2>
         <p>쿠팡 알고리즘은 검색어별 유효 트래픽 볼륨에 비례하여 순위를 부여합니다. 키워드 규모에 맞는 최적의 슬롯 분배가 상위노출의 성패를 가릅니다.</p>
@@ -648,22 +648,22 @@
           </thead>
           <tbody>
             <tr>
-              <td><strong>1만 이하</strong> (소형 키워드)</td>
+              <td><strong>1만 3천 이하</strong> (소형 키워드)</td>
               <td><span style="color: var(--success); font-weight: 700;">낮음 / 보통</span></td>
-              <td><strong>5 ~ 10 슬롯</strong></td>
-              <td>진입 후 3~5일 내 1~3위 장악</td>
+              <td><strong>5 슬롯 이상</strong></td>
+              <td>진입 후 3~5일 내 최적 노출 효과</td>
             </tr>
             <tr>
-              <td><strong>1만 ~ 5만</strong> (중형 키워드)</td>
+              <td><strong>1만 3천 이상 ~ 15만 이하</strong> (중형 키워드)</td>
               <td><span style="color: var(--warning-text); font-weight: 700;">보통 / 높음</span></td>
-              <td><strong>15 ~ 30 슬롯</strong></td>
+              <td><strong>10 슬롯 이상</strong></td>
               <td>안정적인 1페이지 상단 고정 노출</td>
             </tr>
             <tr>
-              <td><strong>5만 이상</strong> (대형 메인 키워드)</td>
+              <td><strong>15만 이상</strong> (대형 메인 키워드)</td>
               <td><span style="color: var(--danger); font-weight: 700;">매우 높음</span></td>
-              <td><strong>40 슬롯 이상</strong></td>
-              <td>실시간 트래픽 급상승을 통한 최상단 독점</td>
+              <td><strong>15 슬롯 이상 또는 상세 컨설팅 필수</strong></td>
+              <td>전문가 1:1 컨설팅 연계를 통한 전략적 진입</td>
             </tr>
           </tbody>
         </table>
@@ -897,11 +897,12 @@
           </div>
         </div>
 
-        <!-- 4. 접속 및 변경 로그 탭 -->
+        <!-- 4. 접속 및 변경 로그 탭 (입금/세금계산서 변경 이력을 하단에 독립된 섹션으로 분리) -->
         <div id="tab-content-logs" class="tab-content">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div>
-              <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 10px;">🌐 최근 방문자 접속 로그 (최대 50개)</h4>
+          <div style="display: flex; flex-direction: column; gap: 30px;">
+            <!-- 방문자 접속 로그 섹션 -->
+            <div style="background: var(--bg-body); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+              <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 14px;">🌐 최근 방문자 접속 로그 (최대 50개)</h4>
               <div class="data-table-wrapper" style="margin-top:0;">
                 <table class="data-table">
                   <thead>
@@ -918,8 +919,10 @@
                 </table>
               </div>
             </div>
-            <div>
-              <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 10px;">⚡ 입금/세금계산서 상태 변경 이력</h4>
+
+            <!-- 입금/세금계산서 상태 변경 이력 독립 섹션 -->
+            <div style="background: var(--bg-body); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+              <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 14px;">⚡ 입금/세금계산서 상태 변경 이력</h4>
               <div class="data-table-wrapper" style="margin-top:0;">
                 <table class="data-table">
                   <thead>
