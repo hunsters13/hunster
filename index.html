@@ -120,7 +120,8 @@
 
     function switchView(viewId) {
       document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
-      document.getElementById(viewId).classList.add('active');
+      const target = document.getElementById(viewId);
+      if(target) target.classList.add('active');
       document.getElementById('mobile-nav').classList.remove('active');
       window.scrollTo(0, 0);
     }
@@ -131,18 +132,22 @@
 
     function handleServiceChange(select) {
       const subBox = document.getElementById('coupang-sub-option');
-      subBox.style.display = (select.value === 'coupang') ? 'block' : 'none';
+      if(subBox) subBox.style.display = (select.value === 'coupang') ? 'block' : 'none';
     }
 
     function calculatePrice(input) {
+      if(!input) return;
       let count = parseInt(input.value) || 5;
       if (count < 5) count = 5;
       const supplyPrice = count * 55000;
       const vat = Math.round(supplyPrice * 0.1);
       const totalPrice = supplyPrice + vat;
-      document.getElementById('supply-price-text').innerText = supplyPrice.toLocaleString() + '원';
-      document.getElementById('vat-text').innerText = vat.toLocaleString() + '원';
-      document.getElementById('total-price-text').innerText = totalPrice.toLocaleString() + '원';
+      const spText = document.getElementById('supply-price-text');
+      const vatText = document.getElementById('vat-text');
+      const totText = document.getElementById('total-price-text');
+      if(spText) spText.innerText = supplyPrice.toLocaleString() + '원';
+      if(vatText) vatText.innerText = vat.toLocaleString() + '원';
+      if(totText) totText.innerText = totalPrice.toLocaleString() + '원';
     }
 
     async function trackVisitor(userName = "비회원 (일반 방문)", userId = "-") {
@@ -163,9 +168,24 @@
       });
     }
 
+    // ⭐ 새로고침 시 로그인 유지 기능 (localStorage 연동)
     window.onload = async function() {
-      calculatePrice(document.getElementById('slot-calc-input'));
-      trackVisitor();
+      const calcInput = document.getElementById('slot-calc-input');
+      if(calcInput) calculatePrice(calcInput);
+      
+      const savedUser = localStorage.getItem('hunster_user');
+      const savedRole = localStorage.getItem('hunster_role');
+
+      if (savedRole === 'admin') {
+        await loadAdminData();
+        switchView('view-admin');
+      } else if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        renderUserDashboard(currentUser);
+        switchView('view-user-dashboard');
+      } else {
+        trackVisitor();
+      }
     };
 
     async function handleRegister(event) {
@@ -203,6 +223,8 @@
       
       // 관리자 로그인 처리
       if (inputId === 'hun1' && inputPw === '1234') {
+        localStorage.setItem('hunster_role', 'admin');
+        localStorage.removeItem('hunster_user');
         await loadAdminData();
         trackVisitor('최고관리자', 'hun1');
         switchView('view-admin');
@@ -220,6 +242,9 @@
         
         if (data.success) {
           currentUser = data.user;
+          localStorage.setItem('hunster_user', JSON.stringify(currentUser));
+          localStorage.removeItem('hunster_role');
+          
           trackVisitor(currentUser.name + ' (로그인)', currentUser.id);
           renderUserDashboard(currentUser);
           switchView('view-user-dashboard');
@@ -231,69 +256,97 @@
       }
     }
 
+    function handleLogout() {
+      localStorage.removeItem('hunster_user');
+      localStorage.removeItem('hunster_role');
+      currentUser = null;
+      alert('로그아웃 되었습니다.');
+      switchView('view-main');
+    }
+
     async function loadAdminData() {
       const res = await fetch('/api/admin/data');
       const data = await res.json();
       
       let tbody = document.getElementById('admin-user-tbody');
-      tbody.innerHTML = '';
-      data.users.forEach((u, index) => {
-        let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
-        let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
-        tbody.innerHTML += `<tr>
-          <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.78rem;">(${u.id})</span></td>
-          <td>${u.phone}<br><span style="color:var(--text-sub); font-size:0.78rem;">${u.address}</span></td>
-          <td><span style="color:var(--primary); font-weight:700;">${u.service}</span><br><strong>${u.slots} 슬롯</strong></td>
-          <td><button class="badge-status ${depositClass}" onclick="toggleStatus(${index}, 'deposit')">${u.depositStatus}</button></td>
-          <td><button class="badge-status ${taxClass}" onclick="toggleStatus(${index}, 'tax')">${u.taxStatus}</button></td>
-          <td><button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteUser(${index}, '${u.name}')">회원 삭제</button></td>
-        </tr>`;
-      });
+      if(tbody) {
+        tbody.innerHTML = '';
+        data.users.forEach((u, index) => {
+          let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
+          let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
+          tbody.innerHTML += `<tr>
+            <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.78rem;">(${u.id})</span></td>
+            <td>${u.phone}<br><span style="color:var(--text-sub); font-size:0.78rem;">${u.address}</span></td>
+            <td><span style="color:var(--primary); font-weight:700;">${u.service}</span><br><strong>${u.slots} 슬롯</strong></td>
+            <td><button class="badge-status ${depositClass}" onclick="toggleStatus('${u.id}', 'deposit')">${u.depositStatus}</button></td>
+            <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus}</button></td>
+            <td><button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteUser('${u.id}', '${u.name}')">회원 삭제</button></td>
+          </tr>`;
+        });
+      }
 
       let inqTbody = document.getElementById('admin-inquiry-tbody');
-      inqTbody.innerHTML = '';
-      data.inquiries.forEach((inq) => {
-        inqTbody.innerHTML += `<tr>
-          <td>${inq.author}</td>
-          <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
-          <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
-          <td>
-            <textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.82rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="submitReply(${inq.id})">답변 등록</button>
-              <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteInquiry(${inq.id})">문의 삭제</button>
-            </div>
-          </td>
-        </tr>`;
-      });
+      if(inqTbody) {
+        inqTbody.innerHTML = '';
+        data.inquiries.forEach((inq) => {
+          inqTbody.innerHTML += `<tr>
+            <td>${inq.author}</td>
+            <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
+            <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
+            <td>
+              <textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.82rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem;" onclick="submitReply(${inq.id})">답변 등록</button>
+                <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteInquiry(${inq.id})">문의 삭제</button>
+              </div>
+            </td>
+          </tr>`;
+        });
+      }
 
       let ipTbody = document.getElementById('admin-ip-tbody');
-      ipTbody.innerHTML = '';
-      data.ipLogs.forEach(log => {
-        ipTbody.innerHTML += `<tr>
-          <td><strong style="color:var(--primary);">${log.ip}</strong></td>
-          <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.78rem; color:var(--text-sub);">(${log.id})</span></td>
-          <td>${log.device}</td>
-          <td style="color:var(--text-sub);">${log.time}</td>
-        </tr>`;
-      });
+      if(ipTbody) {
+        ipTbody.innerHTML = '';
+        data.ipLogs.forEach(log => {
+          ipTbody.innerHTML += `<tr>
+            <td><strong style="color:var(--primary);">${log.ip}</strong></td>
+            <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.78rem; color:var(--text-sub);">(${log.id})</span></td>
+            <td>${log.device}</td>
+            <td style="color:var(--text-sub);">${log.time}</td>
+          </tr>`;
+        });
+      }
+
+      // 파트너 상태 변경 확인 로그 출력
+      let statusLogTbody = document.getElementById('admin-status-log-tbody');
+      if(statusLogTbody && data.statusLogs) {
+        statusLogTbody.innerHTML = '';
+        data.statusLogs.forEach(sLog => {
+          statusLogTbody.innerHTML += `<tr>
+            <td><strong>${sLog.name}</strong> <span style="font-size:0.78rem; color:var(--text-sub);">(${sLog.userId})</span></td>
+            <td><span style="color:var(--primary); font-weight:700;">${sLog.type}</span></td>
+            <td>${sLog.status}</td>
+            <td style="color:var(--text-sub);">${sLog.time}</td>
+          </tr>`;
+        });
+      }
     }
 
-    async function toggleStatus(index, type) {
+    async function toggleStatus(userId, type) {
       await fetch('/api/admin/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ index, type })
+        body: JSON.stringify({ userId, type })
       });
       loadAdminData();
     }
 
-    async function deleteUser(index, name) {
+    async function deleteUser(userId, name) {
       if(!confirm(`정말 "${name}" 파트너 계정을 삭제하시겠습니까?`)) return;
       await fetch('/api/admin/delete-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ index })
+        body: JSON.stringify({ userId })
       });
       alert('파트너 계정이 삭제되었습니다.');
       loadAdminData();
@@ -327,10 +380,14 @@
       document.getElementById('my-address').innerText = user.address;
       document.getElementById('my-service').innerText = user.service;
       document.getElementById('my-slots').innerText = user.slots + ' 슬롯 활성 가동 중';
-      document.getElementById('my-deposit-status').innerText = user.depositStatus;
-      document.getElementById('my-deposit-status').className = 'badge-status ' + (user.depositStatus === '입금완료' ? 'status-complete' : 'status-pending');
-      document.getElementById('my-tax-status').innerText = user.taxStatus;
-      document.getElementById('my-tax-status').className = 'badge-status ' + (user.taxStatus === '발행완료' ? 'status-complete' : 'status-pending');
+      
+      const depositEl = document.getElementById('my-deposit-status');
+      depositEl.innerText = user.depositStatus;
+      depositEl.className = 'badge-status ' + (user.depositStatus === '입금완료' ? 'status-complete' : 'status-pending');
+      
+      const taxEl = document.getElementById('my-tax-status');
+      taxEl.innerText = user.taxStatus;
+      taxEl.className = 'badge-status ' + (user.taxStatus === '발행완료' ? 'status-complete' : 'status-pending');
       
       document.getElementById('account-info-box').innerHTML = `입금 계좌: <strong>${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber}</strong> (예금주: ${ACCOUNT_INFO.holder})`;
       renderUserInquiries(user);
@@ -377,58 +434,6 @@
       document.getElementById('inquiry-form').reset();
       renderUserInquiries(currentUser);
     }
-
-    function handleSlotExtension(event) {
-      event.preventDefault();
-      const addCount = parseInt(document.getElementById('extend-slots-input').value) || 5;
-      alert(addCount + '개 슬롯 연장/추가 신청이 접수되었습니다.');
-      event.target.reset();
-    }
-
-    function switchAdminTab(tabName) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.getElementById('tab-btn-' + tabName).classList.add('active');
-      document.getElementById('tab-content-' + tabName).classList.add('active');
-    }
-
-    function calculateQuoteTotal() {
-      let count = parseInt(document.getElementById('q-slots-count').value) || 5;
-      let unitPrice = parseFloat(document.getElementById('q-unit-price').value) || 55000;
-      if(count < 1) count = 1;
-
-      let supply = count * unitPrice;
-      let vat = Math.round(supply * 0.1);
-      let total = supply + vat;
-
-      document.getElementById('q-supply-sub').innerText = supply.toLocaleString() + '원';
-      document.getElementById('q-vat-sub').innerText = vat.toLocaleString() + '원';
-      document.getElementById('q-total-sub').innerText = total.toLocaleString() + '원';
-      document.getElementById('q-total-display').innerText = total.toLocaleString() + '원';
-    }
-
-    function copyQuoteToClipboard() {
-      const clientName = document.getElementById('q-client-name').value || '고객님';
-      const slots = document.getElementById('q-slots-count').value || 5;
-      const unitPrice = parseInt(document.getElementById('q-unit-price').value) || 55000;
-      const total = document.getElementById('q-total-display').innerText;
-
-      const quoteText = 
-`[ 훈스터(HUNSTER) 공식 견적서 ]
-- 공급자: ${ADMIN_INFO.company} / 연락처: ${ADMIN_INFO.phone}
-- 수신자: ${clientName} 대표님
-- 품목: 쿠팡 트래픽 고속 프록시 슬롯 (${slots}슬롯 / 1슬롯당 ${unitPrice.toLocaleString()}원)
-- 총 합계금액 (VAT 포함): ${total}
-- 입금 계좌: ${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber} (${ACCOUNT_INFO.holder})
-
-감사합니다. 비즈니스의 성공을 응원합니다!`;
-
-      navigator.clipboard.writeText(quoteText).then(() => {
-        alert('📋 견적서 텍스트가 클립보드에 복사되었습니다!');
-      }).catch(err => {
-        alert('복사에 실패했습니다.');
-      });
-    }
   </script>
 </head>
 <body>
@@ -460,6 +465,7 @@
     <a onclick="switchView('view-register')" style="font-weight:700; color:var(--primary); text-decoration:none;">회원가입</a>
   </div>
 
+  <!-- 메인 홈 뷰 -->
   <div id="view-main" class="page-view active">
     <div class="wrapper">
       <section class="hero">
@@ -487,57 +493,6 @@
         </div>
       </section>
 
-      <section class="status-section-grid">
-        <div class="card-box">
-          <h3>📊 전국 실시간 슬롯 유치 현황</h3>
-          <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 6px;">전국적으로 훈스터에 슬롯 유치하신 분들 토대로 882 슬롯 등록 및 가동 중입니다.</p>
-          <div style="margin-top: 20px; padding: 16px; background: var(--bg-body); border-radius: 10px; border: 1px solid var(--border);">
-            <span style="font-size: 0.85rem; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 4px;">전국 가동 슬롯 합계</span>
-            <span style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">882 SLOT RUNNING</span>
-          </div>
-        </div>
-        <div class="card-box">
-          <h3>🛡️ 서비스 포트폴리오 및 인프라 모니터</h3>
-          <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 6px;">쿠팡 트래픽 서비스 정상 가동 및 확장 예정 서비스 상태입니다.</p>
-          <div style="margin-top: 16px;">
-            <div class="server-status-item"><span style="font-weight: 600;">쿠팡 트래픽 솔루션</span><span class="badge-online">● 정상 가동중</span></div>
-            <div class="server-status-item"><span style="font-weight: 600;">네이버 리워드 서비스</span><span style="color: var(--warning-text); font-weight: 700; font-size: 0.78rem;">준비 중</span></div>
-            <div class="server-status-item"><span style="font-weight: 600;">네이버 플레이스 솔루션</span><span style="color: var(--warning-text); font-weight: 700; font-size: 0.78rem;">준비 중</span></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="guide-section">
-        <h2>📈 쿠팡 키워드 검색량별 권장 슬롯 산정 및 로직 분석</h2>
-        <p>쿠팡 알고리즘은 검색어별 유효 트래픽 볼륨에 비례하여 순위를 부여합니다. 키워드 규모에 맞는 최적의 슬롯 분배가 상위노출의 성패를 가릅니다.</p>
-        <table class="guide-table">
-          <thead>
-            <tr>
-              <th>키워드 월간 검색량 규모</th>
-              <th>권장 가동 슬롯 수</th>
-              <th>전략 및 운용 가이드</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>1.3만 이하</strong> (소형/세부 키워드)</td>
-              <td><span style="color: var(--primary); font-weight: 800;">약 5 슬롯</span></td>
-              <td>경쟁 강도가 낮아 최소 기본 슬롯만으로도 빠르게 상위권 진입 및 안착이 가능합니다.</td>
-            </tr>
-            <tr>
-              <td><strong>1.3만 이상 ~ 12만 이하</strong> (중형 키워드)</td>
-              <td><span style="color: var(--success); font-weight: 800;">약 10 슬롯</span></td>
-              <td>안정적인 유입 분산을 통해 알고리즘 체류 시간 지표를 극대화하는 표준 구간입니다.</td>
-            </tr>
-            <tr>
-              <td><strong>12만 이상</strong> (대형 메인 키워드)</td>
-              <td><span style="color: #7c3aed; font-weight: 800;">15 슬롯 이상 (맞춤 상담 필수)</span></td>
-              <td>경쟁이 매우 치열하므로, 제품 지수 진단 후 1:1 맞춤형 컨설팅 및 복합 전략이 반드시 필요합니다.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
       <section class="pricing-section">
         <div style="margin-bottom: 20px;">
           <h2>💰 투명하고 합리적인 요금제 안내</h2>
@@ -547,30 +502,23 @@
           <div class="price-card">
             <div>
               <div class="price-title">쿠팡 트래픽 이용권 (1슬롯 단가 기준)</div>
-              <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당 (최소 5슬롯 구매)</div>
+              <div class="price-desc">공산품 및 농산물 전용 고속 프록시 트래픽 할당</div>
               <div class="price-tag">55,000원 <span>정가 60,000원</span></div>
-              <p style="font-size: 0.82rem; color: var(--success); font-weight: 700; margin-bottom: 16px;">✨ 훈스터 첫 고객 특별 할인가 적용 중</p>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="switchView('view-register')">지금 회원가입 하기</button>
           </div>
           <div class="price-card featured">
             <div>
               <div class="price-title">🧮 실시간 슬롯 수량 및 세금계산기</div>
-              <div class="price-desc">원하시는 슬롯 개수(최소 5개)를 입력하여 부가세 포함 금액을 확인하세요.</div>
+              <div class="price-desc">원하시는 슬롯 개수를 입력하여 부가세 포함 금액을 확인하세요.</div>
               <div style="margin: 12px 0;">
-                <label class="form-label" style="margin-bottom: 4px; display: block;">신청할 슬롯 개수 입력 (최소 5슬롯)</label>
+                <label class="form-label" style="margin-bottom: 4px; display: block;">신청할 슬롯 개수 입력</label>
                 <input type="number" id="slot-calc-input" class="form-input" value="5" min="5" oninput="calculatePrice(this)" style="background: white;">
               </div>
-              <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px; margin-top: 12px;">
-                <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
-                  <span>공급가액 (세금 미포함):</span><span id="supply-price-text" style="font-weight: 600; color: var(--text-main);">275,000원</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
-                  <span>부가세 (VAT 10%):</span><span id="vat-text" style="font-weight: 600; color: var(--text-main);">27,500원</span>
-                </div>
-                <div style="border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
-                  <span>총 결제 금액 (세금 포함):</span><span id="total-price-text" style="font-size: 1.15rem; color: var(--primary);">302,500원</span>
-                </div>
+              <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; color: var(--text-sub);"><span>공급가액:</span><span id="supply-price-text">275,000원</span></div>
+                <div style="display: flex; justify-content: space-between; color: var(--text-sub);"><span>부가세 (VAT):</span><span id="vat-text">27,500원</span></div>
+                <div style="border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between; font-weight: 700;"><span>총 결제금액:</span><span id="total-price-text" style="color: var(--primary);">302,500원</span></div>
               </div>
             </div>
             <button class="btn btn-primary" style="width: 100%; margin-top: 16px;" onclick="switchView('view-register')">선택 수량으로 가입하기</button>
@@ -580,228 +528,110 @@
     </div>
   </div>
 
+  <!-- 로그인 뷰 -->
   <div id="view-login" class="page-view">
     <div class="auth-container">
       <h2>로그인</h2>
       <p>등록하신 아이디와 비밀번호를 입력해주세요.</p>
       <form onsubmit="handleLogin(event)">
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">아이디</label><input type="text" id="login-id" class="form-input" placeholder="아이디를 입력하세요" required></div>
-          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required></div>
-        </div>
-        <div style="margin-top: 24px;"><button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">로그인</button></div>
-        <div style="margin-top: 16px; text-align: center; font-size: 0.88rem; color: var(--text-sub);">아직 계정이 없으신가요? <a style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="switchView('view-register')">회원가입하기</a></div>
-      </form>
-    </div>
-  </div>
-
-  <div id="view-register" class="page-view">
-    <div class="auth-container" style="max-width: 600px;">
-      <h2>파트너 회원가입</h2>
-      <p>직접 계정을 생성하고 트래픽 슬롯 서비스를 시작하세요. (최소 5슬롯 이상)</p>
-      <form onsubmit="handleRegister(event)">
-        <div class="form-grid" style="gap: 14px;">
-          <div class="form-group"><label class="form-label">대표자 성명</label><input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required></div>
-          <div class="form-group"><label class="form-label">사용할 아이디</label><input type="text" id="reg-id" class="form-input" placeholder="아이디 입력" required></div>
-          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="reg-pw" class="form-input" placeholder="비밀번호 입력" required></div>
-          <div class="form-group"><label class="form-label">연락처 (전화번호)</label><input type="tel" id="reg-phone" class="form-input" placeholder="010-0000-0000" required></div>
-          <div class="form-group"><label class="form-label">사업장 주소</label><input type="text" id="reg-address" class="form-input" placeholder="주소 입력" required></div>
           <div class="form-group">
-            <label class="form-label">이용 서비스</label>
-            <select id="service-type" class="form-select" onchange="handleServiceChange(this)" required>
-              <option value="">-- 서비스 선택 --</option>
-              <option value="coupang">쿠팡 트래픽</option>
-            </select>
-            <div id="coupang-sub-option" class="sub-option-box">
-              <label class="form-label" style="color: #1e40af; margin-bottom: 6px; display: block;">🔍 [쿠팡 상세] 상품군 선택</label>
-              <select id="coupang-sub-select" class="form-select" style="background: white;"><option value="industrial">공산품</option><option value="agricultural">농산물</option></select>
-            </div>
+            <label class="form-label">아이디</label>
+            <input type="text" id="login-id" class="form-input" required placeholder="아이디 입력">
           </div>
-          <div class="form-group"><label class="form-label">신청 슬롯 수량 (최소 5개)</label><input type="number" id="reg-slots" class="form-input" value="5" min="5" required></div>
+          <div class="form-group">
+            <label class="form-label">비밀번호</label>
+            <input type="password" id="login-pw" class="form-input" required placeholder="비밀번호 입력">
+          </div>
+          <button type="submit" class="btn btn-primary" style="padding: 12px; margin-top: 8px;">로그인하기</button>
         </div>
-        <div style="margin-top: 28px; display: flex; gap: 10px;">
-          <button type="button" class="btn" style="flex: 1; padding: 12px;" onclick="switchView('view-main')">취소</button>
-          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; font-size: 0.95rem;">회원가입 완료</button>
+      </form>
+      <div style="margin-top: 16px; text-align: center; font-size: 0.88rem;">
+        계정이 없으신가요? <a onclick="switchView('view-register')" style="color: var(--primary); font-weight: 700; cursor: pointer;">회원가입하기</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 회원가입 뷰 -->
+  <div id="view-register" class="page-view">
+    <div class="auth-container">
+      <h2>회원가입</h2>
+      <p>훈스터 파트너 전용 계정을 생성하세요.</p>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">성함 (대표자)</label><input type="text" id="reg-name" class="form-input" required placeholder="이름 입력"></div>
+          <div class="form-group"><label class="form-label">아이디</label><input type="text" id="reg-id" class="form-input" required placeholder="사용할 아이디"></div>
+          <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="reg-pw" class="form-input" required placeholder="비밀번호"></div>
+          <div class="form-group"><label class="form-label">연락처</label><input type="text" id="reg-phone" class="form-input" required placeholder="010-0000-0000"></div>
+          <div class="form-group"><label class="form-label">사업장 주소</label><input type="text" id="reg-address" class="form-input" required placeholder="주소 입력"></div>
+          <div class="form-group">
+            <label class="form-label">서비스 선택</label>
+            <select id="reg-slots" class="form-select" onchange="handleServiceChange(this)">
+              <option value="coupang">쿠팡 트래픽 솔루션</option>
+            </select>
+          </div>
+          <div id="coupang-sub-option" class="sub-option-box" style="display: block;">
+            <label class="form-label">쿠팡 카테고리 세부 선택</label>
+            <select id="coupang-sub-select" class="form-select">
+              <option value="industrial">공산품 트래픽</option>
+              <option value="agricultural">농산물 트래픽</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="padding: 12px; margin-top: 8px;">가입 완료하기</button>
         </div>
       </form>
     </div>
   </div>
 
-  <div id="view-admin" class="page-view">
-    <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>🛡️ 관리자 통합 관제 센터</h2>
-        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
-      </div>
-
-      <div class="tab-menu">
-        <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 및 입금/세금계산서 관리</button>
-        <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">공식 견적서 발행 및 복사</button>
-        <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 고객센터 문의 관리</button>
-        <button id="tab-btn-ips" class="tab-btn" onclick="switchAdminTab('ips')">실시간 방문자 IP & 회원 매칭 로그</button>
-      </div>
-
-      <div id="tab-content-users" class="tab-content active">
-        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 파트너 계정을 관리하거나 필요시 **[회원 삭제]**를 진행할 수 있습니다.</p>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>성명 / ID</th>
-                <th>연락처 / 주소</th>
-                <th>서비스 및 슬롯</th>
-                <th>입금 확인 상태</th>
-                <th>세금계산서 상태</th>
-                <th>관리 조치</th>
-              </tr>
-            </thead>
-            <tbody id="admin-user-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="tab-content-quote" class="tab-content">
-        <div class="card-box" style="background: white;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h3>📑 고객용 공식 견적서 생성기</h3>
-            <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 원클릭 복사</button>
-          </div>
-
-          <div style="border: 2px solid var(--border); border-radius: 12px; padding: 30px; background: #fafafa; max-width: 800px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 24px; border-bottom: 2px solid var(--text-main); padding-bottom: 12px;">
-              <h2 style="font-size: 1.8rem; font-weight: 900;">견 적 서</h2>
-              <p style="font-size: 0.8rem; color: var(--text-sub);">ESTIMATE SHEET</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; font-size: 0.9rem;">
-              <div style="border: 1px solid var(--border); padding: 14px; border-radius: 8px; background: white;">
-                <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">[ 공급자 ]</h4>
-                <div><strong>회사명:</strong> 훈스터 (HUNSTER)</div>
-                <div><strong>담당자:</strong> 관리자 (김*훈)</div>
-                <div><strong>연락처:</strong> 010-3672-7807</div>
-              </div>
-              <div style="border: 1px solid var(--border); padding: 14px; border-radius: 8px; background: white;">
-                <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--success); margin-bottom: 8px;">[ 공급받는 자 (고객) ]</h4>
-                <div style="margin-bottom: 6px;"><strong>고객명:</strong> <input type="text" id="q-client-name" value="홍길동 대표" class="form-input" style="padding: 4px 8px; font-size: 0.88rem; width: 70%; display:inline-block;"></div>
-                <div><strong>전화번호:</strong> <input type="text" id="q-client-phone" value="010-1234-5678" class="form-input" style="padding: 4px 8px; font-size: 0.88rem; width: 70%; display:inline-block;"></div>
-              </div>
-            </div>
-
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.88rem; background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
-              <thead>
-                <tr style="background: var(--border-subtle); border-bottom: 1px solid var(--border);">
-                  <th style="padding: 10px; text-align: left;">품명 및 규격</th>
-                  <th style="padding: 10px; text-align: center; width: 80px;">수량</th>
-                  <th style="padding: 10px; text-align: right; width: 130px;">단가 (원)</th>
-                  <th style="padding: 10px; text-align: right; width: 110px;">금액</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding: 12px 10px;">쿠팡 트래픽 고속 프록시 슬롯 이용권</td>
-                  <td style="padding: 12px 10px; text-align: center;"><input type="number" id="q-slots-count" value="5" min="1" oninput="calculateQuoteTotal()" class="form-input" style="width: 55px; text-align: center; padding: 4px; display:inline-block;"></td>
-                  <td style="padding: 12px 10px; text-align: right;"><input type="number" id="q-unit-price" value="55000" step="1000" oninput="calculateQuoteTotal()" class="form-input" style="width: 100px; text-align: right; padding: 4px; display:inline-block;"></td>
-                  <td style="padding: 12px 10px; text-align: right; font-weight: 700;" id="q-supply-sub">275,000원</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-              <div style="width: 260px; font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--border); padding: 12px; border-radius: 8px; background: white;">
-                <div style="display: flex; justify-content: space-between;"><span>부가세 (VAT 10%):</span> <span id="q-vat-sub">27,500원</span></div>
-                <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 6px; font-weight: 800; font-size: 1rem; color: var(--primary);">
-                  <span>총 합계금액:</span> <span id="q-total-display">302,500원</span>
-                </div>
-              </div>
-            </div>
-
-            <div style="text-align: center; font-size: 0.85rem; color: var(--text-sub); border-top: 1px solid var(--border); padding-top: 16px;">
-              입금 계좌: <strong>카카오뱅크 3333-22-922-9190 (예금주: 김*훈)</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-content-inquiries" class="tab-content">
-        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 파트너들의 1:1 문의에 답변을 달거나 불필요한 문의를 **[문의 삭제]**할 수 있습니다.</p>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>작성자</th>
-                <th>문의 제목 및 내용</th>
-                <th>진행 상태</th>
-                <th>관리자 답변 및 삭제 조치</th>
-              </tr>
-            </thead>
-            <tbody id="admin-inquiry-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="tab-content-ips" class="tab-content">
-        <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:10px;">💡 실시간 접속자 IP 및 로그인 회원 매칭 로그입니다.</p>
-        <div class="data-table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>접속 IP 주소</th>
-                <th>매칭된 회원 성명 / ID</th>
-                <th>접속 환경</th>
-                <th>접속 일시</th>
-              </tr>
-            </thead>
-            <tbody id="admin-ip-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- 파트너 대시보드 뷰 -->
   <div id="view-user-dashboard" class="page-view">
     <div class="dashboard-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 id="my-name">파트너님</h2>
-        <button class="btn" onclick="switchView('view-main')">로그아웃</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 id="my-name" style="font-size: 1.5rem; font-weight: 800;">파트너님</h2>
+        <button class="btn btn-danger" onclick="handleLogout()">로그아웃</button>
       </div>
-      
-      <div class="card-box" style="background: white; margin-bottom: 24px;">
-        <h3>📋 내 파트너 가입 정보 및 처리 상태</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; font-size: 0.92rem;">
-          <div><strong>전화번호:</strong> <span id="my-phone" style="color: var(--text-sub);"></span></div>
-          <div><strong>주소:</strong> <span id="my-address" style="color: var(--text-sub);"></span></div>
-          <div><strong>서비스:</strong> <span id="my-service" style="color: var(--primary); font-weight: 700;"></span></div>
-          <div><strong>슬롯 현황:</strong> <span id="my-slots" style="color: var(--success); font-weight: 700;"></span></div>
-          <div><strong>입금 상태:</strong> <span id="my-deposit-status" class="badge-status status-pending">입금대기</span></div>
-          <div><strong>세금계산서:</strong> <span id="my-tax-status" class="badge-status status-pending">발행대기</span></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="card-box">
+          <div class="metric-title">연락처 / 주소</div>
+          <div style="font-size: 1rem; font-weight: 700; margin-top: 6px;" id="my-phone"></div>
+          <div style="font-size: 0.9rem; color: var(--text-sub); margin-top: 2px;" id="my-address"></div>
         </div>
-        <div id="account-info-box" style="margin-top: 20px; padding: 14px; background: var(--primary-light); border-radius: 10px; font-size: 0.9rem; color: #1e40af;"></div>
+        <div class="card-box" style="--primary: #059669;">
+          <div class="metric-title">활성 서비스 및 슬롯</div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-top: 6px;" id="my-service"></div>
+          <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 2px;" id="my-slots"></div>
+        </div>
+        <div class="card-box">
+          <div class="metric-title">입금 및 세금계산서 상태</div>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <span id="my-deposit-status" class="badge-status">입금대기</span>
+            <span id="my-tax-status" class="badge-status">발행대기</span>
+          </div>
+        </div>
       </div>
-
-      <div class="card-box" style="background: white; margin-bottom: 24px;">
-        <h3>⚡ 슬롯 추가 및 기간 연장 신청</h3>
-        <form onsubmit="handleSlotExtension(event)" style="margin-top: 14px; display: flex; gap: 10px; max-width: 500px;">
-          <input type="number" id="extend-slots-input" class="form-input" value="5" min="5" placeholder="추가 슬롯 수" required>
-          <button type="submit" class="btn btn-primary" style="white-space: nowrap;">연장 신청하기</button>
-        </form>
+      <div class="card-box" style="margin-bottom: 24px; background: var(--primary-light); border-color: #bfdbfe;">
+        <h3 style="font-size: 1.05rem; margin-bottom: 8px;">💳 입금 안내 계좌</h3>
+        <p id="account-info-box" style="font-size: 0.95rem; color: #1e40af;"></p>
       </div>
-
-      <div class="card-box" style="background: white;">
-        <h3>💬 1:1 고객센터 문의하기</h3>
-        <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px; max-width: 700px;">
-          <input type="text" id="inq-title" class="form-input" placeholder="문의 제목을 입력하세요" required>
-          <textarea id="inq-content" class="form-textarea" placeholder="궁금하신 점이나 요청사항을 상세히 남겨주세요." required></textarea>
-          <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 10px 20px;">문의 등록하기</button>
+      <div class="card-box">
+        <h3>💬 1:1 문의 및 지원</h3>
+        <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-top: 16px;">
+          <div class="form-group" style="margin-bottom: 12px;"><input type="text" id="inq-title" class="form-input" required placeholder="문의 제목"></div>
+          <div class="form-group" style="margin-bottom: 12px;"><textarea id="inq-content" class="form-textarea" required placeholder="문의 내용 작성..."></textarea></div>
+          <button type="submit" class="btn btn-primary">문의 등록하기</button>
         </form>
-
-        <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
-          <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 12px;">📋 나의 문의 및 답변 내역</h4>
+        <div style="margin-top: 24px;">
+          <h4 style="font-size: 1rem; margin-bottom: 12px;">나의 문의 내역</h4>
           <div id="my-inquiry-list"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <footer><p>&copy; 2026 HUNSTER TRAFFIC Inc. All rights reserved.</p></footer>
-</body>
-</html>
+  <!-- 관리자 대시보드 뷰 -->
+  <div id="view-admin" class="page-view">
+    <div class="dashboard-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="font-size: 1.5rem; font-weight: 800;">🛠️ 최고 관리자 대시보드</h2>
+        <button class="btn btn-danger" onclick="handleLogout()">관리자 로그아웃</button>
+      </div>
