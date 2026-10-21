@@ -29,6 +29,12 @@
     .header-right { display: flex; gap: 12px; align-items: center; }
     .auth-actions { display: flex; gap: 8px; align-items: center; }
     
+    /* 상단 비와이 Puzzle BGM 플레이어 스타일 */
+    .bgm-player-box { display: flex; align-items: center; gap: 8px; background: var(--primary-light); padding: 6px 14px; border-radius: 20px; border: 1px solid #bfdbfe; }
+    .bgm-btn { background: var(--primary); color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .bgm-btn:hover { background: var(--primary-hover); }
+    .bgm-label { font-size: 0.78rem; font-weight: 700; color: var(--primary); }
+
     .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
     .mobile-nav { display: none; position: absolute; top: 80px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 20px; flex-direction: column; gap: 16px; box-shadow: var(--shadow-md); }
     .mobile-nav.active { display: flex; }
@@ -83,7 +89,7 @@
     
     @media (max-width: 768px) {
       header { padding: 0 16px; height: 70px; }
-      .nav-links, .header-right .auth-actions { display: none; }
+      .nav-links { display: none; }
       .mobile-menu-btn { display: block; }
       .hero h1 { font-size: 1.9rem; }
     }
@@ -102,22 +108,11 @@
 
       if (savedRole === 'admin' || savedUser) {
         authActions.innerHTML = `<button class="btn btn-danger" onclick="handleLogout()">로그아웃</button>`;
-        if (mobileNav) {
-          mobileNav.innerHTML = `<a onclick="goHome()" style="font-weight:700; color:var(--text-main); text-decoration:none; cursor:pointer;">홈</a>
-                                 <a onclick="handleLogout()" style="font-weight:700; color:var(--danger); text-decoration:none; cursor:pointer;">로그아웃</a>`;
-        }
       } else {
         authActions.innerHTML = `
           <button class="btn" onclick="switchView('view-login')">로그인</button>
           <button class="btn btn-primary" onclick="switchView('view-register')">회원가입</button>
         `;
-        if (mobileNav) {
-          mobileNav.innerHTML = `
-            <a onclick="goHome()" style="font-weight:700; color:var(--text-main); text-decoration:none; cursor:pointer;">홈</a>
-            <a onclick="switchView('view-login')" style="font-weight:700; color:var(--primary); text-decoration:none; cursor:pointer;">로그인</a>
-            <a onclick="switchView('view-register')" style="font-weight:700; color:var(--primary); text-decoration:none; cursor:pointer;">회원가입</a>
-          `;
-        }
       }
     }
 
@@ -146,7 +141,7 @@
       const target = document.getElementById(viewId);
       if(target) target.classList.add('active');
       const mobileNav = document.getElementById('mobile-nav');
-      if(mobileNav) mobileNav.classList.remove('active');
+      if(mobileNav) mobileNav.classList.toggle('active', false);
       window.scrollTo(0, 0);
       updateHeaderAuthUI();
     }
@@ -154,6 +149,29 @@
     function toggleMobileMenu() {
       const mobileNav = document.getElementById('mobile-nav');
       if(mobileNav) mobileNav.classList.toggle('active');
+    }
+
+    // 🎵 비와이 Puzzle BGM 재생 및 멈춤 제어 함수
+    let isPlaying = false;
+    function toggleBgm() {
+      const audio = document.getElementById('bgm-audio');
+      const btn = document.getElementById('bgm-toggle-btn');
+      const label = document.getElementById('bgm-status-text');
+
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        btn.innerText = "▶ 재생";
+        label.innerText = "Puzzle 정지됨";
+      } else {
+        audio.play().then(() => {
+          isPlaying = true;
+          btn.innerText = "⏸ 멈춤";
+          label.innerText = "비와이 - Puzzle 재생중 🎵";
+        }).catch(err => {
+          alert('오디오 재생을 시작할 수 없습니다. 브라우저 설정을 확인해주세요.');
+        });
+      }
     }
 
     async function trackVisitor(userName = "비회원 (일반 방문)", userId = "-") {
@@ -278,7 +296,6 @@
         const res = await fetch('/api/admin/data');
         const data = await res.json();
         
-        // 1. 파트너 회원 명단
         let tbody = document.getElementById('admin-user-tbody');
         if(tbody) {
           tbody.innerHTML = '';
@@ -300,7 +317,6 @@
           }
         }
 
-        // 2. 1:1 문의 답변
         let inqTbody = document.getElementById('admin-inquiry-tbody');
         if(inqTbody) {
           inqTbody.innerHTML = '';
@@ -324,7 +340,6 @@
           }
         }
 
-        // 3. 실시간 접속 IP 로그
         let ipTbody = document.getElementById('admin-ip-tbody');
         if(ipTbody && data.ipLogs) {
           ipTbody.innerHTML = '';
@@ -342,7 +357,6 @@
           }
         }
 
-        // 4. 입금/세금계산서 상태 변경 이력
         let statusLogTbody = document.getElementById('admin-status-log-tbody');
         if(statusLogTbody && data.statusLogs) {
           statusLogTbody.innerHTML = '';
@@ -571,6 +585,12 @@
   </script>
 </head>
 <body>
+  <!-- 🎵 비와이 Puzzle BGM 오디오 소스 -->
+  <audio id="bgm-audio" loop>
+    <source src="https://cdns.fara.am/file/music-dl/p/BewhY%20(비와이)%20-%20Puzzle%20(Feat.%20퍼디).mp3" type="audio/mpeg">
+    브라우저가 오디오 요소를 지원하지 않습니다.
+  </audio>
+
   <header>
     <a class="logo-area" onclick="goHome()">
       <div class="logo-icon">H</div>
@@ -579,19 +599,24 @@
         <span class="logo-sub-title">TRAFFIC NETWORK</span>
       </div>
     </a>
-    <div class="nav-links">
-      <a onclick="goHome()">홈</a>
+
+    <!-- 상단 비와이 Puzzle BGM 플레이어 및 인증 버튼 -->
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <div class="bgm-player-box">
+        <span id="bgm-status-text" class="bgm-label">Puzzle 정지됨</span>
+        <button id="bgm-toggle-btn" class="bgm-btn" onclick="toggleBgm()">▶ 재생</button>
+      </div>
+      <div class="header-right">
+        <div id="auth-actions-container" class="auth-actions"></div>
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
     </div>
-    <div class="header-right">
-      <div id="auth-actions-container" class="auth-actions"></div>
-    </div>
-    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
   </header>
 
   <div id="mobile-nav" class="mobile-nav"></div>
 
   <!-- 메인 홈 뷰 -->
-  <div id="view-main" class="page-view">
+  <div id="view-main" class="page-view active">
     <div class="wrapper">
       <section class="hero">
         <span class="hero-badge">⚡ PREMIUM TRAFFIC & SLOT SOLUTION</span>
@@ -693,7 +718,7 @@
         <p style="opacity: 0.8; font-size: 0.95rem;">파트너 회원 관리, 입금/세금계산서 상태 토글 및 1:1 문의 답변 센터입니다.</p>
       </div>
 
-      <!-- 총 5개의 탭 메뉴 -->
+      <!-- 5개 탭 메뉴 -->
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 답변</button>
@@ -738,7 +763,7 @@
               </tr>
             </thead>
             <tbody id="admin-inquiry-tbody">
-              <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">불러오는 중...</td></tr>
+              <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>
             </tbody>
           </table>
         </div>
