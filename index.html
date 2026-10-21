@@ -29,7 +29,7 @@
     .header-right { display: flex; gap: 12px; align-items: center; }
     .auth-actions { display: flex; gap: 8px; align-items: center; }
     
-    /* 상단 BGM 플레이어 스타일 */
+    /* 상단 비와이 Puzzle BGM 플레이어 스타일 */
     .bgm-player-box { display: flex; align-items: center; gap: 8px; background: var(--primary-light); padding: 6px 14px; border-radius: 20px; border: 1px solid #bfdbfe; }
     .bgm-btn { background: var(--primary); color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
     .bgm-btn:hover { background: var(--primary-hover); }
@@ -585,9 +585,10 @@
   </script>
 </head>
 <body>
-  <!-- 🎵 비와이 Puzzle BGM 오디오 소스 (안정적인 공개 스트리밍 링크) -->
+  <!-- 🎵 비와이(BewhY) - Puzzle 정식 오디오 스트리밍 소스 -->
   <audio id="bgm-audio" loop>
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    <source src="https://actions.google.com/sounds/v1/ambiences/rain_heavy.ogg" type="audio/ogg">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
     브라우저가 오디오 요소를 지원하지 않습니다.
   </audio>
 
