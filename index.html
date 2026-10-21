@@ -29,16 +29,10 @@
     .header-right { display: flex; gap: 12px; align-items: center; }
     .auth-actions { display: flex; gap: 8px; align-items: center; }
     
-    /* 상단 비와이 & 씨잼 Puzzle 유튜브 호출 버튼 스타일 */
     .bgm-player-box { display: flex; align-items: center; gap: 8px; background: var(--primary-light); padding: 6px 14px; border-radius: 20px; border: 1px solid #bfdbfe; }
-    .bgm-btn { background: var(--primary); color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .bgm-btn { background: var(--primary); color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; }
     .bgm-btn:hover { background: var(--primary-hover); }
     .bgm-label { font-size: 0.78rem; font-weight: 700; color: var(--primary); }
-
-    /* 유튜브 영상 모달창 스타일 */
-    #puzzle-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 16px; width: 90%; max-width: 600px; box-shadow: var(--shadow-lg); position: relative; }
-    .modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer; color: var(--text-sub); }
 
     .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
     .mobile-nav { display: none; position: absolute; top: 80px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 20px; flex-direction: column; gap: 16px; box-shadow: var(--shadow-md); }
@@ -153,21 +147,6 @@
     function toggleMobileMenu() {
       const mobileNav = document.getElementById('mobile-nav');
       if(mobileNav) mobileNav.classList.toggle('active');
-    }
-
-    // 🎵 비와이 & 씨잼 Puzzle 유튜브 모달 제어 함수
-    function openPuzzleModal() {
-      document.getElementById('puzzle-modal').style.display = 'flex';
-      const iframe = document.getElementById('puzzle-iframe');
-      if (!iframe.src.includes('embed')) {
-        iframe.src = "https://www.youtube.com/embed/Q92c1_Q8v9Y?autoplay=1";
-      }
-    }
-
-    function closePuzzleModal() {
-      document.getElementById('puzzle-modal').style.display = 'none';
-      const iframe = document.getElementById('puzzle-iframe');
-      iframe.src = ""; // 모달 닫을 때 영상 정지
     }
 
     async function trackVisitor(userName = "비회원 (일반 방문)", userId = "-") {
@@ -581,17 +560,6 @@
   </script>
 </head>
 <body>
-  <!-- 🎵 비와이 & 씨잼 Puzzle 유튜브 모달 창 -->
-  <div id="puzzle-modal">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closePuzzleModal()">×</button>
-      <h3 style="margin-bottom: 12px; font-size: 1.1rem; color: #0f172a;">🎵 비와이 & 씨잼 - Puzzle</h3>
-      <div style="position: relative; width: 100%; padding-bottom: 56.25%;">
-        <iframe id="puzzle-iframe" src="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-      </div>
-    </div>
-  </div>
-
   <header>
     <a class="logo-area" onclick="goHome()">
       <div class="logo-icon">H</div>
@@ -601,11 +569,11 @@
       </div>
     </a>
 
-    <!-- 상단 비와이 & 씨잼 Puzzle 플레이어 및 인증 버튼 -->
+    <!-- 상단 비와이 & 씨잼 Puzzle 유튜브 시청 버튼 -->
     <div style="display: flex; gap: 16px; align-items: center;">
       <div class="bgm-player-box">
         <span class="bgm-label">비와이 & 씨잼 - Puzzle</span>
-        <button class="bgm-btn" onclick="openPuzzleModal()">▶ 재생</button>
+        <a href="https://www.youtube.com/watch?v=Q92c1_Q8v9Y" target="_blank" class="bgm-btn">▶ 유튜브 시청</a>
       </div>
       <div class="header-right">
         <div id="auth-actions-container" class="auth-actions"></div>
@@ -731,4 +699,108 @@
       <!-- 탭 1: 파트너 회원 관리 -->
       <div id="tab-content-users" class="tab-content active card-box">
         <h3 style="margin-bottom: 16px;">👥 등록된 파트너 회원 명단</h3>
-        <div class="data
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너 정보</th>
+                <th>연락처 / 주소</th>
+                <th>구동 서비스 및 슬롯</th>
+                <th>입금 상태 (클릭시 토글)</th>
+                <th>세금계산서 (클릭시 토글)</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-user-tbody">
+              <tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-sub);">불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 탭 2: 1:1 문의 답변 -->
+      <div id="tab-content-inquiries" class="tab-content card-box">
+        <h3 style="margin-bottom: 16px;">💬 파트너 1:1 문의 및 답변 관리</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>작성자</th>
+                <th>제목 및 내용</th>
+                <th>상태</th>
+                <th>답변 관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-inquiry-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 탭 3: 견적서 생성기 -->
+      <div id="tab-content-quote" class="tab-content card-box">
+        <h3 style="margin-bottom: 16px;">📋 파트너 발송용 공식 견적서 생성기</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div class="form-group"><label class="form-label">고객명 (대표님)</label><input type="text" id="q-client-name" class="form-input" value="홍길동" oninput="calculateQuoteTotal()"></div>
+          <div class="form-group"><label class="form-label">신청 슬롯 수</label><input type="number" id="q-slots-count" class="form-input" value="10" oninput="calculateQuoteTotal()"></div>
+          <div class="form-group"><label class="form-label">1슬롯 단가 (원)</label><input type="number" id="q-unit-price" class="form-input" value="55000" oninput="calculateQuoteTotal()"></div>
+          <div class="form-group"><label class="form-label">공급자 상호명</label><input type="text" id="q-sender-company" class="form-input" value="훈스터" oninput="calculateQuoteTotal()"></div>
+          <div class="form-group"><label class="form-label">공급자 대표명</label><input type="text" id="q-sender-name" class="form-input" value="김*훈" oninput="calculateQuoteTotal()"></div>
+          <div class="form-group"><label class="form-label">공급자 연락처</label><input type="text" id="q-sender-phone" class="form-input" value="010-0000-0000" oninput="calculateQuoteTotal()"></div>
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">생성된 견적서 텍스트 (복사해서 카톡/문자 전송)</label>
+          <textarea id="quote-textarea-box" class="form-textarea" style="height: 220px; font-family: monospace; font-size: 0.85rem;" readonly></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
+      </div>
+
+      <!-- 탭 4: 실시간 접속 IP 로그 -->
+      <div id="tab-content-iplogs" class="tab-content card-box">
+        <h3 style="margin-bottom: 16px;">📊 최근 방문 및 로그인 IP 로그</h3>
+        <div class="data-table-wrapper" style="margin-top: 0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>접속 IP</th>
+                <th>사용자 정보</th>
+                <th>기기 환경</th>
+                <th>접속 시간</th>
+              </tr>
+            </thead>
+            <tbody id="admin-ip-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">로그 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 탭 5: 입금/세금계산서 상태 변경 이력 -->
+      <div id="tab-content-statuslogs" class="tab-content card-box">
+        <h3 style="margin-bottom: 16px;">📜 입금 및 세금계산서 상태 변경 이력</h3>
+        <div class="data-table-wrapper" style="margin-top: 0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너 대상</th>
+                <th>변경 항목</th>
+                <th>변경된 상태</th>
+                <th>처리 시간</th>
+              </tr>
+            </thead>
+            <tbody id="admin-status-log-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-sub);">이력 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; HUNSTER TRAFFIC NETWORK. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
