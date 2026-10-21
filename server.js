@@ -74,7 +74,7 @@ app.post('/api/register', (req, res) => {
   };
 
   db.users.push(newUser);
-  saveDatabase(); // 즉시 파일에 영구 기록
+  saveDatabase();
 
   res.json({ success: true, message: '회원가입이 완료되었습니다.' });
 });
@@ -133,7 +133,7 @@ app.post('/api/admin/status', (req, res) => {
   }
 });
 
-// 회원 삭제 (관리자가 직접 누를 때만 삭제됨)
+// 회원 삭제
 app.post('/api/admin/delete-user', (req, res) => {
   const { userId } = req.body;
   db.users = db.users.filter(u => u.id !== userId);
@@ -186,7 +186,7 @@ app.post('/api/admin/delete-inquiry', (req, res) => {
   res.json({ success: true });
 });
 
-// 서버 실행 및 ⚡ [Self-Ping] 14분마다 서버 깨우기
+// 서버 실행 및 Self-Ping
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`HUNSTER Server running on port ${PORT}`);
