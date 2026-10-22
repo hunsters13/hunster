@@ -16,26 +16,26 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; word-break: keep-all; overflow-x: hidden; }
     
-    header { height: 64px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 16px; background: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+    header { height: 60px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 14px; background: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
     .logo-area { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer; }
-    .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); flex-shrink: 0; }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1rem; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); flex-shrink: 0; }
     .logo-text-box { display: flex; flex-direction: column; }
-    .logo-main-title { font-weight: 900; font-size: 1.05rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
-    .logo-sub-title { font-size: 0.6rem; font-weight: 700; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
+    .logo-main-title { font-weight: 900; font-size: 1rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; }
+    .logo-sub-title { font-size: 0.55rem; font-weight: 700; color: var(--primary); letter-spacing: 0.8px; text-transform: uppercase; }
     
-    .header-right { display: flex; gap: 8px; align-items: center; }
-    .auth-actions { display: flex; gap: 6px; align-items: center; }
+    .header-right { display: flex; gap: 6px; align-items: center; }
+    .auth-actions { display: flex; gap: 4px; align-items: center; }
     
-    .bgm-player-box { display: flex; align-items: center; gap: 6px; background: var(--primary-light); padding: 4px 8px; border-radius: 12px; border: 1px solid #bfdbfe; }
-    .bgm-btn { background: var(--primary); color: white; border: none; padding: 3px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; white-space: nowrap; }
+    .bgm-player-box { display: flex; align-items: center; gap: 4px; background: var(--primary-light); padding: 3px 6px; border-radius: 10px; border: 1px solid #bfdbfe; }
+    .bgm-btn { background: var(--primary); color: white; border: none; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; white-space: nowrap; }
     .bgm-btn:hover { background: var(--primary-hover); }
-    .bgm-label { font-size: 0.7rem; font-weight: 700; color: var(--primary); white-space: nowrap; display: inline-block; }
+    .bgm-label { font-size: 0.65rem; font-weight: 700; color: var(--primary); white-space: nowrap; display: inline-block; }
 
-    .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-main); padding: 4px; }
-    .mobile-nav { display: none; position: absolute; top: 64px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 16px; flex-direction: column; gap: 12px; box-shadow: var(--shadow-lg); z-index: 99; }
+    .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); padding: 2px; }
+    .mobile-nav { display: none; position: absolute; top: 60px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 14px; flex-direction: column; gap: 10px; box-shadow: var(--shadow-lg); z-index: 99; }
     .mobile-nav.active { display: flex; }
 
-    .btn { padding: 6px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); white-space: nowrap; transition: 0.2s; }
+    .btn { padding: 5px 10px; border-radius: 7px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); white-space: nowrap; transition: 0.2s; }
     .btn:hover { background: #f1f5f9; }
     .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-hover); }
@@ -45,70 +45,64 @@
     .page-view { display: none !important; }
     .page-view.active { display: block !important; }
 
-    .wrapper { max-width: 1200px; margin: 0 auto; padding: 24px 14px; display: flex; flex-direction: column; gap: 30px; }
+    .wrapper { max-width: 1200px; margin: 0 auto; padding: 20px 12px; display: flex; flex-direction: column; gap: 24px; }
     
-    .hero { text-align: center; padding: 16px 0; }
-    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 4px 10px; border-radius: 16px; font-size: 0.75rem; font-weight: 700; margin-bottom: 12px; }
-    .hero h1 { font-size: 1.6rem; font-weight: 800; color: #0f172a; line-height: 1.3; margin-bottom: 12px; word-break: keep-all; }
-    .hero p { font-size: 0.9rem; color: var(--text-sub); max-width: 600px; margin: 0 auto 20px auto; word-break: keep-all; }
+    .hero { text-align: center; padding: 12px 0; }
+    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; margin-bottom: 10px; }
+    .hero h1 { font-size: 1.45rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 10px; word-break: keep-all; }
+    .hero p { font-size: 0.85rem; color: var(--text-sub); max-width: 580px; margin: 0 auto 16px auto; word-break: keep-all; }
     
-    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
-    .card-box h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; gap: 8px; }
+    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
+    .card-box h3 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; color: #0f172a; }
+    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; gap: 6px; }
     .server-status-item:last-child { border-bottom: none; }
 
-    .auth-container { width: 100%; max-width: 440px; margin: 20px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 16px; box-shadow: var(--shadow-md); }
-    .auth-container h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; color: #0f172a; }
-    .auth-container p { color: var(--text-sub); font-size: 0.82rem; margin-bottom: 16px; }
-    .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-label { font-size: 0.81rem; font-weight: 700; color: #334155; }
-    .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
-    .form-textarea { resize: vertical; min-height: 80px; }
+    .auth-container { width: 100%; max-width: 420px; margin: 16px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 14px; box-shadow: var(--shadow-md); }
+    .auth-container h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; color: #0f172a; }
+    .auth-container p { color: var(--text-sub); font-size: 0.78rem; margin-bottom: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .form-group { display: flex; flex-direction: column; gap: 3px; }
+    .form-label { font-size: 0.78rem; font-weight: 700; color: #334155; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 7px; font-size: 0.88rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
+    .form-textarea { resize: vertical; min-height: 75px; }
     
-    .dashboard-container { max-width: 1200px; margin: 16px auto; padding: 0 8px; }
-    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .dashboard-container { max-width: 1200px; margin: 12px auto; padding: 0 4px; }
+    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     
-    .data-table-wrapper { overflow-x: auto; background: white; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; -webkit-overflow-scrolling: touch; }
-    .data-table { width: 100%; border-collapse: collapse; min-width: 650px; }
-    .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
-    .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.74rem; font-weight: 700; }
+    .data-table-wrapper { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid var(--border); margin-top: 8px; -webkit-overflow-scrolling: touch; }
+    .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    .data-table th, .data-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+    .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.72rem; font-weight: 700; }
     
-    .badge-status { padding: 3px 7px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; cursor: pointer; border: none; display: inline-block; text-align: center; white-space: nowrap; }
+    .badge-status { padding: 3px 6px; border-radius: 10px; font-size: 0.68rem; font-weight: 700; cursor: pointer; border: none; display: inline-block; text-align: center; white-space: nowrap; }
     .status-pending { background: var(--warning-bg); color: var(--warning-text); }
     .status-complete { background: var(--success-bg); color: var(--success); }
     
-    .tab-menu { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tab-menu { display: flex; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .tab-menu::-webkit-scrollbar { display: none; }
-    .tab-btn { padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.82rem; background: white; border: 1px solid var(--border); cursor: pointer; color: var(--text-sub); white-space: nowrap; flex-shrink: 0; }
+    .tab-btn { padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 0.78rem; background: white; border: 1px solid var(--border); cursor: pointer; color: var(--text-sub); white-space: nowrap; flex-shrink: 0; }
     .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
     .tab-content { display: none !important; }
     .tab-content.active { display: block !important; }
 
-    footer { text-align: center; padding: 20px 14px; color: var(--text-sub); font-size: 0.78rem; border-top: 1px solid var(--border); background: white; margin-top: 30px; }
+    footer { text-align: center; padding: 16px 12px; color: var(--text-sub); font-size: 0.75rem; border-top: 1px solid var(--border); background: white; margin-top: 24px; }
 
-    /* 모바일 반응형 전용 스타일 */
     @media (max-width: 768px) {
-      header { padding: 0 12px; height: 56px; }
-      .logo-main-title { font-size: 0.95rem; }
-      .logo-icon { width: 30px; height: 30px; font-size: 0.95rem; border-radius: 7px; }
-      
+      header { padding: 0 10px; height: 54px; }
+      .logo-main-title { font-size: 0.9rem; }
+      .logo-icon { width: 28px; height: 28px; font-size: 0.9rem; border-radius: 6px; }
       .bgm-label { display: none; }
-      .bgm-player-box { padding: 3px 6px; border-radius: 10px; }
-      .bgm-btn { font-size: 0.68rem; padding: 3px 6px; }
-      
+      .bgm-player-box { padding: 2px 5px; border-radius: 8px; }
+      .bgm-btn { font-size: 0.65rem; padding: 2px 5px; }
       .mobile-menu-btn { display: block; }
-      .mobile-nav { top: 56px; padding: 12px; }
-      
-      .hero h1 { font-size: 1.45rem; }
-      .hero p { font-size: 0.85rem; }
-      
-      .status-section-grid { grid-template-columns: 1fr; gap: 10px; }
-      .auth-container { margin: 10px auto; padding: 16px 12px; border-radius: 12px; }
-      .card-box { padding: 14px; border-radius: 10px; margin-bottom: 12px; }
-      .dashboard-container { padding: 0 4px; }
-      
-      .btn { padding: 6px 10px; font-size: 0.8rem; }
+      .mobile-nav { top: 54px; padding: 10px; }
+      .hero h1 { font-size: 1.35rem; }
+      .hero p { font-size: 0.8rem; }
+      .status-section-grid { grid-template-columns: 1fr; gap: 8px; }
+      .auth-container { margin: 8px auto; padding: 14px 10px; border-radius: 10px; }
+      .card-box { padding: 12px; border-radius: 9px; margin-bottom: 10px; }
+      .dashboard-container { padding: 0 2px; }
+      .btn { padding: 5px 8px; font-size: 0.78rem; }
     }
   </style>
   <script>
@@ -135,9 +129,9 @@
       authActions.innerHTML = authHtml;
       if (mobileNav) {
         mobileNav.innerHTML = `
-          <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
-            <a href="https://www.youtube.com/watch?v=YTdupRzvQ5M&list=RDYTdupRzvQ5M&start_radio=1" target="_blank" class="btn btn-primary" style="text-align:center; padding: 10px;">🎵 비와이 & 씨잼 Puzzle 유튜브 시청</a>
-            ${savedRole === 'admin' || savedUser ? '<button class="btn btn-danger" style="width:100%; padding: 10px;" onclick="handleLogout()">로그아웃</button>' : '<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;"><button class="btn" style="padding: 10px;" onclick="switchView(\'view-login\')">로그인</button><button class="btn btn-primary" style="padding: 10px;" onclick="switchView(\'view-register\')">회원가입</button></div>'}
+          <div style="display:flex; flex-direction:column; gap:6px; width:100%;">
+            <a href="https://www.youtube.com/watch?v=YTdupRzvQ5M&list=RDYTdupRzvQ5M&start_radio=1" target="_blank" class="btn btn-primary" style="text-align:center; padding: 9px;">🎵 비와이 & 씨잼 Puzzle 유튜브 시청</a>
+            ${savedRole === 'admin' || savedUser ? '<button class="btn btn-danger" style="width:100%; padding: 9px;" onclick="handleLogout()">로그아웃</button>' : '<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;"><button class="btn" style="padding: 9px;" onclick="switchView(\'view-login\')">로그인</button><button class="btn btn-primary" style="padding: 9px;" onclick="switchView(\'view-register\')">회원가입</button></div>'}
           </div>
         `;
       }
@@ -308,16 +302,16 @@
               let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
               let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
               tbody.innerHTML += `<tr>
-                <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.72rem;">(${u.id})</span></td>
-                <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.72rem;">${u.address || '-'}</span></td>
+                <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
+                <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'}</span></td>
                 <td><span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span><br><strong>${u.slots || 5} 슬롯</strong></td>
                 <td><button class="badge-status ${depositClass}" onclick="toggleStatus('${u.id}', 'deposit')">${u.depositStatus || '입금대기'}</button></td>
                 <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus || '발행대기'}</button></td>
-                <td><button class="btn btn-danger" style="padding:3px 6px; font-size:0.7rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
+                <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
               </tr>`;
             });
           } else {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:16px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
           }
         }
 
@@ -331,16 +325,16 @@
                 <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
                 <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
                 <td>
-                  <textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.78rem; margin-bottom:4px;">${inq.reply || ''}</textarea>
-                  <div style="display:flex; gap:4px;">
-                    <button class="btn btn-primary" style="padding:3px 6px; font-size:0.7rem;" onclick="submitReply(${inq.id})">등록</button>
-                    <button class="btn btn-danger" style="padding:3px 6px; font-size:0.7rem;" onclick="deleteInquiry(${inq.id})">삭제</button>
+                  <textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.75rem; margin-bottom:3px;">${inq.reply || ''}</textarea>
+                  <div style="display:flex; gap:3px;">
+                    <button class="btn btn-primary" style="padding:2px 5px; font-size:0.68rem;" onclick="submitReply(${inq.id})">등록</button>
+                    <button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteInquiry(${inq.id})">삭제</button>
                   </div>
                 </td>
               </tr>`;
             });
           } else {
-            inqTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>`;
+            inqTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>`;
           }
         }
 
@@ -351,13 +345,13 @@
             data.ipLogs.forEach(log => {
               ipTbody.innerHTML += `<tr>
                 <td><strong style="color:var(--primary);">${log.ip}</strong></td>
-                <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.72rem; color:var(--text-sub);">(${log.id})</span></td>
+                <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.7rem; color:var(--text-sub);">(${log.id})</span></td>
                 <td>${log.device}</td>
                 <td style="color:var(--text-sub);">${log.time}</td>
               </tr>`;
             });
           } else {
-            ipTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-sub);">접속 로그가 없습니다.</td></tr>`;
+            ipTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">접속 로그가 없습니다.</td></tr>`;
           }
         }
 
@@ -367,14 +361,14 @@
           if(data.statusLogs.length > 0) {
             data.statusLogs.forEach(sLog => {
               statusLogTbody.innerHTML += `<tr>
-                <td><strong>${sLog.name}</strong> <span style="font-size:0.72rem; color:var(--text-sub);">(${sLog.userId})</span></td>
+                <td><strong>${sLog.name}</strong> <span style="font-size:0.7rem; color:var(--text-sub);">(${sLog.userId})</span></td>
                 <td><span style="color:var(--primary); font-weight:700;">${sLog.type}</span></td>
                 <td>${sLog.status}</td>
                 <td style="color:var(--text-sub);">${sLog.time}</td>
               </tr>`;
             });
           } else {
-            statusLogTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>`;
+            statusLogTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>`;
           }
         }
       } catch(err) {}
@@ -470,19 +464,19 @@
         container.innerHTML = '';
         
         if(!myInqList || myInqList.length === 0) {
-          container.innerHTML = '<p style="font-size:0.82rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
+          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
           return;
         }
 
         myInqList.forEach(inq => {
-          container.innerHTML += `<div style="border:1px solid var(--border); padding:10px; border-radius:8px; margin-bottom:8px; background:white;">
-            <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-sub); margin-bottom:4px;">
+          container.innerHTML += `<div style="border:1px solid var(--border); padding:8px; border-radius:7px; margin-bottom:6px; background:white;">
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-sub); margin-bottom:3px;">
               <span>작성일: ${inq.date}</span>
               <span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span>
             </div>
-            <div style="font-weight:700; font-size:0.85rem; margin-bottom:3px;">${inq.title}</div>
-            <div style="font-size:0.82rem; color:var(--text-main); margin-bottom:6px;">${inq.content}</div>
-            ${inq.reply ? `<div style="background:var(--primary-light); padding:8px; border-radius:6px; font-size:0.78rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
+            <div style="font-weight:700; font-size:0.82rem; margin-bottom:2px;">${inq.title}</div>
+            <div style="font-size:0.8rem; color:var(--text-main); margin-bottom:5px;">${inq.content}</div>
+            ${inq.reply ? `<div style="background:var(--primary-light); padding:6px; border-radius:5px; font-size:0.75rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
           </div>`;
         });
       } catch(e) {}
@@ -598,8 +592,7 @@
       </div>
     </a>
 
-    <!-- 상단 유튜브 시청 링크 및 인증 버튼 (모바일 밀착 최적화) -->
-    <div style="display: flex; gap: 6px; align-items: center;">
+    <div style="display: flex; gap: 5px; align-items: center;">
       <div class="bgm-player-box">
         <span class="bgm-label">비와이 & 씨잼 - Puzzle</span>
         <a href="https://www.youtube.com/watch?v=YTdupRzvQ5M&list=RDYTdupRzvQ5M&start_radio=1" target="_blank" class="bgm-btn">▶ 유튜브 시청</a>
@@ -620,8 +613,63 @@
         <span class="hero-badge">⚡ PREMIUM TRAFFIC & SLOT SOLUTION</span>
         <h1>쿠팡 상위노출을 위한<br>압도적인 실시간 트래픽 솔루션</h1>
         <p>안정적인 프록시 분산 서버와 지능형 슬롯 관리 시스템으로 비즈니스의 한계를 뛰어넘으세요.</p>
-        <button class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;" onclick="switchView('view-register')">지금 바로 회원가입 하기</button>
+        <button class="btn btn-primary" style="padding: 10px 18px; font-size: 0.88rem;" onclick="switchView('view-register')">지금 바로 회원가입 하기</button>
       </section>
+
+      <!-- 💡 쿠팡 로직 & 핵심 전략 심층 가이드 (메인화면 하단 모바일 완벽 대응) -->
+      <div class="card-box" style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 10px;">
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span class="hero-badge">💡 HUNSTER DEEP INSIGHT</span>
+          <h2 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin-top: 4px;">쿠팡 상위노출의 3대 핵심 축과 트래픽 전략</h2>
+          <p style="color: var(--text-sub); font-size: 0.8rem; margin-top: 3px; line-height: 1.4;">
+            알고리즘의 본질을 파악하고 올바른 상품 세팅과 트래픽을 결합해야만 확실한 성과를 만들 수 있습니다.
+          </p>
+        </div>
+
+        <!-- 3대 핵심 축 강조 박스 -->
+        <div style="background: var(--border-subtle); border-radius: 9px; padding: 12px; margin-bottom: 14px;">
+          <h4 style="color: var(--primary); font-size: 0.9rem; font-weight: 800; margin-bottom: 6px;">🔥 쿠팡 알고리즘을 지배하는 가장 중요한 3가지 요소</h4>
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: var(--text-main);">
+            <div><strong>1. 압도적인 상품성 (Product-Market Fit):</strong> 유입된 고객이 이탈하지 않도록 상세페이지 흡입력, 리뷰, 가격 경쟁력이 탄탄하게 갖춰져 있어야 합니다.</div>
+            <div><strong>2. 최신성 버프 (Recent Momentum):</strong> 쿠팡은 오랜 누적 점수보다 단기간에 터지는 폭발적인 반응(모멘텀)에 매우 민감하게 반응합니다.</div>
+            <div><strong>3. 혜택 마법사 (즉시할인쿠폰 및 다운로드쿠폰):</strong> 클릭률(CTR)과 구매 전환율(CR)을 극적으로 끌어올리는 치트키이자, 알고리즘이 가장 사랑하는 신호입니다.</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px;">
+          
+          <!-- 승리 공식 -->
+          <div style="background: var(--success-bg); border: 1px solid #a7f3d0; border-radius: 9px; padding: 12px;">
+            <h4 style="color: var(--success); font-size: 0.9rem; font-weight: 800; margin-bottom: 6px;">✅ [성공하는 상품] 트래픽 효율이 극대화되는 구조</h4>
+            <ul style="padding-left: 14px; color: #065f46; font-size: 0.78rem; display: flex; flex-direction: column; gap: 4px;">
+              <li><strong>쿠폰 혜택이 적용된 상태에서 타겟 키워드로 자연스럽게 유입되어</strong> 체류 시간과 스크롤 반응이 높게 유지되는 상품</li>
+              <li>일정한 주기로 유입량과 구매 전환 신호가 우상향 곡선을 그리며 알고리즘의 눈도장을 받는 상품</li>
+            </ul>
+          </div>
+
+          <!-- 실패 원인 -->
+          <div style="background: var(--danger-bg); border: 1px solid #fca5a5; border-radius: 9px; padding: 12px;">
+            <h4 style="color: var(--danger); font-size: 0.9rem; font-weight: 800; margin-bottom: 6px;">❌ [실패하는 상품] 트래픽을 넣어도 역효과가 나는 구조</h4>
+            <ul style="padding-left: 14px; color: #991b1b; font-size: 0.78rem; display: flex; flex-direction: column; gap: 4px;">
+              <li>쿠폰이나 할인 혜택 없이 가격 경쟁력이 밀려, 유입은 되지만 3초 만에 이탈하여 알고리즘이 '저품질'로 판단하는 상품</li>
+              <li>상승세를 타려 할 때 품절이나 배송 지연이 발생해 누적된 점수가 리셋되는 상품</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- 훈스터 솔루션 결론 -->
+        <div style="background: var(--primary-light); border: 1px solid #bfdbfe; border-radius: 9px; padding: 14px; text-align: center;">
+          <h4 style="color: var(--primary); font-size: 0.92rem; font-weight: 800; margin-bottom: 4px;">🚀 훈스터 고속 프록시 슬롯의 역할</h4>
+          <p style="color: #1e3a8a; font-size: 0.78rem; line-height: 1.4;">
+            완벽한 상품성과 쿠폰 전략이 세팅된 상품에 훈스터의 <strong>'정밀한 검색 유입 및 체류 모멘텀'</strong>을 더해,<br>
+            쿠팡 검색 상단 및 골드박스 고지에 가장 안전하고 확실하게 안착시켜 드립니다.
+          </p>
+        </div>
+
+      </div>
+
     </div>
   </div>
 
@@ -643,11 +691,11 @@
           </select>
         </div>
         <div class="form-group"><label class="form-label">신청 슬롯 수 (최소 5슬롯)</label><input type="number" id="reg-slots" class="form-input" value="5" min="5" required></div>
-        <button type="submit" class="btn btn-primary" style="padding: 11px; margin-top: 4px;">회원가입 완료하기</button>
+        <button type="submit" class="btn btn-primary" style="padding: 10px; margin-top: 4px;">회원가입 완료하기</button>
       </form>
-      <div style="text-align: center; margin-top: 14px;">
-        <span style="font-size: 0.82rem; color: var(--text-sub);">이미 계정이 있으신가요? </span>
-        <a onclick="switchView('view-login')" style="color: var(--primary); font-weight: 700; cursor: pointer; font-size: 0.82rem;">로그인 하기</a>
+      <div style="text-align: center; margin-top: 12px;">
+        <span style="font-size: 0.78rem; color: var(--text-sub);">이미 계정이 있으신가요? </span>
+        <a onclick="switchView('view-login')" style="color: var(--primary); font-weight: 700; cursor: pointer; font-size: 0.78rem;">로그인 하기</a>
       </div>
     </div>
   </div>
@@ -660,11 +708,11 @@
       <form onsubmit="handleLogin(event)" class="form-grid">
         <div class="form-group"><label class="form-label">아이디</label><input type="text" id="login-id" class="form-input" placeholder="아이디 입력" required></div>
         <div class="form-group"><label class="form-label">비밀번호</label><input type="password" id="login-pw" class="form-input" placeholder="비밀번호 입력" required></div>
-        <button type="submit" class="btn btn-primary" style="padding: 11px; margin-top: 4px;">로그인</button>
+        <button type="submit" class="btn btn-primary" style="padding: 10px; margin-top: 4px;">로그인</button>
       </form>
-      <div style="text-align: center; margin-top: 14px;">
-        <span style="font-size: 0.82rem; color: var(--text-sub);">계정이 없으신가요? </span>
-        <a onclick="switchView('view-register')" style="color: var(--primary); font-weight: 700; cursor: pointer; font-size: 0.82rem;">회원가입 하기</a>
+      <div style="text-align: center; margin-top: 12px;">
+        <span style="font-size: 0.78rem; color: var(--text-sub);">계정이 없으신가요? </span>
+        <a onclick="switchView('view-register')" style="color: var(--primary); font-weight: 700; cursor: pointer; font-size: 0.78rem;">회원가입 하기</a>
       </div>
     </div>
   </div>
@@ -672,9 +720,9 @@
   <!-- 유저(파트너) 마이페이지 뷰 -->
   <div id="view-user-dashboard" class="page-view">
     <div class="dashboard-container">
-      <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; margin-bottom: 14px;">
-        <h2 id="my-name" style="font-size: 1.35rem; margin-bottom: 3px; color: white;">파트너님</h2>
-        <p style="opacity: 0.9; font-size: 0.85rem;" id="my-slots">5 슬롯 활성 가동 중</p>
+      <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; margin-bottom: 12px;">
+        <h2 id="my-name" style="font-size: 1.25rem; margin-bottom: 2px; color: white;">파트너님</h2>
+        <p style="opacity: 0.9; font-size: 0.8rem;" id="my-slots">5 슬롯 활성 가동 중</p>
       </div>
 
       <div class="status-section-grid">
@@ -689,20 +737,20 @@
           <h3>💳 결제 및 세금계산서 상태</h3>
           <div class="server-status-item"><span style="font-weight: 600;">입금 상태</span><span id="my-deposit-status" class="badge-status status-pending">입금대기</span></div>
           <div class="server-status-item"><span style="font-weight: 600;">세금계산서</span><span id="my-tax-status" class="badge-status status-pending">발행대기</span></div>
-          <div style="margin-top: 8px; font-size: 0.78rem; color: var(--text-sub);" id="account-info-box">입금 계좌 안내</div>
+          <div style="margin-top: 6px; font-size: 0.75rem; color: var(--text-sub);" id="account-info-box">입금 계좌 안내</div>
         </div>
       </div>
 
-      <div class="card-box" style="margin-top: 14px;">
+      <div class="card-box" style="margin-top: 12px;">
         <h3>💬 1:1 문의하기 및 내역</h3>
-        <form id="inquiry-form" onsubmit="handleNewInquiry(event)" class="form-grid" style="margin-bottom: 16px;">
+        <form id="inquiry-form" onsubmit="handleNewInquiry(event)" class="form-grid" style="margin-bottom: 14px;">
           <div class="form-group"><label class="form-label">제목</label><input type="text" id="inq-title" class="form-input" placeholder="문의 제목" required></div>
           <div class="form-group"><label class="form-label">내용</label><textarea id="inq-content" class="form-textarea" placeholder="문의하실 내용을 입력해주세요." required></textarea></div>
-          <button type="submit" class="btn btn-primary" style="width: auto; padding: 7px 14px;">문의 등록</button>
+          <button type="submit" class="btn btn-primary" style="width: auto; padding: 6px 12px;">문의 등록</button>
         </form>
-        <h4 style="font-size: 0.9rem; margin-bottom: 8px; font-weight: 700;">나의 문의 내역</h4>
+        <h4 style="font-size: 0.85rem; margin-bottom: 6px; font-weight: 700;">나의 문의 내역</h4>
         <div id="my-inquiry-list">
-          <p style="font-size: 0.82rem; color: var(--text-sub);">작성한 문의 내역이 없습니다.</p>
+          <p style="font-size: 0.78rem; color: var(--text-sub);">작성한 문의 내역이 없습니다.</p>
         </div>
       </div>
     </div>
@@ -711,12 +759,11 @@
   <!-- 관리자 대시보드 뷰 -->
   <div id="view-admin" class="page-view">
     <div class="dashboard-container">
-      <div class="card-box" style="background: #0f172a; color: white; margin-bottom: 14px;">
-        <h2 style="font-size: 1.35rem; margin-bottom: 3px; color: white;">👑 HUNSTER 통합 관리자 센터</h2>
-        <p style="opacity: 0.8; font-size: 0.85rem;">파트너 회원 관리, 입금/세금계산서 상태 토글 및 1:1 문의 답변 센터입니다.</p>
+      <div class="card-box" style="background: #0f172a; color: white; margin-bottom: 12px;">
+        <h2 style="font-size: 1.25rem; margin-bottom: 2px; color: white;">👑 HUNSTER 통합 관리자 센터</h2>
+        <p style="opacity: 0.8; font-size: 0.8rem;">파트너 회원 관리, 입금/세금계산서 상태 토글 및 1:1 문의 답변 센터입니다.</p>
       </div>
 
-      <!-- 5개 탭 메뉴 -->
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 답변</button>
@@ -725,9 +772,8 @@
         <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">상태 변경 이력</button>
       </div>
 
-      <!-- 탭 1: 파트너 회원 관리 -->
       <div id="tab-content-users" class="tab-content active card-box">
-        <h3 style="margin-bottom: 12px;">👥 등록된 파트너 회원 명단</h3>
+        <h3 style="margin-bottom: 10px;">👥 등록된 파트너 회원 명단</h3>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
@@ -741,15 +787,14 @@
               </tr>
             </thead>
             <tbody id="admin-user-tbody">
-              <tr><td colspan="6" style="text-align:center; padding:16px; color:var(--text-sub);">불러오는 중...</td></tr>
+              <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">불러오는 중...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- 탭 2: 1:1 문의 답변 -->
       <div id="tab-content-inquiries" class="tab-content card-box">
-        <h3 style="margin-bottom: 12px;">💬 파트너 1:1 문의 및 답변 관리</h3>
+        <h3 style="margin-bottom: 10px;">💬 파트너 1:1 문의 및 답변 관리</h3>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
@@ -761,16 +806,15 @@
               </tr>
             </thead>
             <tbody id="admin-inquiry-tbody">
-              <tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>
+              <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- 탭 3: 견적서 생성기 -->
       <div id="tab-content-quote" class="tab-content card-box">
-        <h3 style="margin-bottom: 12px;">📋 파트너 발송용 공식 견적서 생성기</h3>
-        <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px;">
+        <h3 style="margin-bottom: 10px;">📋 파트너 발송용 공식 견적서 생성기</h3>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px;">
           <div class="form-group"><label class="form-label">고객명 (대표님)</label><input type="text" id="q-client-name" class="form-input" value="홍길동" oninput="calculateQuoteTotal()"></div>
           <div class="form-group"><label class="form-label">신청 슬롯 수</label><input type="number" id="q-slots-count" class="form-input" value="10" oninput="calculateQuoteTotal()"></div>
           <div class="form-group"><label class="form-label">1슬롯 단가 (원)</label><input type="number" id="q-unit-price" class="form-input" value="55000" oninput="calculateQuoteTotal()"></div>
@@ -778,16 +822,15 @@
           <div class="form-group"><label class="form-label">공급자 대표명</label><input type="text" id="q-sender-name" class="form-input" value="김*훈" oninput="calculateQuoteTotal()"></div>
           <div class="form-group"><label class="form-label">공급자 연락처</label><input type="text" id="q-sender-phone" class="form-input" value="010-0000-0000" oninput="calculateQuoteTotal()"></div>
         </div>
-        <div class="form-group" style="margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 10px;">
           <label class="form-label">생성된 견적서 텍스트 (복사해서 카톡/문자 전송)</label>
-          <textarea id="quote-textarea-box" class="form-textarea" style="height: 160px; font-family: monospace; font-size: 0.8rem;" readonly></textarea>
+          <textarea id="quote-textarea-box" class="form-textarea" style="height: 150px; font-family: monospace; font-size: 0.78rem;" readonly></textarea>
         </div>
         <button class="btn btn-primary" onclick="copyQuoteToClipboard()">📋 견적서 텍스트 복사하기</button>
       </div>
 
-      <!-- 탭 4: 실시간 접속 IP 로그 -->
       <div id="tab-content-iplogs" class="tab-content card-box">
-        <h3 style="margin-bottom: 12px;">📊 최근 방문 및 로그인 IP 로그</h3>
+        <h3 style="margin-bottom: 10px;">📊 최근 방문 및 로그인 IP 로그</h3>
         <div class="data-table-wrapper" style="margin-top: 0;">
           <table class="data-table">
             <thead>
@@ -799,15 +842,14 @@
               </tr>
             </thead>
             <tbody id="admin-ip-tbody">
-              <tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-sub);">로그 없음</td></tr>
+              <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">로그 없음</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- 탭 5: 상태 변경 이력 -->
       <div id="tab-content-statuslogs" class="tab-content card-box">
-        <h3 style="margin-bottom: 12px;">📜 입금 및 세금계산서 상태 변경 이력</h3>
+        <h3 style="margin-bottom: 10px;">📜 입금 및 세금계산서 상태 변경 이력</h3>
         <div class="data-table-wrapper" style="margin-top: 0;">
           <table class="data-table">
             <thead>
@@ -819,7 +861,7 @@
               </tr>
             </thead>
             <tbody id="admin-status-log-tbody">
-              <tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-sub);">이력 없음</td></tr>
+              <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">이력 없음</td></tr>
             </tbody>
           </table>
         </div>
