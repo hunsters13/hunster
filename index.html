@@ -19,11 +19,11 @@
     header { height: 60px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 14px; background: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
     .logo-area { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer; }
     
-    /* ✨ 로고 반짝반짝 빛나는 네온 글로우 애니메이션 효과 */
+    /* ✨ 반짝반짝 빛나는 네온 글로우 애니메이션 로고 */
     .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1rem; box-shadow: 0 0 12px rgba(37, 99, 235, 0.6); flex-shrink: 0; animation: logoGlow 2s infinite alternate; }
     @keyframes logoGlow {
       0% { box-shadow: 0 0 6px rgba(37, 99, 235, 0.4); transform: scale(1); }
-      100% { box-shadow: 0 0 16px rgba(37, 99, 235, 0.9), 0 0 25px rgba(59, 130, 246, 0.5); transform: scale(1.03); }
+      100% { box-shadow: 0 0 18px rgba(37, 99, 235, 0.95), 0 0 28px rgba(59, 130, 246, 0.6); transform: scale(1.04); }
     }
 
     .logo-text-box { display: flex; flex-direction: column; }
@@ -236,6 +236,7 @@
         trackVisitor();
       }
       updateHeaderAuthUI();
+      loadRankTrackers();
     };
 
     async function handleRegister(event) {
@@ -488,8 +489,7 @@
       document.getElementById('my-service').innerText = user.service || '쿠팡 트래픽';
       document.getElementById('my-slots').innerText = (user.slots || 5) + ' 슬롯 활성 가동 중';
       
-      // ✨ 슬롯량 직접 표시 (883슬롯 등 연동)
-      const slotsNum = user.slots || 5;
+      const slotsNum = user.slots || 883; // 기본값 883슬롯 연동
       document.getElementById('my-traffic-count').innerText = "현재 " + slotsNum + "슬롯 정상 가동 중 (실시간 활성)";
       
       const depositEl = document.getElementById('my-deposit-status');
@@ -573,6 +573,81 @@
       alert(`🚀 ${addCount}슬롯 추가 신청이 관리자에게 전송되었습니다!\n관리자가 확인 후 입금 안내 및 슬롯 확정을 도와드립니다.`);
       document.getElementById('add-slot-form').reset();
       renderUserInquiries(currentUser);
+    }
+
+    // 📈 쿠팡 상품 순위 추적기 로직
+    function handleAddRankTracker(event) {
+      event.preventDefault();
+      const name = document.getElementById('track-product-name').value;
+      const keyword = document.getElementById('track-keyword').value;
+      const url = document.getElementById('track-url').value;
+      const initialRank = document.getElementById('track-rank').value || '실시간 연동 확인중';
+
+      let trackers = JSON.parse(localStorage.getItem('hunster_rank_trackers') || '[]');
+      trackers.unshift({
+        id: Date.now(),
+        name,
+        keyword,
+        url,
+        rank: initialRank,
+        date: new Date().toLocaleDateString()
+      });
+
+      localStorage.setItem('hunster_rank_trackers', JSON.stringify(trackers));
+      alert('📈 쿠팡 순위 추적 상품 링크가 완벽하게 등록되었습니다!');
+      document.getElementById('rank-tracker-form').reset();
+      loadRankTrackers();
+    }
+
+    function loadRankTrackers() {
+      let trackers = JSON.parse(localStorage.getItem('hunster_rank_trackers') || '[]');
+      
+      let adminContainer = document.getElementById('admin-rank-tbody');
+      if(adminContainer) {
+        adminContainer.innerHTML = '';
+        if(trackers.length === 0) {
+          adminContainer.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>`;
+        } else {
+          trackers.forEach((item) => {
+            adminContainer.innerHTML += `
+              <tr>
+                <td><strong>${item.name}</strong><br><span style="color:var(--primary); font-size:0.72rem;">키워드: ${item.keyword}</span></td>
+                <td><a href="${item.url}" target="_blank" class="btn" style="padding:2px 6px; font-size:0.7rem; text-decoration:none;">🔗 링크 열기</a></td>
+                <td><strong style="color:var(--success); font-size:0.9rem;">${item.rank}</strong></td>
+                <td style="color:var(--text-sub); font-size:0.75rem;">${item.date}</td>
+                <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteRankTracker(${item.id})">삭제</button></td>
+              </tr>
+            `;
+          });
+        }
+      }
+
+      let userContainer = document.getElementById('user-rank-tracker-list');
+      if(userContainer) {
+        userContainer.innerHTML = '';
+        if(trackers.length === 0) {
+          userContainer.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>`;
+        } else {
+          trackers.forEach((item) => {
+            userContainer.innerHTML += `
+              <tr>
+                <td><strong>${item.name}</strong><br><span style="color:var(--primary); font-size:0.72rem;">키워드: ${item.keyword}</span></td>
+                <td><a href="${item.url}" target="_blank" class="btn" style="padding:2px 6px; font-size:0.7rem; text-decoration:none;">🔗 상품 링크 열기</a></td>
+                <td><strong style="color:var(--success); font-size:0.9rem;">${item.rank}</strong></td>
+                <td style="color:var(--text-sub); font-size:0.75rem;">${item.date}</td>
+              </tr>
+            `;
+          });
+        }
+      }
+    }
+
+    function deleteRankTracker(id) {
+      if(!confirm('해당 추적 항목을 삭제하시겠습니까?')) return;
+      let trackers = JSON.parse(localStorage.getItem('hunster_rank_trackers') || '[]');
+      trackers = trackers.filter(t => t.id !== id);
+      localStorage.setItem('hunster_rank_trackers', JSON.stringify(trackers));
+      loadRankTrackers();
     }
 
     function switchAdminTab(tabName) {
@@ -810,7 +885,7 @@
             <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 800; color: var(--success); margin-bottom: 3px;">
               <span class="pulse-dot"></span> 실시간 슬롯 정상 가동 중
             </div>
-            <div id="my-traffic-count" style="font-size: 0.75rem; color: #065f46; font-weight: 600;">현재 5슬롯 정상 가동 중 (실시간 활성)</div>
+            <div id="my-traffic-count" style="font-size: 0.75rem; color: #065f46; font-weight: 600;">현재 883슬롯 정상 가동 중 (실시간 활성)</div>
           </div>
         </div>
 
@@ -837,6 +912,27 @@
         </form>
       </div>
 
+      <!-- 📈 마이페이지 내 쿠팡 상품 순위 추적 확인 박스 -->
+      <div class="card-box" style="margin-top: 12px;">
+        <h3>📈 내 쿠팡 상품 순위 추적기</h3>
+        <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">등록된 상품 링크와 타겟 키워드의 실시간 검색 순위를 한눈에 확인하세요.</p>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>상품명 및 키워드</th>
+                <th>링크 바로가기</th>
+                <th>현재 순위</th>
+                <th>기록일</th>
+              </tr>
+            </thead>
+            <tbody id="user-rank-tracker-list">
+              <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="card-box" style="margin-top: 12px;">
         <h3>💬 1:1 문의하기 및 내역</h3>
         <form id="inquiry-form" onsubmit="handleNewInquiry(event)" class="form-grid" style="margin-bottom: 14px;">
@@ -857,12 +953,14 @@
     <div class="dashboard-container">
       <div class="card-box" style="background: #0f172a; color: white; margin-bottom: 12px;">
         <h2 style="font-size: 1.25rem; margin-bottom: 2px; color: white;">👑 HUNSTER 통합 관리자 센터</h2>
-        <p style="opacity: 0.8; font-size: 0.8rem;">파트너 회원 관리, 슬롯 가동 현황 목록, 1:1 문의 답변 센터입니다.</p>
+        <p style="opacity: 0.8; font-size: 0.8rem;">파트너 회원 관리, 슬롯 가동 목록, 쿠팡 순위 추적기 및 1:1 문의 답변 센터입니다.</p>
       </div>
 
+      <!-- 관리자 탭 메뉴 (순위 추적기 탭 포함) -->
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
         <button id="tab-btn-slots" class="tab-btn" onclick="switchAdminTab('slots')">파트너 슬롯 가동 목록</button>
+        <button id="tab-btn-rank" class="tab-btn" onclick="switchAdminTab('rank')">📈 쿠팡 순위 추적기</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 답변</button>
         <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">견적서 간편 생성기</button>
         <button id="tab-btn-iplogs" class="tab-btn" onclick="switchAdminTab('iplogs')">실시간 접속 IP 로그</button>
@@ -908,6 +1006,37 @@
             </thead>
             <tbody id="admin-slot-tbody">
               <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 📈 관리자용 쿠팡 순위 추적기 탭 -->
+      <div id="tab-content-rank" class="tab-content card-box">
+        <h3 style="margin-bottom: 6px;">📈 쿠팡 상품 검색 순위 추적 센터</h3>
+        <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 12px;">쿠팡 상품 링크와 타겟 키워드를 복사·등록하여 실시간 검색 순위 변동을 관리하세요.</p>
+        
+        <form id="rank-tracker-form" onsubmit="handleAddRankTracker(event)" style="background: var(--border-subtle); padding: 12px; border-radius: 8px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="form-group"><label class="form-label">상품명</label><input type="text" id="track-product-name" class="form-input" placeholder="예: 유기농 토마토 2kg" required></div>
+          <div class="form-group"><label class="form-label">검색 키워드</label><input type="text" id="track-keyword" class="form-input" placeholder="예: 방울토마토" required></div>
+          <div class="form-group" style="grid-column: span 2;"><label class="form-label">쿠팡 상품 링크 (URL)</label><input type="url" id="track-url" class="form-input" placeholder="https://www.coupang.com/vp/products/..." required></div>
+          <div class="form-group"><label class="form-label">초기 추적 순위</label><input type="text" id="track-rank" class="form-input" value="실시간 5위" required></div>
+          <div style="display: flex; align-items: flex-end;"><button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">+ 순위 추적 등록</button></div>
+        </form>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>상품명 / 키워드</th>
+                <th>상품 링크</th>
+                <th>현재 검색 순위</th>
+                <th>등록일</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-rank-tbody">
+              <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>
             </tbody>
           </table>
         </div>
