@@ -41,6 +41,10 @@
     .mobile-nav { display: none; position: absolute; top: 60px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 14px; flex-direction: column; gap: 10px; box-shadow: var(--shadow-lg); z-index: 99; }
     .mobile-nav.active { display: flex; }
 
+    .mobile-floating-bar { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-top: 1px solid var(--border); padding: 8px 12px; z-index: 999; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); gap: 8px; grid-template-columns: 1fr 1fr; }
+    .floating-btn { padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-align: center; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .floating-btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+
     .btn { padding: 5px 10px; border-radius: 7px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); white-space: nowrap; transition: 0.2s; }
     .btn:hover { background: #f1f5f9; }
     .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
@@ -90,6 +94,13 @@
     .badge-status { padding: 3px 6px; border-radius: 10px; font-size: 0.68rem; font-weight: 700; cursor: pointer; border: none; display: inline-block; text-align: center; white-space: nowrap; }
     .status-pending { background: var(--warning-bg); color: var(--warning-text); }
     .status-complete { background: var(--success-bg); color: var(--success); }
+    
+    .tab-menu { display: flex; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tab-menu::-webkit-scrollbar { display: none; }
+    .tab-btn { padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 0.78rem; background: white; border: 1px solid var(--border); cursor: pointer; color: var(--text-sub); white-space: nowrap; flex-shrink: 0; }
+    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .tab-content { display: none !important; }
+    .tab-content.active { display: block !important; }
 
     footer { text-align: center; padding: 16px 12px; color: var(--text-sub); font-size: 0.75rem; border-top: 1px solid var(--border); background: white; margin-top: 24px; }
 
@@ -102,6 +113,9 @@
       .bgm-btn { font-size: 0.65rem; padding: 2px 5px; }
       .mobile-menu-btn { display: block; }
       .mobile-nav { top: 54px; padding: 10px; }
+      .mobile-floating-bar { display: grid; }
+      .hero h1 { font-size: 1.35rem; }
+      .hero p { font-size: 0.8rem; }
       .status-section-grid { grid-template-columns: 1fr; gap: 8px; }
       .auth-container { margin: 8px auto; padding: 14px 10px; border-radius: 10px; }
       .card-box { padding: 12px; border-radius: 9px; margin-bottom: 10px; }
@@ -407,7 +421,7 @@
           }
         }
 
-        // 👑 관리자 센터 순위 추적 통합 리스트 불러오기
+        // 👑 관리자 센터 순위 추적 통합 리스트 로드
         loadAdminAllRankTrackers();
 
       } catch(err) {}
@@ -507,7 +521,7 @@
         container.innerHTML = '';
         
         if(!myInqList || myInqList.length === 0) {
-          container.innerHTML = '<p style="font-size:0.80rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
+          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
           return;
         }
 
@@ -562,7 +576,7 @@
       renderUserInquiries(currentUser);
     }
 
-    // 📈 파트너 본인 쿠팡 순위 추적기 등록 (서버 연동: a가 설정해도 b, c에게 절대 보이지 않음)
+    // 📈 파트너 본인 순위 추적 상품 등록 (a가 등록해도 b, c에게 절대 보이지 않음)
     async function handleUserAddRankTracker(event) {
       event.preventDefault();
       if (!currentUser) { alert('로그인 정보가 없습니다.'); return; }
@@ -587,12 +601,11 @@
       }
     }
 
-    // 📈 파트너 본인 것만 불러오기 (a 전용)
+    // 📈 파트너 본인 것만 조회 (a에게는 b, c의 것이 보이지 않음)
     async function loadUserPrivateRankTrackers(userId) {
       try {
         const res = await fetch('/api/rank-trackers?userId=' + userId);
         const trackers = await res.json();
-        
         let tbody = document.getElementById('user-rank-tbody');
         if (!tbody) return;
 
@@ -627,7 +640,7 @@
       loadUserPrivateRankTrackers(currentUser.id);
     }
 
-    // 👑 최고관리자 센터: 모든 파트너들의 순위 추적 리스트 통합 조회 함수
+    // 👑 최고관리자 센터: 모든 파트너들의 순위 추적 리스트 통합 모니터링
     async function loadAdminAllRankTrackers() {
       try {
         const res = await fetch('/api/admin/rank-trackers');
@@ -690,7 +703,7 @@
     <div id="mobile-nav" class="mobile-nav"></div>
   </header>
 
-  <!-- 메인 홈 뷰 -->
+  <!-- 메인 홈 뷰 (비회원/소개) -->
   <div id="view-main" class="page-view active wrapper">
     <section class="hero">
       <span class="hero-badge">ENTERPRISE TRAFFIC SYSTEM</span>
@@ -735,6 +748,9 @@
         </div>
         <button type="submit" class="btn btn-primary" style="margin-top:6px; padding: 10px;">로그인</button>
       </form>
+      <div style="text-align:center; margin-top:12px; font-size:0.78rem;">
+        계정이 없으신가요? <a href="#" onclick="switchView('view-register')" style="color:var(--primary); font-weight:700; text-decoration:none;">회원가입하기</a>
+      </div>
     </div>
   </div>
 
@@ -827,7 +843,7 @@
       </div>
     </div>
 
-    <!-- 📈 파트너 본인만의 쿠팡 상품 순위 추적기 (a가 설정해도 b, c에게 절대 안 보임) -->
+    <!-- 📈 나만의 쿠팡 상품 순위 추적기 (a가 설정해도 b, c에게 절대 안 보임) -->
     <div class="card-box">
       <h3>📈 나만의 쿠팡 상품 순위 추적기</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">
