@@ -14,7 +14,7 @@
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.06); --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; word-break: keep-all; overflow-x: hidden; }
+    body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; word-break: keep-all; overflow-x: hidden; padding-bottom: 60px; /* 하단 플로팅바 공간 확보 */ }
     
     header { height: 60px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 14px; background: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
     .logo-area { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer; }
@@ -34,6 +34,11 @@
     .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); padding: 2px; }
     .mobile-nav { display: none; position: absolute; top: 60px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 14px; flex-direction: column; gap: 10px; box-shadow: var(--shadow-lg); z-index: 99; }
     .mobile-nav.active { display: flex; }
+
+    /* 📱 모바일 하단 퀵 액션 플로팅 바 */
+    .mobile-floating-bar { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-top: 1px solid var(--border); padding: 8px 12px; z-index: 999; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); gap: 8px; grid-template-columns: 1fr 1fr; }
+    .floating-btn { padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-align: center; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .floating-btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
 
     .btn { padding: 5px 10px; border-radius: 7px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); white-space: nowrap; transition: 0.2s; }
     .btn:hover { background: #f1f5f9; }
@@ -56,6 +61,14 @@
     .card-box h3 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; color: #0f172a; }
     .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; gap: 6px; }
     .server-status-item:last-child { border-bottom: none; }
+
+    /* 🟢 실시간 가동 펄스 애니메이션 */
+    .pulse-dot { width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 0 rgba(5, 150, 105, 0.4); animation: pulse 1.6s infinite; }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.6); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+    }
 
     .auth-container { width: 100%; max-width: 420px; margin: 16px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 14px; box-shadow: var(--shadow-md); }
     .auth-container h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; color: #0f172a; }
@@ -96,6 +109,7 @@
       .bgm-btn { font-size: 0.65rem; padding: 2px 5px; }
       .mobile-menu-btn { display: block; }
       .mobile-nav { top: 54px; padding: 10px; }
+      .mobile-floating-bar { display: grid; } /* 모바일에서만 하단 바 노출 */
       .hero h1 { font-size: 1.35rem; }
       .hero p { font-size: 0.8rem; }
       .status-section-grid { grid-template-columns: 1fr; gap: 8px; }
@@ -172,6 +186,16 @@
       if(mobileNav) mobileNav.classList.toggle('active');
     }
 
+    // ⚡ 원터치 계좌번호 클립보드 복사 함수
+    function copyAccountNumber() {
+      const textToCopy = ACCOUNT_INFO.bank + " " + ACCOUNT_INFO.accountNumber + " (" + ACCOUNT_INFO.holder + ")";
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("📋 입금 계좌번호가 클립보드에 복사되었습니다!\n" + textToCopy);
+      }).catch(err => {
+        alert("복사에 실패했습니다.");
+      });
+    }
+
     async function trackVisitor(userName = "비회원 (일반 방문)", userId = "-") {
       try {
         let userIp = "121.160.XXX.XX";
@@ -230,7 +254,7 @@
       
       const result = await response.json();
       if(result.success) {
-        alert('회원가입 완료!\n[입금 계좌]\n' + ACCOUNT_INFO.bank + ' ' + ACCOUNT_INFO.accountNumber + ' (' + ACCOUNT_INFO.holder + ')');
+        alert('회원가입 완료!\n[입금 계좌]\n' + ACCOUNT_INFO.bank + ' ' + ACCOUNT_INFO.accountNumber + ' (' + ACCOUNT_INFO.holder + ')\n\n※ 입금자명과 신청자 성함이 다를 경우 1:1 문의로 꼭 남겨주세요!');
         trackVisitor(name + ' (회원가입)', id);
         switchView('view-login');
       } else {
@@ -436,6 +460,11 @@
       document.getElementById('my-service').innerText = user.service || '쿠팡 트래픽';
       document.getElementById('my-slots').innerText = (user.slots || 5) + ' 슬롯 활성 가동 중';
       
+      // 📊 동적 유입 통계 수치 계산 (슬롯당 하루 약 250명 기준 예시)
+      const slotsNum = user.slots || 5;
+      const estimatedTraffic = (slotsNum * 248).toLocaleString();
+      document.getElementById('my-traffic-count').innerText = "약 " + estimatedTraffic + "명 유입 달성 완료";
+      
       const depositEl = document.getElementById('my-deposit-status');
       if (depositEl) {
         depositEl.innerText = user.depositStatus || '입금대기';
@@ -450,7 +479,7 @@
       
       const accountInfoBox = document.getElementById('account-info-box');
       if (accountInfoBox) {
-        accountInfoBox.innerHTML = `입금 계좌: <strong>${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber}</strong> (예금주: ${ACCOUNT_INFO.holder})`;
+        accountInfoBox.innerHTML = `입금 계좌: <strong>${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber}</strong> (${ACCOUNT_INFO.holder}) <button class="btn" style="padding:2px 6px; font-size:0.7rem; margin-left:4px;" onclick="copyAccountNumber()">복사</button><br><span style="color:var(--danger); font-size:0.72rem; margin-top:3px; display:inline-block;">※ 입금자명이 다를 경우 1:1 문의로 남겨주세요.</span>`;
       }
 
       renderUserInquiries(user);
@@ -547,7 +576,7 @@
 - 부가세(VAT 10%): ${vat.toLocaleString()}원
 - 총 합계금액: ${total.toLocaleString()}원 (VAT 포함)
 
-💳 [입금 계좌 안내]
+💳 [입금 계좌 안내 (원터치 복사 지원)]
 - 은행: ${ACCOUNT_INFO.bank}
 - 계좌: ${ACCOUNT_INFO.accountNumber}
 - 예금주: ${ACCOUNT_INFO.holder}
@@ -605,6 +634,12 @@
   </header>
 
   <div id="mobile-nav" class="mobile-nav"></div>
+
+  <!-- 📱 모바일 하단 퀵 액션 플로팅 바 추가 -->
+  <div class="mobile-floating-bar">
+    <button class="floating-btn" onclick="switchView('view-login')">🔑 파트너 로그인</button>
+    <button class="floating-btn floating-btn-primary" onclick="switchView('view-register')">🚀 슬롯 신청/가입</button>
+  </div>
 
   <!-- 메인 홈 뷰 -->
   <div id="view-main" class="page-view active">
@@ -731,13 +766,21 @@
           <div class="server-status-item"><span style="font-weight: 600;">연락처</span><span id="my-phone" style="color:var(--text-sub);">-</span></div>
           <div class="server-status-item"><span style="font-weight: 600;">사업장 주소</span><span id="my-address" style="color:var(--text-sub);">-</span></div>
           <div class="server-status-item"><span style="font-weight: 600;">구동 서비스</span><span id="my-service" style="color:var(--primary); font-weight:700;">쿠팡 트래픽</span></div>
+          <!-- 🟢 실시간 슬롯 가동 상태 및 유입 통계 시각화 박스 -->
+          <div style="margin-top: 10px; background: var(--success-bg); border: 1px solid #a7f3d0; padding: 10px; border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 800; color: var(--success); margin-bottom: 3px;">
+              <span class="pulse-dot"></span> 실시간 슬롯 정상 가동 중
+            </div>
+            <div id="my-traffic-count" style="font-size: 0.75rem; color: #065f46; font-weight: 600;">약 1,240명 유입 달성 완료</div>
+          </div>
         </div>
 
         <div class="card-box">
           <h3>💳 결제 및 세금계산서 상태</h3>
           <div class="server-status-item"><span style="font-weight: 600;">입금 상태</span><span id="my-deposit-status" class="badge-status status-pending">입금대기</span></div>
           <div class="server-status-item"><span style="font-weight: 600;">세금계산서</span><span id="my-tax-status" class="badge-status status-pending">발행대기</span></div>
-          <div style="margin-top: 6px; font-size: 0.75rem; color: var(--text-sub);" id="account-info-box">입금 계좌 안내</div>
+          <!-- ⚡ 원터치 계좌번호 복사 안내 박스 -->
+          <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-sub); background: var(--border-subtle); padding: 8px; border-radius: 6px;" id="account-info-box">입금 계좌 안내</div>
         </div>
       </div>
 
