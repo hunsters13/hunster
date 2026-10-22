@@ -17,7 +17,7 @@ let db = {
   inquiries: [],
   ipLogs: [],
   statusLogs: [],
-  rankTrackers: []
+  rankTrackers: [] // 👈 순위 추적기 DB 추가
 };
 
 // 🛡️ [데이터 보존 안전장치] 서버 재시작 시 기존 회원 데이터 유실 절대 방지
@@ -29,7 +29,7 @@ if (fs.existsSync(DB_FILE)) {
     db.inquiries = parsed.inquiries || [];
     db.ipLogs = parsed.ipLogs || [];
     db.statusLogs = parsed.statusLogs || [];
-    db.rankTrackers = parsed.rankTrackers || [];
+    db.rankTrackers = parsed.rankTrackers || []; // 👈 순위 추적기 데이터 로드
   } catch (err) {
     console.error('DB 로드 에러:', err);
   }
