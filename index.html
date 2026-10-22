@@ -315,6 +315,7 @@
         const res = await fetch('/api/admin/data');
         const data = await res.json();
         
+        // 1. 파트너 회원 관리 탭 테이블
         let tbody = document.getElementById('admin-user-tbody');
         if(tbody) {
           tbody.innerHTML = '';
@@ -333,6 +334,33 @@
             });
           } else {
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
+          }
+        }
+
+        // 🚀 [신규 추가] 관리자 센터 내 '파트너 슬롯 가동 현황 목록' 탭 테이블
+        let slotTbody = document.getElementById('admin-slot-tbody');
+        if(slotTbody) {
+          slotTbody.innerHTML = '';
+          let totalActiveSlots = 0;
+          if(data.users && data.users.length > 0) {
+            data.users.forEach((u) => {
+              let sCount = u.slots || 5;
+              totalActiveSlots += sCount;
+              let estTraffic = (sCount * 248).toLocaleString();
+              slotTbody.innerHTML += `<tr>
+                <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
+                <td><span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span></td>
+                <td><strong style="font-size:0.9rem; color:var(--success);">${sCount} 슬롯</strong></td>
+                <td>약 ${estTraffic}명 / 일</td>
+                <td><span class="badge-status ${u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending'}">${u.depositStatus || '입금대기'}</span></td>
+              </tr>`;
+            });
+            let summaryBox = document.getElementById('admin-total-slot-summary');
+            if(summaryBox) {
+              summaryBox.innerHTML = `🔥 전체 파트너 가동 중인 총 슬롯량: <strong style="color:var(--primary);">${totalActiveSlots} 슬롯</strong> (총 ${data.users.name || data.users.length}개 파트너사)`;
+            }
+          } else {
+            slotTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">가동 중인 파트너 슬롯이 없습니다.</td></tr>`;
           }
         }
 
@@ -525,7 +553,6 @@
       renderUserInquiries(currentUser);
     }
 
-    // ➕ 슬롯 추가 연장 간편 신청 함수 (1:1 문의로 자동 연동)
     async function handleAddSlotRequest(event) {
       event.preventDefault();
       if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
@@ -792,7 +819,7 @@
         </div>
       </div>
 
-      <!-- 🚀 [신규 추가] 슬롯 추가 연장/신청 간편 폼 -->
+      <!-- 슬롯 추가 연장/신청 간편 폼 -->
       <div class="card-box" style="margin-top: 12px; border: 1px solid #bfdbfe; background: var(--primary-light);">
         <h3 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 6px;">⚡ 슬롯 추가 연장 및 확장 신청</h3>
         <p style="font-size: 0.78rem; color: #1e3a8a; margin-bottom: 10px;">사업 확장에 따라 슬롯을 추가하고 싶으신가요? 아래에서 원하시는 추가 수량을 선택하시면 관리자에게 즉시 접수됩니다.</p>
@@ -827,17 +854,20 @@
     <div class="dashboard-container">
       <div class="card-box" style="background: #0f172a; color: white; margin-bottom: 12px;">
         <h2 style="font-size: 1.25rem; margin-bottom: 2px; color: white;">👑 HUNSTER 통합 관리자 센터</h2>
-        <p style="opacity: 0.8; font-size: 0.8rem;">파트너 회원 관리, 입금/세금계산서 상태 토글 및 1:1 문의 답변 센터입니다.</p>
+        <p style="opacity: 0.8; font-size: 0.8rem;">파트너 회원 관리, 슬롯 가동 현황 목록, 1:1 문의 답변 센터입니다.</p>
       </div>
 
+      <!-- 탭 메뉴 (신규 '파트너 슬롯 가동 목록' 탭 추가) -->
       <div class="tab-menu">
         <button id="tab-btn-users" class="tab-btn active" onclick="switchAdminTab('users')">파트너 회원 관리</button>
+        <button id="tab-btn-slots" class="tab-btn" onclick="switchAdminTab('slots')">파트너 슬롯 가동 목록</button>
         <button id="tab-btn-inquiries" class="tab-btn" onclick="switchAdminTab('inquiries')">1:1 문의 답변</button>
         <button id="tab-btn-quote" class="tab-btn" onclick="switchAdminTab('quote')">견적서 간편 생성기</button>
         <button id="tab-btn-iplogs" class="tab-btn" onclick="switchAdminTab('iplogs')">실시간 접속 IP 로그</button>
         <button id="tab-btn-statuslogs" class="tab-btn" onclick="switchAdminTab('statuslogs')">상태 변경 이력</button>
       </div>
 
+      <!-- 파트너 회원 관리 탭 -->
       <div id="tab-content-users" class="tab-content active card-box">
         <h3 style="margin-bottom: 10px;">👥 등록된 파트너 회원 명단</h3>
         <div class="data-table-wrapper">
@@ -854,6 +884,31 @@
             </thead>
             <tbody id="admin-user-tbody">
               <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 🚀 [신규 추가] 파트너 슬롯 가동 목록 탭 -->
+      <div id="tab-content-slots" class="tab-content card-box">
+        <h3 style="margin-bottom: 6px;">📊 파트너 슬롯 가동 현황 및 수량 목록</h3>
+        <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 12px;">모든 파트너사들이 현재 구동 중인 서비스와 슬롯 양, 일일 예상 트래픽 유입량을 한눈에 확인할 수 있습니다.</p>
+        <div id="admin-total-slot-summary" style="background: var(--primary-light); border: 1px solid #bfdbfe; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #1e3a8a; margin-bottom: 12px;">
+          🔥 전체 파트너 가동 중인 총 슬롯량: 계산 중...
+        </div>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너 명 (아이디)</th>
+                <th>구동 서비스</th>
+                <th>투입된 슬롯량</th>
+                <th>예상 일일 트래픽</th>
+                <th>입금 상태</th>
+              </tr>
+            </thead>
+            <tbody id="admin-slot-tbody">
+              <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">불러오는 중...</td></tr>
             </tbody>
           </table>
         </div>
