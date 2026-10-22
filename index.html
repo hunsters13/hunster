@@ -407,9 +407,6 @@
           }
         }
 
-        // 👑 관리자 센터: 파트너 순위추적기 목록 통합 로드
-        loadAdminAllRankTrackers();
-
       } catch(err) {}
     }
 
@@ -496,7 +493,6 @@
       }
 
       renderUserInquiries(user);
-      loadUserPrivateRankTrackers(user.id);
     }
 
     async function renderUserInquiries(user) {
@@ -561,113 +557,10 @@
       document.getElementById('add-slot-form').reset();
       renderUserInquiries(currentUser);
     }
-
-    // 📈 파트너 본인 쿠팡 순위 추적 상품 등록 (a가 설정해도 b, c에게 절대 안 보임)
-    async function handleUserAddRankTracker(event) {
-      event.preventDefault();
-      if (!currentUser) { alert('로그인 정보가 없습니다.'); return; }
-
-      const name = document.getElementById('user-track-product-name').value;
-      const keyword = document.getElementById('user-track-keyword').value;
-      const url = document.getElementById('user-track-url').value;
-
-      const res = await fetch('/api/rank-tracker', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, userName: currentUser.name, name, keyword, url, rank: '실시간 연동 확인중' })
-      });
-
-      const result = await res.json();
-      if (result.success) {
-        alert('📈 쿠팡 순위 추적 상품이 완벽하게 등록되었습니다! (본인에게만 표시됩니다)');
-        document.getElementById('user-rank-tracker-form').reset();
-        loadUserPrivateRankTrackers(currentUser.id);
-      } else {
-        alert('등록 중 오류가 발생했습니다.');
-      }
-    }
-
-    // 📈 파트너 본인 것만 조회 (a에게는 b, c의 것이 보이지 않음)
-    async function loadUserPrivateRankTrackers(userId) {
-      try {
-        const res = await fetch('/api/rank-trackers?userId=' + userId);
-        const trackers = await res.json();
-        let tbody = document.getElementById('user-rank-tbody');
-        if (!tbody) return;
-
-        tbody.innerHTML = '';
-        if (trackers.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>`;
-          return;
-        }
-
-        trackers.forEach(item => {
-          tbody.innerHTML += `
-            <tr>
-              <td><strong>${item.name}</strong><br><span style="color:var(--primary); font-weight:700;">키워드: ${item.keyword}</span></td>
-              <td><span class="badge-status status-complete">${item.rank}</span></td>
-              <td style="color:var(--text-sub);">${item.date}</td>
-              <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUserTracker(${item.id})">삭제</button></td>
-            </tr>
-          `;
-        });
-      } catch (e) {}
-    }
-
-    async function deleteUserTracker(id) {
-      if (!confirm('해당 순위 추적 상품을 삭제하시겠습니까?')) return;
-      if (!currentUser) return;
-
-      await fetch('/api/rank-tracker/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, userId: currentUser.id })
-      });
-      loadUserPrivateRankTrackers(currentUser.id);
-    }
-
-    // 👑 관리자 센터: 파트너 순위추적기 목록 통합 모니터링
-    async function loadAdminAllRankTrackers() {
-      try {
-        const res = await fetch('/api/admin/rank-trackers');
-        const trackers = await res.json();
-        let tbody = document.getElementById('admin-rank-tbody');
-        if (!tbody) return;
-
-        tbody.innerHTML = '';
-        if (trackers.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>`;
-          return;
-        }
-
-        trackers.forEach(item => {
-          tbody.innerHTML += `
-            <tr>
-              <td><strong>${item.userName || '알 수 없음'}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${item.userId})</span></td>
-              <td><strong>${item.name}</strong><br><span style="color:var(--primary); font-size:0.75rem;">키워드: ${item.keyword}</span></td>
-              <td><a href="${item.url}" target="_blank" style="color:var(--primary); font-size:0.75rem; text-decoration:underline;">상품 링크 열기</a></td>
-              <td><span class="badge-status status-complete">${item.rank}</span></td>
-              <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="adminDeleteTracker(${item.id})">삭제</button></td>
-            </tr>
-          `;
-        });
-      } catch (e) {}
-    }
-
-    async function adminDeleteTracker(id) {
-      if (!confirm('해당 파트너의 순위 추적 상품을 강제 삭제하시겠습니까?')) return;
-      await fetch('/api/rank-tracker/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
-      loadAdminAllRankTrackers();
-    }
   </script>
 </head>
 <body>
 
-  <!-- 헤더 영역 -->
   <header>
     <a class="logo-area" onclick="goHome()">
       <div class="logo-icon">H</div>
@@ -689,7 +582,6 @@
     <div id="mobile-nav" class="mobile-nav"></div>
   </header>
 
-  <!-- 메인 홈 뷰 (비회원/소개) -->
   <div id="view-main" class="page-view active wrapper">
     <section class="hero">
       <span class="hero-badge">ENTERPRISE TRAFFIC SYSTEM</span>
@@ -718,7 +610,6 @@
     </div>
   </div>
 
-  <!-- 로그인 뷰 -->
   <div id="view-login" class="page-view wrapper">
     <div class="auth-container">
       <h2>파트너 로그인</h2>
@@ -737,7 +628,6 @@
     </div>
   </div>
 
-  <!-- 회원가입 뷰 -->
   <div id="view-register" class="page-view wrapper">
     <div class="auth-container" style="max-width: 480px;">
       <h2>파트너 회원가입 및 슬롯 신청</h2>
@@ -781,7 +671,6 @@
     </div>
   </div>
 
-  <!-- 사용자 대시보드 뷰 -->
   <div id="view-user-dashboard" class="page-view dashboard-container">
     <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
       <h3 id="my-name" style="color: white; font-size: 1.2rem; margin-bottom: 4px;">파트너님</h3>
@@ -826,39 +715,6 @@
       </div>
     </div>
 
-    <!-- 📈 나만의 쿠팡 상품 순위 추적기 (본인 전용 - 타인 노출 차단) -->
-    <div class="card-box">
-      <h3>📈 나만의 쿠팡 상품 순위 추적기</h3>
-      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">
-        본인 계정으로 등록한 상품과 키워드 순위만 안전하게 저장되며, 다른 파트너 회원에게는 절대 보이지 않습니다.
-      </p>
-      
-      <form id="user-rank-tracker-form" onsubmit="handleUserAddRankTracker(event)" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-          <input type="text" id="user-track-product-name" class="form-input" placeholder="상품명 입력" required style="font-size:0.78rem;">
-          <input type="text" id="user-track-keyword" class="form-input" placeholder="타겟 검색 키워드 입력" required style="font-size:0.78rem;">
-        </div>
-        <input type="url" id="user-track-url" class="form-input" placeholder="쿠팡 상품 상세 URL 주소 링크" required style="font-size:0.78rem;">
-        <button type="submit" class="btn btn-primary" style="width:100%; padding:8px; font-size:0.8rem;">🔍 내 상품 순위 추적 등록하기</button>
-      </form>
-
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>내 상품명 / 키워드</th>
-              <th>실시간 순위</th>
-              <th>등록일</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody id="user-rank-tbody">
-            <tr><td colspan="4" style="text-align:center; padding:12px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <div class="card-box">
       <h3>💬 1:1 고객 문의 및 관리자 소통</h3>
       <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-bottom: 14px;">
@@ -878,7 +734,6 @@
     </div>
   </div>
 
-  <!-- 관리자 대시보드 뷰 -->
   <div id="view-admin" class="page-view dashboard-container">
     <div class="card-box" style="background: #0f172a; color: white;">
       <h3 style="color: white; font-size: 1.1rem; margin-bottom: 4px;">👑 최고관리자 통합 관제센터</h3>
@@ -901,30 +756,6 @@
           </thead>
           <tbody id="admin-user-tbody">
             <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 👑 관리자 센터: 파트너 순위추적기 목록 (통합 모니터링) -->
-    <div class="card-box">
-      <h3>📈 파트너 순위추적기 목록</h3>
-      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">
-        파트너들이 직접 등록한 쿠팡 상품, 타겟 키워드 및 실시간 순위 현황을 통합 모니터링하는 관리자 전용 공간입니다.
-      </p>
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>파트너 정보</th>
-              <th>상품명 / 검색 키워드</th>
-              <th>상품 링크</th>
-              <th>실시간 순위</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody id="admin-rank-tbody">
-            <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 순위 추적 상품이 없습니다.</td></tr>
           </tbody>
         </table>
       </div>
