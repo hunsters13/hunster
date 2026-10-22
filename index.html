@@ -421,7 +421,7 @@
           }
         }
 
-        // 👑 관리자 센터 순위 추적 통합 리스트 로드
+        // 👑 관리자 센터: 파트너 순위추적기 목록 로드
         loadAdminAllRankTrackers();
 
       } catch(err) {}
@@ -576,7 +576,7 @@
       renderUserInquiries(currentUser);
     }
 
-    // 📈 파트너 본인 순위 추적 상품 등록 (a가 등록해도 b, c에게 절대 보이지 않음)
+    // 📈 파트너 본인 순위 추적 상품 등록 (a가 설정해도 b, c에게 절대 보이지 않음)
     async function handleUserAddRankTracker(event) {
       event.preventDefault();
       if (!currentUser) { alert('로그인 정보가 없습니다.'); return; }
@@ -640,7 +640,7 @@
       loadUserPrivateRankTrackers(currentUser.id);
     }
 
-    // 👑 최고관리자 센터: 모든 파트너들의 순위 추적 리스트 통합 모니터링
+    // 👑 관리자 센터: 파트너 순위추적기 목록 통합 모니터링
     async function loadAdminAllRankTrackers() {
       try {
         const res = await fetch('/api/admin/rank-trackers');
@@ -843,7 +843,7 @@
       </div>
     </div>
 
-    <!-- 📈 나만의 쿠팡 상품 순위 추적기 (a가 설정해도 b, c에게 절대 안 보임) -->
+    <!-- 📈 나만의 쿠팡 상품 순위 추적기 (파트너 본인 전용 - 타인 노출 차단) -->
     <div class="card-box">
       <h3>📈 나만의 쿠팡 상품 순위 추적기</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">
@@ -923,19 +923,19 @@
       </div>
     </div>
 
-    <!-- 👑 관리자 센터: 쿠팡 순위 추적기 페이지 (모든 파트너들의 순위 추적 상품 통합 모니터링) -->
+    <!-- 👑 관리자 센터: 파트너 순위추적기 목록 (통합 모니터링) -->
     <div class="card-box">
-      <h3>📈 쿠팡 순위 추적기 센터 (파트너별 전체 통합 모니터링)</h3>
+      <h3>📈 파트너 순위추적기 목록</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">
-        모든 파트너사들이 각자 등록한 쿠팡 상품 및 키워드 순위 추적 현황을 통합해서 관리하는 페이지입니다.
+        파트너들이 직접 등록한 쿠팡 상품, 타겟 키워드 및 실시간 순위 현황을 통합 모니터링하는 관리자 전용 공간입니다.
       </p>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
             <tr>
-              <th>파트너사 명</th>
-              <th>상품명 / 키워드</th>
-              <th>상품 URL 링크</th>
+              <th>파트너 정보</th>
+              <th>상품명 / 검색 키워드</th>
+              <th>상품 링크</th>
               <th>실시간 순위</th>
               <th>관리</th>
             </tr>
