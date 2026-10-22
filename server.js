@@ -16,8 +16,7 @@ let db = {
   users: [],
   inquiries: [],
   ipLogs: [],
-  statusLogs: [],
-  rankTrackers: [] // 👈 순위 추적기 DB 추가
+  statusLogs: []
 };
 
 // 🛡️ [데이터 보존 안전장치] 서버 재시작 시 기존 회원 데이터 유실 절대 방지
@@ -29,7 +28,6 @@ if (fs.existsSync(DB_FILE)) {
     db.inquiries = parsed.inquiries || [];
     db.ipLogs = parsed.ipLogs || [];
     db.statusLogs = parsed.statusLogs || [];
-    db.rankTrackers = parsed.rankTrackers || []; // 👈 순위 추적기 데이터 로드
   } catch (err) {
     console.error('DB 로드 에러:', err);
   }
@@ -184,44 +182,6 @@ app.post('/api/admin/reply', (req, res) => {
 app.post('/api/admin/delete-inquiry', (req, res) => {
   const { id } = req.body;
   db.inquiries = db.inquiries.filter(item => item.id != id);
-  saveDatabase();
-  res.json({ success: true });
-});
-
-// 📈 파트너 순위 추적 상품 등록 API
-app.post('/api/rank-tracker', (req, res) => {
-  const { userId, userName, name, keyword, url, rank } = req.body;
-  const newTracker = {
-    id: Date.now(),
-    userId,
-    userName,
-    name,
-    keyword,
-    url,
-    rank: rank || '실시간 연동 확인중',
-    date: new Date().toLocaleDateString()
-  };
-  db.rankTrackers.unshift(newTracker);
-  saveDatabase();
-  res.json({ success: true, tracker: newTracker });
-});
-
-// 📈 특정 파트너 본인만의 순위 추적 상품 조회 API (a에게는 b, c의 것이 절대 안 보임)
-app.get('/api/rank-trackers', (req, res) => {
-  const { userId } = req.query;
-  const myTrackers = db.rankTrackers.filter(item => item.userId === userId);
-  res.json(myTrackers);
-});
-
-// 👑 관리자용 전체 순위 추적 상품 통합 조회 API (관리자 센터용)
-app.get('/api/admin/rank-trackers', (req, res) => {
-  res.json(db.rankTrackers);
-});
-
-// 📈 순위 추적 상품 삭제 API
-app.post('/api/rank-tracker/delete', (req, res) => {
-  const { id } = req.body;
-  db.rankTrackers = db.rankTrackers.filter(item => item.id != id);
   saveDatabase();
   res.json({ success: true });
 });
