@@ -19,7 +19,7 @@ let db = {
   statusLogs: []
 };
 
-// 🛡️ [데이터 보존 안전장치] 서버 재시작 시 기존 회원 데이터 유실 방지
+// 🛡️ [데이터 보존 안전장치] 서버 재시작 시 기존 회원 데이터 유실 절대 방지
 if (fs.existsSync(DB_FILE)) {
   try {
     const data = fs.readFileSync(DB_FILE, 'utf8');
@@ -52,9 +52,9 @@ app.post('/api/log', (req, res) => {
   res.json({ success: true });
 });
 
-// 회원가입
+// 회원가입 (신규 필수 정보 모두 수용)
 app.post('/api/register', (req, res) => {
-  const { name, id, pw, phone, address, coupangSub, slots } = req.body;
+  const { name, id, pw, phone, address, businessNumber, email, coupangSub, reason, slots } = req.body;
   
   const existing = db.users.find(u => u.id === id);
   if (existing) {
@@ -67,7 +67,10 @@ app.post('/api/register', (req, res) => {
     pw,
     phone,
     address,
+    businessNumber,
+    email,
     service: coupangSub === 'agricultural' ? '쿠팡 농산물 트래픽' : '쿠팡 공산품 트래픽',
+    reason,
     slots: slots || 5,
     depositStatus: '입금대기',
     taxStatus: '발행대기'
