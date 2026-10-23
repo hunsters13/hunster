@@ -305,27 +305,46 @@
         const res = await fetch('/api/admin/data');
         const data = await res.json();
         
-        let tbody = document.getElementById('admin-user-tbody');
-        if(tbody) {
-          tbody.innerHTML = '';
+        // 1. 파트너 회원 목록 및 입금 관리 테이블 렌더링
+        let userTbody = document.getElementById('admin-user-tbody');
+        let taxTbody = document.getElementById('admin-tax-tbody');
+
+        if(userTbody || taxTbody) {
+          if(userTbody) userTbody.innerHTML = '';
+          if(taxTbody) taxTbody.innerHTML = '';
+
           if(data.users && data.users.length > 0) {
             data.users.forEach((u) => {
               let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
               let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
-              tbody.innerHTML += `<tr>
-                <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
-                <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'}</span></td>
-                <td><span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span><br><strong>${u.slots || 5} 슬롯</strong></td>
-                <td><button class="badge-status ${depositClass}" onclick="toggleStatus('${u.id}', 'deposit')">${u.depositStatus || '입금대기'}</button></td>
-                <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus || '발행대기'}</button></td>
-                <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
-              </tr>`;
+              
+              if(userTbody) {
+                userTbody.innerHTML += `<tr>
+                  <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
+                  <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'}</span></td>
+                  <td><span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span><br><strong>${u.slots || 5} 슬롯</strong></td>
+                  <td><button class="badge-status ${depositClass}" onclick="toggleStatus('${u.id}', 'deposit')">${u.depositStatus || '입금대기'}</button></td>
+                  <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
+                </tr>`;
+              }
+
+              if(taxTbody) {
+                taxTbody.innerHTML += `<tr>
+                  <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
+                  <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'}</span></td>
+                  <td><span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span><br><strong>${u.slots || 5} 슬롯</strong></td>
+                  <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus || '발행대기'}</button></td>
+                  <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
+                </tr>`;
+              }
             });
           } else {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
+            if(userTbody) userTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
+            if(taxTbody) taxTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
           }
         }
 
+        // 3. 실시간 가동 중인 파트너별 슬롯 현황
         let slotTbody = document.getElementById('admin-slot-tbody');
         if(slotTbody) {
           slotTbody.innerHTML = '';
@@ -350,6 +369,7 @@
           }
         }
 
+        // 4. 파트너 1:1 문의 답변 관리
         let inqTbody = document.getElementById('admin-inquiry-tbody');
         if(inqTbody) {
           inqTbody.innerHTML = '';
@@ -373,6 +393,7 @@
           }
         }
 
+        // 5. 방문자 접속 IP 로그 실시간 모니터링
         let ipTbody = document.getElementById('admin-ip-tbody');
         if(ipTbody && data.ipLogs) {
           ipTbody.innerHTML = '';
@@ -390,6 +411,7 @@
           }
         }
 
+        // 6. 파트너 상태 변경 이력 감사 로그
         let statusLogTbody = document.getElementById('admin-status-log-tbody');
         if(statusLogTbody && data.statusLogs) {
           statusLogTbody.innerHTML = '';
@@ -617,16 +639,14 @@
       </div>
     </div>
 
-    <!-- 💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 (상세 내용 대폭 보강 & 세로형 고급 디자인) -->
+    <!-- 💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 가이드 -->
     <div class="card-box">
       <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 가이드</h3>
       <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px; word-break: keep-all; line-height: 1.5;">
         쿠팡 알고리즘의 본질과 소비자 구매 심리를 관통하는 필수 요충지입니다. 안정적인 슬롯 성과 극대화를 위해 반드시 숙지하고 적용해야 합니다.
       </p>
       
-      <!-- 세로 정렬 카드 리스트 컨테이너 -->
       <div style="display: flex; flex-direction: column; gap: 14px;">
-        
         <!-- 1. 상품성 -->
         <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 5px solid var(--primary); border-radius: 10px; padding: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
@@ -637,7 +657,7 @@
             <strong style="color: var(--text-main);">왜 가장 중요하고 필수적인가?:</strong> 쿠팡의 대규모 검색 및 노출 알고리즘은 단순한 유입(클릭) 수치보다 <strong>'최종 구매 전환율(CVR)'</strong>과 상세페이지 체류 시간을 훨씬 더 높은 가중치로 평가합니다.
           </p>
           <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
-            <strong>전문가 근거:</strong> 아무리 강력한 슬롯 트래픽을 집중적으로 주입하더라도, 상품 자체의 가격 경쟁력이 떨어지거나 상세페이지의 USP(고유 판매 제안)와 리뷰 신뢰도가 미흡하여 이탈률이 치솟으면 알고리즘은 해당 상품의 점수를 급격히 하락시킵니다. 매력적인 스펙과 탄탄한 가격 구조가 뒷받침되어야 트래픽 유입이 실질적이고 지속적인 순위 급상승으로 이어집니다.
+            <strong>전문가 근거:</strong> 아무리 강력한 슬롯 트래픽을 집중적으로 주입하더라도, 상품 자체의 가격 경쟁력이 떨어지거나 상세페이지의 USP와 리뷰 신뢰도가 미흡하여 이탈률이 치솟으면 알고리즘은 해당 상품의 점수를 급격히 하락시킵니다. 매력적인 스펙과 탄탄한 가격 구조가 뒷받침되어야 트래픽 유입이 실질적이고 지속적인 순위 급상승으로 이어집니다.
           </p>
         </div>
 
@@ -668,7 +688,6 @@
             <strong>전문가 근거:</strong> 쿠폰을 적용하여 체감 가격을 파격적으로 낮추는 전략은 검색 결과에서의 **CTR(클릭률)**을 단숨에 끌어올리며, 최종 결제 단계로 진입하는 전환율을 폭발적으로 가속화합니다. 슬롯 트래픽을 가동하는 타이밍에 쿠폰 전략을 함께 맞물리게 하면 알고리즘이 감지하는 속도 지표가 극대화되어 최단 기간 내 목표 순위를 달성할 수 있습니다.
           </p>
         </div>
-
       </div>
     </div>
   </div>
@@ -800,15 +819,19 @@
     </div>
   </div>
 
-  <!-- 관리자 대시보드 뷰 -->
+  <!-- 관리자 대시보드 뷰 (요청하신 순서대로 상단 분리 및 재정렬 완료) -->
   <div id="view-admin" class="page-view dashboard-container">
-    <div class="card-box" style="background: #0f172a; color: white;">
-      <h3 style="color: white; font-size: 1.1rem; margin-bottom: 4px;">👑 최고관리자 통합 관제센터</h3>
-      <p id="admin-total-slot-summary" style="font-size: 0.82rem; color: #94a3b8;">전체 파트너 슬롯 현황을 실시간 집계 중입니다...</p>
+    <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155;">
+      <h3 style="color: white; font-size: 1.15rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+        <span>👑</span> 최고관리자 통합 관제센터
+      </h3>
+      <p id="admin-total-slot-summary" style="font-size: 0.85rem; color: #94a3b8;">전체 파트너 슬롯 현황을 실시간 집계 중입니다...</p>
     </div>
 
-    <div class="card-box">
-      <h3>👥 파트너 회원 목록 및 입금/세금계산서 관리</h3>
+    <!-- 1. 파트너 회원 목록 및 입금 관리 -->
+    <div class="card-box" style="border-top: 4px solid var(--primary);">
+      <h3>👥 1. 파트너 회원 목록 및 입금 관리</h3>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">등록된 파트너 회원 정보와 입금 완료 여부를 확인하고 실시간으로 상태를 관리합니다.</p>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
@@ -817,19 +840,42 @@
               <th>연락처 / 주소</th>
               <th>서비스 / 슬롯</th>
               <th>입금 상태</th>
-              <th>세금계산서</th>
               <th>관리</th>
             </tr>
           </thead>
           <tbody id="admin-user-tbody">
-            <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+            <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <div class="card-box">
-      <h3>🔥 실시간 가동 중인 파트너별 슬롯 현황</h3>
+    <!-- 2. 세금 계산서 관리 -->
+    <div class="card-box" style="border-top: 4px solid #059669;">
+      <h3>🧾 2. 파트너 세금 계산서 관리</h3>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너사별 세금계산서 발행 요청 및 발행 완료 상태를 집중 관리합니다.</p>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>파트너 정보</th>
+              <th>연락처 / 주소</th>
+              <th>서비스 / 슬롯</th>
+              <th>세금계산서 발행 상태</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tax-tbody">
+            <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. 실시간 가동 중인 파트너별 슬롯 현황 -->
+    <div class="card-box" style="border-top: 4px solid #d97706;">
+      <h3>🔥 3. 실시간 가동 중인 파트너별 슬롯 현황</h3>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">각 파트너사별로 현재 활성화되어 구동 중인 슬롯 수량을 모니터링합니다.</p>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
@@ -847,8 +893,10 @@
       </div>
     </div>
 
-    <div class="card-box">
-      <h3>💬 파트너 1:1 문의 답변 관리</h3>
+    <!-- 4. 파트너 1:1 문의 답변 관리 -->
+    <div class="card-box" style="border-top: 4px solid #7c3aed;">
+      <h3>💬 4. 파트너 1:1 문의 답변 관리</h3>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너들이 남긴 1:1 문의 사항을 확인하고 피드백을 답변합니다.</p>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
@@ -866,8 +914,10 @@
       </div>
     </div>
 
-    <div class="card-box">
-      <h3>🔒 방문자 접속 IP 로그 실시간 모니터링</h3>
+    <!-- 5. 방문자 접속 IP 로그 실시간 모니터링 -->
+    <div class="card-box" style="border-top: 4px solid #0284c7;">
+      <h3>🔒 5. 방문자 접속 IP 로그 실시간 모니터링</h3>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">웹사이트에 접속한 방문자 및 회원들의 IP와 접속 기기 환경을 실시간으로 추적합니다.</p>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
@@ -885,8 +935,10 @@
       </div>
     </div>
 
-    <div class="card-box">
-      <h3>📋 파트너 상태 변경 이력 감사 로그</h3>
+    <!-- 6. 파트너 상태 변경 이력 감사 로그 -->
+    <div class="card-box" style="border-top: 4px solid #e11d48;">
+      <h3>📋 6. 파트너 상태 변경 이력 감사 로그</h3>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">관리자가 처리한 입금 및 세금계산서 상태 변경 내역의 감사(Audit) 로그를 기록합니다.</p>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
