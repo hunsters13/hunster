@@ -70,7 +70,7 @@
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
     }
 
-    .auth-container { width: 100%; max-width: 420px; margin: 16px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 14px; box-shadow: var(--shadow-md); }
+    .auth-container { width: 100%; max-width: 460px; margin: 16px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; box-shadow: var(--shadow-md); }
     .auth-container h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; color: #0f172a; }
     .auth-container p { color: var(--text-sub); font-size: 0.78rem; margin-bottom: 14px; }
     .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
@@ -236,14 +236,18 @@
       updateHeaderAuthUI();
     };
 
+    // 📝 개편된 필수 회원가입 처리 함수
     async function handleRegister(event) {
       event.preventDefault();
-      const name = document.getElementById('reg-name').value;
-      const id = document.getElementById('reg-id').value;
-      const pw = document.getElementById('reg-pw').value;
-      const phone = document.getElementById('reg-phone').value;
-      const address = document.getElementById('reg-address').value;
+      const name = document.getElementById('reg-name').value.trim();
+      const id = document.getElementById('reg-id').value.trim();
+      const pw = document.getElementById('reg-pw').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const address = document.getElementById('reg-address').value.trim();
+      const businessNumber = document.getElementById('reg-business-number').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
       const coupangSub = document.getElementById('coupang-sub-select').value;
+      const reason = document.getElementById('reg-reason').value.trim();
       const slotCount = parseInt(document.getElementById('reg-slots').value) || 5;
       
       if (slotCount < 5) { alert('슬롯은 최소 5개 이상부터 신청 가능합니다.'); return; }
@@ -251,12 +255,12 @@
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, id, pw, phone, address, coupangSub, slots: slotCount })
+        body: JSON.stringify({ name, id, pw, phone, address, businessNumber, email, coupangSub, reason, slots: slotCount })
       });
       
       const result = await response.json();
       if(result.success) {
-        alert('회원가입 완료!\n[입금 계좌]\n' + ACCOUNT_INFO.bank + ' ' + ACCOUNT_INFO.accountNumber + ' (' + ACCOUNT_INFO.holder + ')\n\n※ 입금자명과 신청자 성함이 다를 경우 1:1 문의로 꼭 남겨주세요!');
+        alert('🎉 파트너 회원가입 및 슬롯 신청이 완료되었습니다!\n\n[입금 계좌]\n' + ACCOUNT_INFO.bank + ' ' + ACCOUNT_INFO.accountNumber + ' (' + ACCOUNT_INFO.holder + ')\n\n※ 입금자명과 성함이 다를 경우 1:1 문의로 꼭 남겨주세요!');
         trackVisitor(name + ' (회원가입)', id);
         switchView('view-login');
       } else {
@@ -313,6 +317,7 @@
       updateHeaderAuthUI();
     }
 
+    // 관리자 페이지에 신규 가입 항목들이 모두 연동되어 표출되도록 업데이트
     async function loadAdminData() {
       try {
         const res = await fetch('/api/admin/data');
@@ -332,12 +337,20 @@
               
               if(userTbody) {
                 userTbody.innerHTML += `<tr>
-                  <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
-                  <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'}</span></td>
+                  <td>
+                    <strong>${u.name}</strong> <span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span><br>
+                    <span style="font-size:0.73rem; color:var(--text-sub);">📧 ${u.email || '-'}</span>
+                  </td>
+                  <td>
+                    📞 ${u.phone || '-'}<br>
+                    🏢 <span style="font-size:0.73rem;">${u.address || '-'}</span><br>
+                    <span style="font-size:0.7rem; color:var(--primary); font-weight:700;">사업자번호: ${u.businessNumber || '-'}</span>
+                  </td>
                   <td>
                     <span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span><br>
-                    <div style="display:flex; align-items:center; gap:4px; margin-top:3px;">
-                      <input type="number" id="slot-input-${u.id}" value="${u.slots || 5}" style="width:60px; padding:2px 4px; font-size:0.75rem;" class="form-input" min="1">
+                    <span style="font-size:0.72rem; color:var(--text-sub);">💡 사유: ${u.reason || '-'}</span><br>
+                    <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
+                      <input type="number" id="slot-input-${u.id}" value="${u.slots || 5}" style="width:55px; padding:2px 4px; font-size:0.75rem;" class="form-input" min="1">
                       <button class="btn btn-primary" style="padding:2px 5px; font-size:0.65rem;" onclick="updateUserSlots('${u.id}')">변경</button>
                     </div>
                   </td>
@@ -348,8 +361,8 @@
 
               if(taxTbody) {
                 taxTbody.innerHTML += `<tr>
-                  <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
-                  <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'}</span></td>
+                  <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id} / ${u.email || '-'})</span></td>
+                  <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'} (사업자:${u.businessNumber || '-'})</span></td>
                   <td><span style="color:var(--primary); font-weight:700;">${u.service || '쿠팡 트래픽'}</span><br><strong>${u.slots || 5} 슬롯</strong></td>
                   <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus || '발행대기'}</button></td>
                   <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
@@ -464,7 +477,7 @@
       });
       const data = await res.json();
       if (data.success) {
-        alert('🚀 파트너의 슬롯 수량이 성공적으로 변경·승인되었습니다!\n이제 파트너 페이지에 실시간 반영됩니다.');
+        alert('🚀 파트너의 슬롯 수량이 성공적으로 변경·승인되었습니다!');
         loadAdminData();
       } else {
         alert('슬롯 변경에 실패했습니다.');
@@ -605,7 +618,7 @@
         body: JSON.stringify({ author: currentUser.name + ' (' + currentUser.id + ')', userId: currentUser.id, title, content })
       });
 
-      alert(`🚀 ${addCount}슬롯 추가 신청이 관리자에게 전송되었습니다!\n관리자가 확인 후 입금 안내 및 슬롯 확정을 도와드립니다.`);
+      alert(`🚀 ${addCount}슬롯 추가 신청이 관리자에게 전송되었습니다!`);
       document.getElementById('add-slot-form').reset();
       renderUserInquiries(currentUser);
     }
@@ -741,46 +754,68 @@
     </div>
   </div>
 
-  <!-- 회원가입 뷰 -->
+  <!-- 📝 요청사항 반영: 확장되고 최적화된 필수 회원가입 뷰 -->
   <div id="view-register" class="page-view wrapper">
-    <div class="auth-container" style="max-width: 480px;">
+    <div class="auth-container" style="max-width: 520px;">
       <h2>파트너 회원가입 및 슬롯 신청</h2>
-      <p>정보를 입력하시면 담당자 확인 후 슬롯이 배정됩니다.</p>
+      <p>모든 항목을 빠짐없이 입력해 주세요. (필수 입력)</p>
       <form onsubmit="handleRegister(event)" class="form-grid">
         <div class="form-group">
-          <label class="form-label">성함 (대표자명)</label>
+          <label class="form-label">성함 (대표자명) *</label>
           <input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required>
         </div>
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
           <div class="form-group">
-            <label class="form-label">아이디</label>
+            <label class="form-label">아이디 *</label>
             <input type="text" id="reg-id" class="form-input" placeholder="사용할 아이디" required>
           </div>
           <div class="form-group">
-            <label class="form-label">비밀번호</label>
+            <label class="form-label">비밀번호 *</label>
             <input type="password" id="reg-pw" class="form-input" placeholder="비밀번호" required>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">연락처</label>
-          <input type="text" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="form-group">
+            <label class="form-label">전화번호 *</label>
+            <input type="text" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">이메일 주소 *</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="example@email.com" required>
+          </div>
         </div>
+
         <div class="form-group">
-          <label class="form-label">사업장 주소</label>
-          <input type="text" id="reg-address" class="form-input" placeholder="주소 입력" required>
+          <label class="form-label">사업장 주소 *</label>
+          <input type="text" id="reg-address" class="form-input" placeholder="상세 사업장 주소 입력" required>
         </div>
+
         <div class="form-group">
-          <label class="form-label">쿠팡 트래픽 상품 선택</label>
-          <select id="coupang-sub-select" class="form-select">
+          <label class="form-label">사업자번호 *</label>
+          <input type="text" id="reg-business-number" class="form-input" placeholder="000-00-00000" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">쿠팡 트래픽 상품 선택 *</label>
+          <select id="coupang-sub-select" class="form-select" required>
             <option value="industrial">쿠팡 공산품 트래픽</option>
             <option value="agricultural">쿠팡 농산물 트래픽</option>
           </select>
         </div>
+
         <div class="form-group">
-          <label class="form-label">신청 슬롯 수 (최소 5슬롯 이상)</label>
+          <label class="form-label">가입 사유 (왜 가입을 하셨나요?) *</label>
+          <textarea id="reg-reason" class="form-textarea" placeholder="가입 동기 및 목표를 상세히 적어주세요." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">신청 슬롯 수 (최소 5슬롯 이상) *</label>
           <input type="number" id="reg-slots" class="form-input" value="5" min="5" required>
         </div>
-        <button type="submit" class="btn btn-primary" style="margin-top:6px; padding: 10px;">회원가입 및 슬롯 신청 완료</button>
+
+        <button type="submit" class="btn btn-primary" style="margin-top:8px; padding: 11px; font-weight: 700;">회원가입 및 슬롯 신청 완료</button>
       </form>
     </div>
   </div>
@@ -876,17 +911,17 @@
     <!-- 1. 파트너 회원 목록 및 입금 관리 (기본 열림) -->
     <div id="admin-sec-users" class="card-box" style="border-top: 4px solid var(--primary); display: block;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin-bottom: 0;">👥 1. 파트너 회원 목록 및 입금 관리 (슬롯 수량 수정 가능)</h3>
+        <h3 style="margin-bottom: 0;">👥 1. 파트너 회원 목록 및 입금 관리 (가입 정보 연동)</h3>
         <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-users')">닫기 ✕</button>
       </div>
-      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너 정보와 입금을 관리하며, 슬롯 수량을 직접 입력하고 변경하여 파트너 페이지에 실시간 반영할 수 있습니다.</p>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너가 가입 시 입력한 모든 정보(이메일, 사업자번호, 가입사유 등)가 실시간으로 반영됩니다.</p>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
             <tr>
-              <th>파트너 정보</th>
-              <th>연락처 / 주소</th>
-              <th>서비스 / 슬롯수정</th>
+              <th>파트너 정보 (성함/ID/이메일)</th>
+              <th>연락처 / 주소 / 사업자번호</th>
+              <th>상품 / 가입사유 / 슬롯수정</th>
               <th>입금 상태</th>
               <th>관리</th>
             </tr>
