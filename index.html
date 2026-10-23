@@ -177,7 +177,6 @@
       if(mobileNav) mobileNav.classList.toggle('active');
     }
 
-    // 관리자 섹션 열기/닫기(토글) 함수
     function toggleAdminSec(secId) {
       const el = document.getElementById(secId);
       if (el) {
@@ -456,7 +455,6 @@
       loadAdminData();
     }
 
-    // 관리자 슬롯 변경 및 승인 함수
     async function updateUserSlots(userId) {
       const inputVal = document.getElementById('slot-input-' + userId).value;
       const res = await fetch('/api/admin/update-slots', {
@@ -503,3 +501,528 @@
         body: JSON.stringify({ id })
       });
       alert('문의가 삭제되었습니다.');
+      loadAdminData();
+    }
+
+    async function renderUserDashboard(user) {
+      try {
+        const res = await fetch('/api/admin/data');
+        const data = await res.json();
+        if (data.users) {
+          const latestUser = data.users.find(u => u.id === user.id);
+          if (latestUser) {
+            currentUser = latestUser;
+            localStorage.setItem('hunster_user', JSON.stringify(currentUser));
+            user = latestUser;
+          }
+        }
+      } catch (e) {}
+
+      document.getElementById('my-name').innerText = user.name + ' 파트너님';
+      document.getElementById('my-phone').innerText = user.phone || '-';
+      document.getElementById('my-address').innerText = user.address || '-';
+      document.getElementById('my-service').innerText = user.service || '쿠팡 트래픽';
+      document.getElementById('my-slots').innerText = (user.slots || 5) + ' 슬롯 활성 가동 중';
+      
+      const slotsNum = user.slots || 5;
+      document.getElementById('my-traffic-count').innerText = "현재 " + slotsNum + "슬롯 정상 가동 중 (실시간 활성)";
+      
+      const depositEl = document.getElementById('my-deposit-status');
+      if (depositEl) {
+        depositEl.innerText = user.depositStatus || '입금대기';
+        depositEl.className = 'badge-status ' + (user.depositStatus === '입금완료' ? 'status-complete' : 'status-pending');
+      }
+      
+      const taxEl = document.getElementById('my-tax-status');
+      if (taxEl) {
+        taxEl.innerText = user.taxStatus || '발행대기';
+        taxEl.className = 'badge-status ' + (user.taxStatus === '발행완료' ? 'status-complete' : 'status-pending');
+      }
+      
+      const accountInfoBox = document.getElementById('account-info-box');
+      if (accountInfoBox) {
+        accountInfoBox.innerHTML = `입금 계좌: <strong>${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber}</strong> (${ACCOUNT_INFO.holder}) <button class="btn" style="padding:2px 6px; font-size:0.7rem; margin-left:4px;" onclick="copyAccountNumber()">복사</button><br><span style="color:var(--danger); font-size:0.72rem; margin-top:3px; display:inline-block;">※ 입금자명이 다를 경우 1:1 문의로 남겨주세요.</span>`;
+      }
+
+      renderUserInquiries(user);
+    }
+
+    async function renderUserInquiries(user) {
+      try {
+        const res = await fetch('/api/inquiries?id=' + user.id);
+        const myInqList = await res.json();
+        let container = document.getElementById('my-inquiry-list');
+        container.innerHTML = '';
+        
+        if(!myInqList || myInqList.length === 0) {
+          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
+          return;
+        }
+
+        myInqList.forEach(inq => {
+          container.innerHTML += `<div style="border:1px solid var(--border); padding:8px; border-radius:7px; margin-bottom:6px; background:white;">
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-sub); margin-bottom:3px;">
+              <span>작성일: ${inq.date}</span>
+              <span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span>
+            </div>
+            <div style="font-weight:700; font-size:0.82rem; margin-bottom:2px;">${inq.title}</div>
+            <div style="font-size:0.8rem; color:var(--text-main); margin-bottom:5px;">${inq.content}</div>
+            ${inq.reply ? `<div style="background:var(--primary-light); padding:6px; border-radius:5px; font-size:0.75rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
+          </div>`;
+        });
+      } catch(e) {}
+    }
+
+    async function handleNewInquiry(event) {
+      event.preventDefault();
+      if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
+      
+      const title = document.getElementById('inq-title').value;
+      const content = document.getElementById('inq-content').value;
+      
+      await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author: currentUser.name + ' (' + currentUser.id + ')', userId: currentUser.id, title, content })
+      });
+
+      alert('1:1 문의가 등록되었습니다.');
+      document.getElementById('inquiry-form').reset();
+      renderUserInquiries(currentUser);
+    }
+
+    async function handleAddSlotRequest(event) {
+      event.preventDefault();
+      if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
+
+      const addCount = document.getElementById('add-slot-count').value;
+      const title = `[슬롯 추가 신청] ${addCount}슬롯 추가 요청`;
+      const content = `안녕하세요! 현재 가동 중인 ${currentUser.service || '쿠팡 트래픽'} 상품에 **추가로 ${addCount}슬롯**을 더 연장·유치하고 싶습니다. 입금 안내 부탁드립니다!`;
+
+      await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author: currentUser.name + ' (' + currentUser.id + ')', userId: currentUser.id, title, content })
+      });
+
+      alert(`🚀 ${addCount}슬롯 추가 신청이 관리자에게 전송되었습니다!\n관리자가 확인 후 입금 안내 및 슬롯 확정을 도와드립니다.`);
+      document.getElementById('add-slot-form').reset();
+      renderUserInquiries(currentUser);
+    }
+  </script>
+</head>
+<body>
+
+  <header>
+    <a class="logo-area" onclick="goHome()">
+      <div class="logo-icon">H</div>
+      <div class="logo-text-box">
+        <span class="logo-main-title">HUNSTER</span>
+        <span class="logo-sub-title">Traffic & Slots</span>
+      </div>
+    </a>
+    
+    <div class="header-right">
+      <div class="bgm-player-box">
+        <span class="bgm-label">🎵 BGM</span>
+        <a href="https://www.youtube.com/watch?v=YTdupRzvQ5M&list=RDYTdupRzvQ5M&start_radio=1" target="_blank" class="bgm-btn">Puzzle 시청</a>
+      </div>
+      <div id="auth-actions-container" class="auth-actions"></div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </div>
+    
+    <div id="mobile-nav" class="mobile-nav"></div>
+  </header>
+
+  <!-- 메인 홈 뷰 -->
+  <div id="view-main" class="page-view active wrapper">
+    <section class="hero">
+      <span class="hero-badge">ENTERPRISE TRAFFIC SYSTEM</span>
+      <h1>안정적인 쿠팡 트래픽 & 슬롯 솔루션<br>HUNSTER와 함께 시작하세요</h1>
+      <p>실시간 가동률 모니터링과 체계적인 파트너 관리를 통해 최고의 비즈니스 성과를 제공합니다.</p>
+      <div style="display:flex; justify-content:center; gap:8px;">
+        <button class="btn btn-primary" onclick="switchView('view-register')" style="padding: 10px 18px; font-size: 0.9rem;">파트너 회원가입</button>
+        <button class="btn" onclick="switchView('view-login')" style="padding: 10px 18px; font-size: 0.9rem;">로그인</button>
+      </div>
+    </section>
+
+    <!-- 🟢 시스템 실시간 서버 상태 관제 카드 -->
+    <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155; box-shadow: var(--shadow-md);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+        <h3 style="margin-bottom: 0; color: #ffffff; font-size: 1.05rem; display: flex; align-items: center; gap: 6px;">
+          <span>🟢</span> 시스템 실시간 관제 센터
+        </h3>
+        <span style="font-size: 0.7rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid rgba(16, 185, 129, 0.3);">⚡ ALL SYSTEMS NORMAL</span>
+      </div>
+
+      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
+        <span style="font-weight: 600;">쿠팡 공산품 트래픽 라우터</span>
+        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 정상 가동 중</span>
+      </div>
+      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
+        <span style="font-weight: 600;">쿠팡 농산물 트래픽 라우터</span>
+        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 정상 가동 중</span>
+      </div>
+      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
+        <span style="font-weight: 600;">실시간 순위 추적 엔진</span>
+        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 연동 완료</span>
+      </div>
+    </div>
+
+    <!-- 💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 가이드 -->
+    <div class="card-box">
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 가이드</h3>
+      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px; word-break: keep-all; line-height: 1.5;">
+        쿠팡 알고리즘의 본질과 소비자 구매 심리를 관통하는 필수 요충지입니다. 안정적인 슬롯 성과 극대화를 위해 반드시 숙지하고 적용해야 합니다.
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- 1. 상품성 -->
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 5px solid var(--primary); border-radius: 10px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.9rem; font-weight: 800; color: var(--primary);">01. 상품성 (Product Competitiveness)</span>
+            <span style="font-size: 0.68rem; font-weight: 700; background: var(--primary-light); color: var(--primary); padding: 3px 8px; border-radius: 6px;">CVR 핵심 지표</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 8px;">
+            <strong style="color: var(--text-main);">왜 가장 중요하고 필수적인가?:</strong> 쿠팡의 대규모 검색 및 노출 알고리즘은 단순한 유입(클릭) 수치보다 <strong>'최종 구매 전환율(CVR)'</strong>과 상세페이지 체류 시간을 훨씬 더 높은 가중치로 평가합니다.
+          </p>
+          <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
+            <strong>전문가 근거:</strong> 아무리 강력한 슬롯 트래픽을 집중적으로 주입하더라도, 상품 자체의 가격 경쟁력이 떨어지거나 상세페이지의 USP와 리뷰 신뢰도가 미흡하여 이탈률이 치솟으면 알고리즘은 해당 상품의 점수를 급격히 하락시킵니다. 매력적인 스펙과 탄탄한 가격 구조가 뒷받침되어야 트래픽 유입이 실질적이고 지속적인 순위 급상승으로 이어집니다.
+          </p>
+        </div>
+
+        <!-- 2. 최신성 -->
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 5px solid #059669; border-radius: 10px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.9rem; font-weight: 800; color: #059669;">02. 최신성 (Recency & Freshness)</span>
+            <span style="font-size: 0.68rem; font-weight: 700; background: #ecfdf5; color: #059669; padding: 3px 8px; border-radius: 6px;">초기 가점 부여</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 8px;">
+            <strong style="color: var(--text-main);">왜 시장 변화에 민첩해야 하는가?:</strong> 쿠팡 시스템은 신규 등록 상품이나 최근 데이터가 활발히 갱신되는 리스트에 대해 검색 알고리즘 상의 <strong>'초기 가점'</strong>과 테스트 노출 기회를 부여합니다.
+          </p>
+          <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
+            <strong>전문가 근거:</strong> 시장의 트렌드 속도에 맞춰 상품명 키워드 최적화, 상세 이미지 개선, 재고 상태 관리 등을 정체시키지 않고 주기적으로 업데이트하는 계정은 알고리즘의 간택을 받을 확률이 압도적으로 높습니다. 정지된 데이터보다 살아 숨 쉬는 최신 데이터를 유지하는 것이 상위 랭킹 안착의 지름길입니다.
+          </p>
+        </div>
+
+        <!-- 3. 쿠폰매김 -->
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 5px solid #d97706; border-radius: 10px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.9rem; font-weight: 800; color: #d97706;">03. 쿠폰매김 (Coupon & Pricing Strategy)</span>
+            <span style="font-size: 0.68rem; font-weight: 700; background: #fffbeb; color: #d97706; padding: 3px 8px; border-radius: 6px;">클릭 및 전환 폭발 부스터</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 8px;">
+            <strong style="color: var(--text-main);">왜 구매 심리를 자극해야 하는가?:</strong> 쿠팡을 이용하는 핵심 소비층은 검색 결과 목록에서 눈에 띄는 <strong>'즉시 할인 배지'</strong>와 <strong>'쿠폰 적용가'</strong>에 극도로 민감하게 반응합니다.
+          </p>
+          <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
+            <strong>전문가 근거:</strong> 쿠폰을 적용하여 체감 가격을 파격적으로 낮추는 전략은 검색 결과에서의 **CTR(클릭률)**을 단숨에 끌어올리며, 최종 결제 단계로 진입하는 전환율을 폭발적으로 가속화합니다. 슬롯 트래픽을 가동하는 타이밍에 쿠폰 전략을 함께 맞물리게 하면 알고리즘이 감지하는 속도 지표가 극대화되어 최단 기간 내 목표 순위를 달성할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그인 뷰 -->
+  <div id="view-login" class="page-view wrapper">
+    <div class="auth-container">
+      <h2>파트너 로그인</h2>
+      <p>HUNSTER 파트너 전용 시스템에 접속하세요.</p>
+      <form onsubmit="handleLogin(event)" class="form-grid">
+        <div class="form-group">
+          <label class="form-label">아이디</label>
+          <input type="text" id="login-id" class="form-input" placeholder="아이디 입력" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input type="password" id="login-pw" class="form-input" placeholder="비밀번호 입력" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:6px; padding: 10px;">로그인</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 회원가입 뷰 -->
+  <div id="view-register" class="page-view wrapper">
+    <div class="auth-container" style="max-width: 480px;">
+      <h2>파트너 회원가입 및 슬롯 신청</h2>
+      <p>정보를 입력하시면 담당자 확인 후 슬롯이 배정됩니다.</p>
+      <form onsubmit="handleRegister(event)" class="form-grid">
+        <div class="form-group">
+          <label class="form-label">성함 (대표자명)</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="form-group">
+            <label class="form-label">아이디</label>
+            <input type="text" id="reg-id" class="form-input" placeholder="사용할 아이디" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">비밀번호</label>
+            <input type="password" id="reg-pw" class="form-input" placeholder="비밀번호" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">연락처</label>
+          <input type="text" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">사업장 주소</label>
+          <input type="text" id="reg-address" class="form-input" placeholder="주소 입력" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">쿠팡 트래픽 상품 선택</label>
+          <select id="coupang-sub-select" class="form-select">
+            <option value="industrial">쿠팡 공산품 트래픽</option>
+            <option value="agricultural">쿠팡 농산물 트래픽</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">신청 슬롯 수 (최소 5슬롯 이상)</label>
+          <input type="number" id="reg-slots" class="form-input" value="5" min="5" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:6px; padding: 10px;">회원가입 및 슬롯 신청 완료</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 사용자 대시보드 뷰 -->
+  <div id="view-user-dashboard" class="page-view dashboard-container">
+    <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
+      <h3 id="my-name" style="color: white; font-size: 1.2rem; margin-bottom: 4px;">파트너님</h3>
+      <p id="my-traffic-count" style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 10px;">현재 5슬롯 정상 가동 중 (실시간 활성)</p>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.8rem;">
+        <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">연락처: <span id="my-phone">-</span></span>
+        <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">주소: <span id="my-address">-</span></span>
+      </div>
+    </div>
+
+    <div class="status-section-grid">
+      <div class="card-box">
+        <h3>📊 내 서비스 현황</h3>
+        <div class="server-status-item">
+          <span>이용 상품</span>
+          <strong id="my-service" style="color:var(--primary);">쿠팡 트래픽</strong>
+        </div>
+        <div class="server-status-item">
+          <span>가동 슬롯</span>
+          <strong id="my-slots" style="color:var(--success);">5 슬롯 활성 가동 중</strong>
+        </div>
+        <div class="server-status-item">
+          <span>입금 상태</span>
+          <span id="my-deposit-status" class="badge-status status-pending">입금대기</span>
+        </div>
+        <div class="server-status-item">
+          <span>세금계산서</span>
+          <span id="my-tax-status" class="badge-status status-pending">발행대기</span>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h3>💳 입금 안내 계좌</h3>
+        <p id="account-info-box" style="font-size: 0.8rem; line-height: 1.6; color: var(--text-main); margin-bottom: 10px;"></p>
+        <form id="add-slot-form" onsubmit="handleAddSlotRequest(event)" style="border-top: 1px solid var(--border); padding-top: 10px;">
+          <h4 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 6px;">🚀 슬롯 추가 연장 신청</h4>
+          <div style="display:flex; gap:6px;">
+            <input type="number" id="add-slot-count" class="form-input" value="5" min="1" placeholder="추가 슬롯수" style="font-size: 0.8rem;">
+            <button type="submit" class="btn btn-primary" style="font-size: 0.78rem; white-space: nowrap;">추가 신청</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h3>💬 1:1 고객 문의 및 관리자 소통</h3>
+      <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-bottom: 14px;">
+        <div class="form-group" style="margin-bottom: 6px;">
+          <input type="text" id="inq-title" class="form-input" placeholder="문의 제목을 입력하세요" required style="font-size: 0.8rem;">
+        </div>
+        <div class="form-group" style="margin-bottom: 6px;">
+          <textarea id="inq-content" class="form-textarea" placeholder="문의 내용을 자세히 남겨주세요." required style="font-size: 0.8rem;"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">문의 등록하기</button>
+      </form>
+
+      <h4 style="font-size: 0.9rem; font-weight: 800; margin-bottom: 8px;">내 문의 및 답변 내역</h4>
+      <div id="my-inquiry-list">
+        <p style="font-size: 0.8rem; color: var(--text-sub);">작성한 문의 내역이 없습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 관리자 대시보드 뷰 -->
+  <div id="view-admin" class="page-view dashboard-container">
+    <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155;">
+      <h3 style="color: white; font-size: 1.15rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+        <span>👑</span> 최고관리자 통합 관제센터
+      </h3>
+      <p id="admin-total-slot-summary" style="font-size: 0.85rem; color: #94a3b8;">전체 파트너 슬롯 현황을 실시간 집계 중입니다...</p>
+    </div>
+
+    <!-- ⚡ 관리자 퀵 메뉴 (클릭 시 해당 섹션 열기 / 닫기 토글) -->
+    <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm);">
+      <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
+        <span>⚡</span> 섹션 열기/닫기 퀵 메뉴 (클릭하여 펼치기·접기)
+      </h4>
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="admin-quick-nav">
+        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-users')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">👥 회원&입금</button>
+        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-tax')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🧾 세금계산서</button>
+        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-slots')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🔥 슬롯현황</button>
+        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-inquiry')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">💬 1:1문의</button>
+        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-iplog')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🔒 접속IP로그</button>
+        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-statuslog')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">📋 감사로그</button>
+      </div>
+    </div>
+
+    <!-- 1. 파트너 회원 목록 및 입금 관리 (기본 열림) -->
+    <div id="admin-sec-users" class="card-box" style="border-top: 4px solid var(--primary); display: block;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin-bottom: 0;">👥 1. 파트너 회원 목록 및 입금 관리 (슬롯 수량 수정 가능)</h3>
+        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-users')">닫기 ✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너 정보와 입금을 관리하며, 슬롯 수량을 직접 입력하고 변경하여 파트너 페이지에 실시간 반영할 수 있습니다.</p>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>파트너 정보</th>
+              <th>연락처 / 주소</th>
+              <th>서비스 / 슬롯수정</th>
+              <th>입금 상태</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="admin-user-tbody">
+            <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. 세금 계산서 관리 (기본 닫힘) -->
+    <div id="admin-sec-tax" class="card-box" style="border-top: 4px solid #059669; display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin-bottom: 0;">🧾 2. 파트너 세금 계산서 관리</h3>
+        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-tax')">닫기 ✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너사별 세금계산서 발행 요청 및 발행 완료 상태를 집중 관리합니다.</p>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>파트너 정보</th>
+              <th>연락처 / 주소</th>
+              <th>서비스 / 슬롯</th>
+              <th>세금계산서 발행 상태</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tax-tbody">
+            <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. 실시간 가동 중인 파트너별 슬롯 현황 (기본 닫힘) -->
+    <div id="admin-sec-slots" class="card-box" style="border-top: 4px solid #d97706; display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin-bottom: 0;">🔥 3. 실시간 가동 중인 파트너별 슬롯 현황</h3>
+        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-slots')">닫기 ✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">각 파트너사별로 현재 활성화되어 구동 중인 슬롯 수량을 모니터링합니다.</p>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>파트너명 (아이디)</th>
+              <th>트래픽 상품</th>
+              <th>가동 슬롯량</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="admin-slot-tbody">
+            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. 파트너 1:1 문의 답변 관리 (기본 닫힘) -->
+    <div id="admin-sec-inquiry" class="card-box" style="border-top: 4px solid #7c3aed; display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin-bottom: 0;">💬 4. 파트너 1:1 문의 답변 관리</h3>
+        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-inquiry')">닫기 ✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너들이 남긴 1:1 문의 사항을 확인하고 피드백을 답변합니다.</p>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>작성자</th>
+              <th>문의 내용</th>
+              <th>처리 상태</th>
+              <th>관리 및 답변</th>
+            </tr>
+          </thead>
+          <tbody id="admin-inquiry-tbody">
+            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 5. 방문자 접속 IP 로그 실시간 모니터링 (기본 닫힘) -->
+    <div id="admin-sec-iplog" class="card-box" style="border-top: 4px solid #0284c7; display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin-bottom: 0;">🔒 5. 방문자 접속 IP 로그 실시간 모니터링</h3>
+        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-iplog')">닫기 ✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">웹사이트에 접속한 방문자 및 회원들의 IP와 접속 기기 환경을 실시간으로 추적합니다.</p>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>접속 IP</th>
+              <th>방문자 / 회원명</th>
+              <th>기기 환경</th>
+              <th>접속 시간</th>
+            </tr>
+          </thead>
+          <tbody id="admin-ip-tbody">
+            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">기록된 접속 로그가 없습니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 6. 파트너 상태 변경 이력 감사 로그 (기본 닫힘) -->
+    <div id="admin-sec-statuslog" class="card-box" style="border-top: 4px solid #e11d48; display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin-bottom: 0;">📋 6. 파트너 상태 변경 이력 감사 로그</h3>
+        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-statuslog')">닫기 ✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">관리자가 처리한 입금 및 세금계산서 상태 변경 내역의 감사(Audit) 로그를 기록합니다.</p>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>대상 파트너</th>
+              <th>변경 항목</th>
+              <th>변경 상태</th>
+              <th>처리 시간</th>
+            </tr>
+          </thead>
+          <tbody id="admin-status-log-tbody">
+            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© HUNSTER Enterprise Traffic & Slot Operations. All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>
