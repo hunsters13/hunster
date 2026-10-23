@@ -107,6 +107,7 @@
       .card-box { padding: 12px; border-radius: 9px; margin-bottom: 10px; }
       .dashboard-container { padding: 0 2px; }
       .btn { padding: 5px 8px; font-size: 0.78rem; }
+      #admin-quick-nav { grid-template-columns: repeat(2, 1fr) !important; }
     }
   </style>
   <script>
@@ -305,7 +306,6 @@
         const res = await fetch('/api/admin/data');
         const data = await res.json();
         
-        // 1. 파트너 회원 목록 및 입금 관리 테이블 렌더링
         let userTbody = document.getElementById('admin-user-tbody');
         let taxTbody = document.getElementById('admin-tax-tbody');
 
@@ -344,7 +344,6 @@
           }
         }
 
-        // 3. 실시간 가동 중인 파트너별 슬롯 현황
         let slotTbody = document.getElementById('admin-slot-tbody');
         if(slotTbody) {
           slotTbody.innerHTML = '';
@@ -369,7 +368,6 @@
           }
         }
 
-        // 4. 파트너 1:1 문의 답변 관리
         let inqTbody = document.getElementById('admin-inquiry-tbody');
         if(inqTbody) {
           inqTbody.innerHTML = '';
@@ -393,7 +391,6 @@
           }
         }
 
-        // 5. 방문자 접속 IP 로그 실시간 모니터링
         let ipTbody = document.getElementById('admin-ip-tbody');
         if(ipTbody && data.ipLogs) {
           ipTbody.innerHTML = '';
@@ -411,7 +408,6 @@
           }
         }
 
-        // 6. 파트너 상태 변경 이력 감사 로그
         let statusLogTbody = document.getElementById('admin-status-log-tbody');
         if(statusLogTbody && data.statusLogs) {
           statusLogTbody.innerHTML = '';
@@ -819,7 +815,7 @@
     </div>
   </div>
 
-  <!-- 관리자 대시보드 뷰 (요청하신 순서대로 상단 분리 및 재정렬 완료) -->
+  <!-- 관리자 대시보드 뷰 -->
   <div id="view-admin" class="page-view dashboard-container">
     <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155;">
       <h3 style="color: white; font-size: 1.15rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
@@ -828,8 +824,23 @@
       <p id="admin-total-slot-summary" style="font-size: 0.85rem; color: #94a3b8;">전체 파트너 슬롯 현황을 실시간 집계 중입니다...</p>
     </div>
 
+    <!-- ⚡ 관리자 퀵 내비게이션 (빠른 섹션 이동 메뉴 바) -->
+    <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm);">
+      <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
+        <span>⚡</span> 빠른 섹션 이동 퀵 메뉴
+      </h4>
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="admin-quick-nav">
+        <a href="#admin-sec-users" class="btn" style="text-align: center; text-decoration: none; font-size: 0.73rem; padding: 7px 4px; font-weight: 700;">👥 회원&입금</a>
+        <a href="#admin-sec-tax" class="btn" style="text-align: center; text-decoration: none; font-size: 0.73rem; padding: 7px 4px; font-weight: 700;">🧾 세금계산서</a>
+        <a href="#admin-sec-slots" class="btn" style="text-align: center; text-decoration: none; font-size: 0.73rem; padding: 7px 4px; font-weight: 700;">🔥 슬롯현황</a>
+        <a href="#admin-sec-inquiry" class="btn" style="text-align: center; text-decoration: none; font-size: 0.73rem; padding: 7px 4px; font-weight: 700;">💬 1:1문의</a>
+        <a href="#admin-sec-iplog" class="btn" style="text-align: center; text-decoration: none; font-size: 0.73rem; padding: 7px 4px; font-weight: 700;">🔒 접속IP로그</a>
+        <a href="#admin-sec-statuslog" class="btn" style="text-align: center; text-decoration: none; font-size: 0.73rem; padding: 7px 4px; font-weight: 700;">📋 감사로그</a>
+      </div>
+    </div>
+
     <!-- 1. 파트너 회원 목록 및 입금 관리 -->
-    <div class="card-box" style="border-top: 4px solid var(--primary);">
+    <div id="admin-sec-users" class="card-box" style="border-top: 4px solid var(--primary); scroll-margin-top: 75px;">
       <h3>👥 1. 파트너 회원 목록 및 입금 관리</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">등록된 파트너 회원 정보와 입금 완료 여부를 확인하고 실시간으로 상태를 관리합니다.</p>
       <div class="data-table-wrapper">
@@ -851,7 +862,7 @@
     </div>
 
     <!-- 2. 세금 계산서 관리 -->
-    <div class="card-box" style="border-top: 4px solid #059669;">
+    <div id="admin-sec-tax" class="card-box" style="border-top: 4px solid #059669; scroll-margin-top: 75px;">
       <h3>🧾 2. 파트너 세금 계산서 관리</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너사별 세금계산서 발행 요청 및 발행 완료 상태를 집중 관리합니다.</p>
       <div class="data-table-wrapper">
@@ -873,7 +884,7 @@
     </div>
 
     <!-- 3. 실시간 가동 중인 파트너별 슬롯 현황 -->
-    <div class="card-box" style="border-top: 4px solid #d97706;">
+    <div id="admin-sec-slots" class="card-box" style="border-top: 4px solid #d97706; scroll-margin-top: 75px;">
       <h3>🔥 3. 실시간 가동 중인 파트너별 슬롯 현황</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">각 파트너사별로 현재 활성화되어 구동 중인 슬롯 수량을 모니터링합니다.</p>
       <div class="data-table-wrapper">
@@ -894,7 +905,7 @@
     </div>
 
     <!-- 4. 파트너 1:1 문의 답변 관리 -->
-    <div class="card-box" style="border-top: 4px solid #7c3aed;">
+    <div id="admin-sec-inquiry" class="card-box" style="border-top: 4px solid #7c3aed; scroll-margin-top: 75px;">
       <h3>💬 4. 파트너 1:1 문의 답변 관리</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">파트너들이 남긴 1:1 문의 사항을 확인하고 피드백을 답변합니다.</p>
       <div class="data-table-wrapper">
@@ -915,7 +926,7 @@
     </div>
 
     <!-- 5. 방문자 접속 IP 로그 실시간 모니터링 -->
-    <div class="card-box" style="border-top: 4px solid #0284c7;">
+    <div id="admin-sec-iplog" class="card-box" style="border-top: 4px solid #0284c7; scroll-margin-top: 75px;">
       <h3>🔒 5. 방문자 접속 IP 로그 실시간 모니터링</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">웹사이트에 접속한 방문자 및 회원들의 IP와 접속 기기 환경을 실시간으로 추적합니다.</p>
       <div class="data-table-wrapper">
@@ -936,7 +947,7 @@
     </div>
 
     <!-- 6. 파트너 상태 변경 이력 감사 로그 -->
-    <div class="card-box" style="border-top: 4px solid #e11d48;">
+    <div id="admin-sec-statuslog" class="card-box" style="border-top: 4px solid #e11d48; scroll-margin-top: 75px;">
       <h3>📋 6. 파트너 상태 변경 이력 감사 로그</h3>
       <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px;">관리자가 처리한 입금 및 세금계산서 상태 변경 내역의 감사(Audit) 로그를 기록합니다.</p>
       <div class="data-table-wrapper">
