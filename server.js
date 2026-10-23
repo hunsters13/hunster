@@ -133,6 +133,29 @@ app.post('/api/admin/status', (req, res) => {
   }
 });
 
+// 파트너 슬롯 수량 수정 및 승인 (관리자용)
+app.post('/api/admin/update-slots', (req, res) => {
+  const { userId, slots } = req.body;
+  const user = db.users.find(u => u.id === userId);
+  if (user) {
+    user.slots = parseInt(slots) || user.slots;
+    
+    db.statusLogs.unshift({
+      name: user.name,
+      userId: user.id,
+      type: '슬롯 수량 변경',
+      status: `${user.slots} 슬롯으로 확정`,
+      time: new Date().toLocaleString()
+    });
+    if (db.statusLogs.length > 50) db.statusLogs.pop();
+
+    saveDatabase();
+    res.json({ success: true, user });
+  } else {
+    res.json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+  }
+});
+
 // 회원 삭제
 app.post('/api/admin/delete-user', (req, res) => {
   const { userId } = req.body;
@@ -186,7 +209,7 @@ app.post('/api/admin/delete-inquiry', (req, res) => {
   res.json({ success: true });
 });
 
-// 서버 실행 및 Self-Ping
+// 서버 실행 및 Self-Ping (14분 간격)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`HUNSTER Server running on port ${PORT}`);
