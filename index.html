@@ -236,7 +236,6 @@
       updateHeaderAuthUI();
     };
 
-    // 📝 개편된 필수 회원가입 처리 함수
     async function handleRegister(event) {
       event.preventDefault();
       const name = document.getElementById('reg-name').value.trim();
@@ -317,7 +316,6 @@
       updateHeaderAuthUI();
     }
 
-    // 관리자 페이지에 신규 가입 항목들이 모두 연동되어 표출되도록 업데이트
     async function loadAdminData() {
       try {
         const res = await fetch('/api/admin/data');
@@ -659,26 +657,53 @@
       </div>
     </section>
 
-    <!-- 🟢 시스템 실시간 서버 상태 관제 카드 -->
-    <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155; box-shadow: var(--shadow-md);">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-        <h3 style="margin-bottom: 0; color: #ffffff; font-size: 1.05rem; display: flex; align-items: center; gap: 6px;">
-          <span>🟢</span> 시스템 실시간 관제 센터
+    <!-- 🟢 화려하게 업그레이드된 시스템 실시간 서버 상태 관제 카드 -->
+    <div class="card-box" style="background: linear-gradient(135deg, #090d16 0%, #1e293b 100%); color: white; border: 1px solid #334155; box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
+      <div style="position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px;">
+        <h3 style="margin-bottom: 0; color: #ffffff; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px;">
+          <span style="font-size: 1.15rem; filter: drop-shadow(0 0 6px rgba(16,185,129,0.8));">🟢</span> 시스템 실시간 관제 센터
         </h3>
-        <span style="font-size: 0.7rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid rgba(16, 185, 129, 0.3);">⚡ ALL SYSTEMS NORMAL</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="pulse-dot" style="width: 8px; height: 8px; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+          <span style="font-size: 0.72rem; font-weight: 800; color: #34d399; background: rgba(16, 185, 129, 0.15); padding: 4px 12px; border-radius: 20px; letter-spacing: 0.8px; border: 1px solid rgba(16, 185, 129, 0.4);">⚡ ALL SYSTEMS NORMAL</span>
+        </div>
       </div>
 
-      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
-        <span style="font-weight: 600;">쿠팡 공산품 트래픽 라우터</span>
-        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 정상 가동 중</span>
-      </div>
-      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
-        <span style="font-weight: 600;">쿠팡 농산물 트래픽 라우터</span>
-        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 정상 가동 중</span>
-      </div>
-      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
-        <span style="font-weight: 600;">실시간 순위 추적 엔진</span>
-        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 연동 완료</span>
+      <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+        <div class="server-status-item" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.9rem;">📦</span>
+            <span style="font-weight: 700; color: #f8fafc; font-size: 0.85rem;">쿠팡 공산품 트래픽 라우터</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.7rem; color: #94a3b8; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px;">LATENCY: 12ms</span>
+            <span style="display:flex; align-items:center; gap:5px; font-weight:800; color:#34d399; font-size: 0.8rem;"><span class="pulse-dot"></span> 정상 가동 중</span>
+          </div>
+        </div>
+
+        <div class="server-status-item" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.9rem;">🌾</span>
+            <span style="font-weight: 700; color: #f8fafc; font-size: 0.85rem;">쿠팡 농산물 트래픽 라우터</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.7rem; color: #94a3b8; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px;">LATENCY: 14ms</span>
+            <span style="display:flex; align-items:center; gap:5px; font-weight:800; color:#34d399; font-size: 0.8rem;"><span class="pulse-dot"></span> 정상 가동 중</span>
+          </div>
+        </div>
+
+        <div class="server-status-item" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.9rem;">⚡</span>
+            <span style="font-weight: 700; color: #f8fafc; font-size: 0.85rem;">실시간 순위 추적 엔진</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.7rem; color: #94a3b8; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px;">SYNC: REAL-TIME</span>
+            <span style="display:flex; align-items:center; gap:5px; font-weight:800; color:#60a5fa; font-size: 0.8rem;"><span class="pulse-dot" style="background:#60a5fa; box-shadow:0 0 0 rgba(96,165,250,0.4);"></span> 연동 완료</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -754,7 +779,7 @@
     </div>
   </div>
 
-  <!-- 📝 요청사항 반영: 확장되고 최적화된 필수 회원가입 뷰 -->
+  <!-- 회원가입 뷰 -->
   <div id="view-register" class="page-view wrapper">
     <div class="auth-container" style="max-width: 520px;">
       <h2>파트너 회원가입 및 슬롯 신청</h2>
