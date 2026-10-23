@@ -58,9 +58,9 @@
     .hero h1 { font-size: 1.45rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 10px; word-break: keep-all; }
     .hero p { font-size: 0.85rem; color: var(--text-sub); max-width: 580px; margin: 0 auto 16px auto; word-break: keep-all; }
     
-    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
+    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
     .card-box h3 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; color: #0f172a; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; gap: 6px; }
+    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; gap: 6px; }
     .server-status-item:last-child { border-bottom: none; }
 
     .pulse-dot { width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 0 rgba(5, 150, 105, 0.4); animation: pulse 1.6s infinite; }
@@ -107,7 +107,6 @@
       .card-box { padding: 12px; border-radius: 9px; margin-bottom: 10px; }
       .dashboard-container { padding: 0 2px; }
       .btn { padding: 5px 8px; font-size: 0.78rem; }
-      #strategy-grid { grid-template-columns: 1fr !important; }
     }
   </style>
   <script>
@@ -583,6 +582,7 @@
     <div id="mobile-nav" class="mobile-nav"></div>
   </header>
 
+  <!-- 메인 홈 뷰 -->
   <div id="view-main" class="page-view active wrapper">
     <section class="hero">
       <span class="hero-badge">ENTERPRISE TRAFFIC SYSTEM</span>
@@ -594,8 +594,12 @@
       </div>
     </section>
 
+    <!-- 시스템 실시간 서버 상태 카드 -->
     <div class="card-box">
-      <h3>🟢 시스템 실시간 서버 상태</h3>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <h3 style="margin-bottom: 0;">🟢 시스템 실시간 서버 상태</h3>
+        <span style="font-size: 0.68rem; font-weight: 700; color: var(--success); background: var(--success-bg); padding: 2px 8px; border-radius: 12px;">ALL SYSTEMS NORMAL</span>
+      </div>
       <div class="server-status-item">
         <span>쿠팡 공산품 트래픽 라우터</span>
         <span style="display:flex; align-items:center; gap:5px; font-weight:700; color:var(--success);"><span class="pulse-dot"></span> 정상 가동 중</span>
@@ -610,36 +614,54 @@
       </div>
     </div>
 
-    <!-- 💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 가이드 (메인 하단 추가) -->
+    <!-- 💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 (세로형 고급 카드 디자인) -->
     <div class="card-box">
-      <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략</h3>
-      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 12px; word-break: keep-all;">
+      <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략</h3>
+      <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 16px; word-break: keep-all; line-height: 1.5;">
         쿠팡 알고리즘과 소비자 구매 심리를 관통하는 필수 요충지입니다. 성공적인 슬롯 운영을 위해 반드시 점검하세요.
       </p>
       
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;" id="strategy-grid">
-        <div style="background: var(--border-subtle); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <div style="font-size: 0.82rem; font-weight: 800; color: var(--primary); margin-bottom: 4px;">01. 상품성 (Competitiveness)</div>
-          <p style="font-size: 0.75rem; color: var(--text-sub); line-height: 1.4;">
-            <strong>근거:</strong> 검색 알고리즘은 <strong>구매 전환율(CVR)</strong>을 핵심 지표로 봅니다. 매력적인 스펙과 가격이 뒷받침되어야 트래픽 유입이 실질적 순위 상승으로 이어집니다.
+      <!-- 세로 정렬 카드 리스트 컨테이너 -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        
+        <!-- 1. 상품성 -->
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--primary);">01. 상품성 (Competitiveness)</span>
+            <span style="font-size: 0.65rem; font-weight: 700; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 6px;">CVR 핵심</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
+            <strong style="color: var(--text-main);">근거:</strong> 검색 알고리즘은 <strong>구매 전환율(CVR)</strong>을 핵심 지표로 봅니다. 매력적인 스펙과 가격이 뒷받침되어야 트래픽 유입이 실질적 순위 상승으로 이어집니다.
           </p>
         </div>
-        <div style="background: var(--border-subtle); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <div style="font-size: 0.82rem; font-weight: 800; color: var(--primary); margin-bottom: 4px;">02. 최신성 (Recency)</div>
-          <p style="font-size: 0.75rem; color: var(--text-sub); line-height: 1.4;">
-            <strong>근거:</strong> 신규 및 최근 데이터가 갱신된 리스트는 알고리즘 초기 가점을 받습니다. 트렌드 변화에 맞춘 꾸준한 상품 최적화가 필수적입니다.
+
+        <!-- 2. 최신성 -->
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 10px; padding: 14px 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.85rem; font-weight: 800; color: #059669;">02. 최신성 (Recency)</span>
+            <span style="font-size: 0.65rem; font-weight: 700; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 6px;">초기 가점</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
+            <strong style="color: var(--text-main);">근거:</strong> 신규 및 최근 데이터가 갱신된 리스트는 알고리즘 초기 가점을 받습니다. 트렌드 변화에 맞춘 꾸준한 상품 최적화가 필수적입니다.
           </p>
         </div>
-        <div style="background: var(--border-subtle); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <div style="font-size: 0.82rem; font-weight: 800; color: var(--primary); margin-bottom: 4px;">03. 쿠폰매김 (Coupon & Pricing)</div>
-          <p style="font-size: 0.75rem; color: var(--text-sub); line-height: 1.4;">
-            <strong>근거:</strong> 쿠팡 이용자는 즉시 할인과 쿠폰에 매우 민감합니다. <strong>CTR(클릭률)</strong>과 전환율을 단기간에 폭발적으로 끌어올리는 강력한 부스터입니다.
+
+        <!-- 3. 쿠폰매김 -->
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 10px; padding: 14px 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.85rem; font-weight: 800; color: #d97706;">03. 쿠폰매김 (Coupon & Pricing)</span>
+            <span style="font-size: 0.65rem; font-weight: 700; background: #fffbeb; color: #d97706; padding: 2px 6px; border-radius: 6px;">클릭·전환 부스터</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
+            <strong style="color: var(--text-main);">근거:</strong> 쿠팡 이용자는 즉시 할인과 쿠폰에 매우 민감합니다. <strong>CTR(클릭률)</strong>과 전환율을 단기간에 폭발적으로 끌어올리는 강력한 부스터입니다.
           </p>
         </div>
+
       </div>
     </div>
   </div>
 
+  <!-- 로그인 뷰 -->
   <div id="view-login" class="page-view wrapper">
     <div class="auth-container">
       <h2>파트너 로그인</h2>
@@ -658,6 +680,7 @@
     </div>
   </div>
 
+  <!-- 회원가입 뷰 -->
   <div id="view-register" class="page-view wrapper">
     <div class="auth-container" style="max-width: 480px;">
       <h2>파트너 회원가입 및 슬롯 신청</h2>
@@ -701,6 +724,7 @@
     </div>
   </div>
 
+  <!-- 사용자 대시보드 뷰 -->
   <div id="view-user-dashboard" class="page-view dashboard-container">
     <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
       <h3 id="my-name" style="color: white; font-size: 1.2rem; margin-bottom: 4px;">파트너님</h3>
@@ -764,6 +788,7 @@
     </div>
   </div>
 
+  <!-- 관리자 대시보드 뷰 -->
   <div id="view-admin" class="page-view dashboard-container">
     <div class="card-box" style="background: #0f172a; color: white;">
       <h3 style="color: white; font-size: 1.1rem; margin-bottom: 4px;">👑 최고관리자 통합 관제센터</h3>
