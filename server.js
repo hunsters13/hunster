@@ -19,7 +19,7 @@ let db = {
   statusLogs: []
 };
 
-// 🛡️ [데이터 보존 안전장치] 서버 재시작 시 기존 회원 데이터 유실 절대 방지
+// 🛡️ [데이터 보존 안전장치] 서버 재시작 시 기존 회원 데이터 유실 방지
 if (fs.existsSync(DB_FILE)) {
   try {
     const data = fs.readFileSync(DB_FILE, 'utf8');
