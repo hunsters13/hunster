@@ -60,10 +60,10 @@
     
     .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
     .card-box h3 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; color: #0f172a; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; gap: 6px; }
-    .server-status-item:last-child { border-bottom: none; }
+    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #fafafa; border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 8px; font-size: 0.82rem; gap: 6px; }
+    .server-status-item:last-child { margin-bottom: 0; }
 
-    .pulse-dot { width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 0 rgba(5, 150, 105, 0.4); animation: pulse 1.6s infinite; }
+    .pulse-dot { width: 9px; height: 9px; background-color: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 0 rgba(5, 150, 105, 0.4); animation: pulse 1.6s infinite; }
     @keyframes pulse {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.6); }
       70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
@@ -594,66 +594,78 @@
       </div>
     </section>
 
-    <!-- 시스템 실시간 서버 상태 카드 -->
-    <div class="card-box">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-        <h3 style="margin-bottom: 0;">🟢 시스템 실시간 서버 상태</h3>
-        <span style="font-size: 0.68rem; font-weight: 700; color: var(--success); background: var(--success-bg); padding: 2px 8px; border-radius: 12px;">ALL SYSTEMS NORMAL</span>
+    <!-- 🟢 화려하게 업그레이드된 시스템 실시간 서버 상태 관제 카드 -->
+    <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155; box-shadow: var(--shadow-md);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+        <h3 style="margin-bottom: 0; color: #ffffff; font-size: 1.05rem; display: flex; align-items: center; gap: 6px;">
+          <span>🟢</span> 시스템 실시간 관제 센터
+        </h3>
+        <span style="font-size: 0.7rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid rgba(16, 185, 129, 0.3);">⚡ ALL SYSTEMS NORMAL</span>
       </div>
-      <div class="server-status-item">
-        <span>쿠팡 공산품 트래픽 라우터</span>
-        <span style="display:flex; align-items:center; gap:5px; font-weight:700; color:var(--success);"><span class="pulse-dot"></span> 정상 가동 중</span>
+
+      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
+        <span style="font-weight: 600;">쿠팡 공산품 트래픽 라우터</span>
+        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 정상 가동 중</span>
       </div>
-      <div class="server-status-item">
-        <span>쿠팡 농산물 트래픽 라우터</span>
-        <span style="display:flex; align-items:center; gap:5px; font-weight:700; color:var(--success);"><span class="pulse-dot"></span> 정상 가동 중</span>
+      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
+        <span style="font-weight: 600;">쿠팡 농산물 트래픽 라우터</span>
+        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 정상 가동 중</span>
       </div>
-      <div class="server-status-item">
-        <span>실시간 순위 추적 엔진</span>
-        <span style="display:flex; align-items:center; gap:5px; font-weight:700; color:var(--success);"><span class="pulse-dot"></span> 연동 완료</span>
+      <div class="server-status-item" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #f8fafc;">
+        <span style="font-weight: 600;">실시간 순위 추적 엔진</span>
+        <span style="display:flex; align-items:center; gap:6px; font-weight:700; color:#34d399;"><span class="pulse-dot"></span> 연동 완료</span>
       </div>
     </div>
 
-    <!-- 💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 (세로형 고급 카드 디자인) -->
+    <!-- 💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 (상세 내용 대폭 보강 & 세로형 고급 디자인) -->
     <div class="card-box">
-      <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략</h3>
-      <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 16px; word-break: keep-all; line-height: 1.5;">
-        쿠팡 알고리즘과 소비자 구매 심리를 관통하는 필수 요충지입니다. 성공적인 슬롯 운영을 위해 반드시 점검하세요.
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">💡 쿠팡 상위 노출 & 성장을 위한 3대 핵심 전략 가이드</h3>
+      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px; word-break: keep-all; line-height: 1.5;">
+        쿠팡 알고리즘의 본질과 소비자 구매 심리를 관통하는 필수 요충지입니다. 안정적인 슬롯 성과 극대화를 위해 반드시 숙지하고 적용해야 합니다.
       </p>
       
       <!-- 세로 정렬 카드 리스트 컨테이너 -->
-      <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 14px;">
         
         <!-- 1. 상품성 -->
-        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 16px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.85rem; font-weight: 800; color: var(--primary);">01. 상품성 (Competitiveness)</span>
-            <span style="font-size: 0.65rem; font-weight: 700; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 6px;">CVR 핵심</span>
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 5px solid var(--primary); border-radius: 10px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.9rem; font-weight: 800; color: var(--primary);">01. 상품성 (Product Competitiveness)</span>
+            <span style="font-size: 0.68rem; font-weight: 700; background: var(--primary-light); color: var(--primary); padding: 3px 8px; border-radius: 6px;">CVR 핵심 지표</span>
           </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 8px;">
+            <strong style="color: var(--text-main);">왜 가장 중요하고 필수적인가?:</strong> 쿠팡의 대규모 검색 및 노출 알고리즘은 단순한 유입(클릭) 수치보다 <strong>'최종 구매 전환율(CVR)'</strong>과 상세페이지 체류 시간을 훨씬 더 높은 가중치로 평가합니다.
+          </p>
           <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
-            <strong style="color: var(--text-main);">근거:</strong> 검색 알고리즘은 <strong>구매 전환율(CVR)</strong>을 핵심 지표로 봅니다. 매력적인 스펙과 가격이 뒷받침되어야 트래픽 유입이 실질적 순위 상승으로 이어집니다.
+            <strong>전문가 근거:</strong> 아무리 강력한 슬롯 트래픽을 집중적으로 주입하더라도, 상품 자체의 가격 경쟁력이 떨어지거나 상세페이지의 USP(고유 판매 제안)와 리뷰 신뢰도가 미흡하여 이탈률이 치솟으면 알고리즘은 해당 상품의 점수를 급격히 하락시킵니다. 매력적인 스펙과 탄탄한 가격 구조가 뒷받침되어야 트래픽 유입이 실질적이고 지속적인 순위 급상승으로 이어집니다.
           </p>
         </div>
 
         <!-- 2. 최신성 -->
-        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 10px; padding: 14px 16px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.85rem; font-weight: 800; color: #059669;">02. 최신성 (Recency)</span>
-            <span style="font-size: 0.65rem; font-weight: 700; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 6px;">초기 가점</span>
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 5px solid #059669; border-radius: 10px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.9rem; font-weight: 800; color: #059669;">02. 최신성 (Recency & Freshness)</span>
+            <span style="font-size: 0.68rem; font-weight: 700; background: #ecfdf5; color: #059669; padding: 3px 8px; border-radius: 6px;">초기 가점 부여</span>
           </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 8px;">
+            <strong style="color: var(--text-main);">왜 시장 변화에 민첩해야 하는가?:</strong> 쿠팡 시스템은 신규 등록 상품이나 최근 데이터가 활발히 갱신되는 리스트에 대해 검색 알고리즘 상의 <strong>'초기 가점'</strong>과 테스트 노출 기회를 부여합니다.
+          </p>
           <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
-            <strong style="color: var(--text-main);">근거:</strong> 신규 및 최근 데이터가 갱신된 리스트는 알고리즘 초기 가점을 받습니다. 트렌드 변화에 맞춘 꾸준한 상품 최적화가 필수적입니다.
+            <strong>전문가 근거:</strong> 시장의 트렌드 속도에 맞춰 상품명 키워드 최적화, 상세 이미지 개선, 재고 상태 관리 등을 정체시키지 않고 주기적으로 업데이트하는 계정은 알고리즘의 간택을 받을 확률이 압도적으로 높습니다. 정지된 데이터보다 살아 숨 쉬는 최신 데이터를 유지하는 것이 상위 랭킹 안착의 지름길입니다.
           </p>
         </div>
 
         <!-- 3. 쿠폰매김 -->
-        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 10px; padding: 14px 16px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.85rem; font-weight: 800; color: #d97706;">03. 쿠폰매김 (Coupon & Pricing)</span>
-            <span style="font-size: 0.65rem; font-weight: 700; background: #fffbeb; color: #d97706; padding: 2px 6px; border-radius: 6px;">클릭·전환 부스터</span>
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-left: 5px solid #d97706; border-radius: 10px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.9rem; font-weight: 800; color: #d97706;">03. 쿠폰매김 (Coupon & Pricing Strategy)</span>
+            <span style="font-size: 0.68rem; font-weight: 700; background: #fffbeb; color: #d97706; padding: 3px 8px; border-radius: 6px;">클릭 및 전환 폭발 부스터</span>
           </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 8px;">
+            <strong style="color: var(--text-main);">왜 구매 심리를 자극해야 하는가?:</strong> 쿠팡을 이용하는 핵심 소비층은 검색 결과 목록에서 눈에 띄는 <strong>'즉시 할인 배지'</strong>와 <strong>'쿠폰 적용가'</strong>에 극도로 민감하게 반응합니다.
+          </p>
           <p style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.5;">
-            <strong style="color: var(--text-main);">근거:</strong> 쿠팡 이용자는 즉시 할인과 쿠폰에 매우 민감합니다. <strong>CTR(클릭률)</strong>과 전환율을 단기간에 폭발적으로 끌어올리는 강력한 부스터입니다.
+            <strong>전문가 근거:</strong> 쿠폰을 적용하여 체감 가격을 파격적으로 낮추는 전략은 검색 결과에서의 **CTR(클릭률)**을 단숨에 끌어올리며, 최종 결제 단계로 진입하는 전환율을 폭발적으로 가속화합니다. 슬롯 트래픽을 가동하는 타이밍에 쿠폰 전략을 함께 맞물리게 하면 알고리즘이 감지하는 속도 지표가 극대화되어 최단 기간 내 목표 순위를 달성할 수 있습니다.
           </p>
         </div>
 
