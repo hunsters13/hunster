@@ -232,12 +232,10 @@
       const rewardBox = document.getElementById('reg-fields-reward');
       const placeBox = document.getElementById('reg-fields-place');
 
-      // 모두 숨기기
       coupangBox.style.display = 'none';
       rewardBox.style.display = 'none';
       placeBox.style.display = 'none';
 
-      // 선택된 서비스에 따라 해당 박스만 오픈
       if (serviceVal === '쿠팡 트래픽') {
         coupangBox.style.display = 'block';
       } else if (serviceVal === '네이버 리워드 트래픽') {
@@ -293,7 +291,7 @@
         trackVisitor();
       }
       updateHeaderAuthUI();
-      updateRegisterFields(); // 초기 로딩 시 필드 반영
+      updateRegisterFields();
     };
 
     async function handleRegister(event) {
@@ -436,7 +434,6 @@
               let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
               let serviceTag = formatServiceBadge(u.service);
               
-              // 1. 쿠팡 탭 데이터
               if(u.service && u.service.includes('쿠팡')) {
                 if(userTbody) {
                   userTbody.innerHTML += `<tr>
@@ -463,7 +460,6 @@
                 }
               }
 
-              // 2. 세금계산서 탭
               if(taxTbody) {
                 taxTbody.innerHTML += `<tr>
                   <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id} / ${u.email || '-'})</span></td>
@@ -474,7 +470,6 @@
                 </tr>`;
               }
 
-              // 3. 네이버 리워드 관리 탭
               if(u.service && u.service.includes('네이버 리워드')) {
                 if(rewardTbody) {
                   rewardTbody.innerHTML += `<tr>
@@ -488,7 +483,6 @@
                 }
               }
 
-              // 4. 네이버 플레이스 관리 탭
               if(u.service && u.service.includes('네이버 플레이스')) {
                 if(placeTbody) {
                   placeTbody.innerHTML += `<tr>
@@ -807,7 +801,7 @@
     <!-- 🌐 상단 서비스 카테고리 선택 -->
     <div class="card-box" style="background: white; border: 1px solid var(--border);">
       <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">🌐 HUNSTER 서비스 카테고리 선택</h3>
-      <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">이용하실 솔루션을 선택하세요. 카드를 클릭하시면 초보자 가이드 및 전문 용어 사전 페이지로 이동합니다.</p>
+      <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">이용하실 솔루션을 선택하세요. 각 카드를 클릭하시면 초보자 가이드 및 전문 용어 사전 페이지로 이동합니다.</p>
       
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;" id="service-category-cards">
         <!-- 쿠팡 트래픽 -->
@@ -884,54 +878,237 @@
     </div>
   </div>
 
-  <!-- 🚀 쿠팡 트래픽 솔루션 상세 가이드 뷰 -->
+  <!-- 🚀 쿠팡 트래픽 솔루션 상세 가이드 및 용어 사전 뷰 (긴 설명글 복원 완료) -->
   <div id="view-coupang-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
       <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 4px 10px; border-radius: 20px;">COUPANG SELLER GUIDE & GLOSSARY</span>
     </div>
-    <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; text-align: center; padding: 32px 18px;">
+
+    <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
       <div style="font-size: 2.2rem; margin-bottom: 6px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
         <span style="background: #ffffff; color: #2563eb; padding: 4px 14px; border-radius: 8px; display: inline-block;">Coupang</span>
       </div>
-      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">쿠팡 트래픽 & 슬롯 초보자 완벽 가이드</h2>
-      <p style="font-size: 0.88rem; opacity: 0.95; max-width: 640px; margin: 0 auto; line-height: 1.6;">쿠팡 셀러분들이 반드시 알아야 할 트래픽 개념 및 필수 마케팅 용어 사전입니다.</p>
+      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">쿠팡 트래픽 & 슬롯 초보자 완벽 가이드 및 용어 사전</h2>
+      <p style="font-size: 0.88rem; opacity: 0.95; max-width: 640px; margin: 0 auto; line-height: 1.6;">
+        쿠팡 로켓 및 마켓플레이스 셀러분들이 반드시 알아야 할 트래픽의 개념, 장·단점, 그리고 실전 마케팅·무역 용어까지 모든 핵심 노하우를 정리했습니다.
+      </p>
     </div>
+
     <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px;">🔍 쿠팡 트래픽(Traffic)이란 무엇인가요?</h3>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6;">쿠팡 알고리즘은 소비자가 특정 키워드를 검색했을 때 얼마나 많은 사람들이 내 상품으로 유입되는지를 측정합니다. 슬롯 트래픽은 이 유입량을 인위적이고 안정적으로 공급하여 알고리즘 점수를 극대화합니다.</p>
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">🔍 트래픽(Traffic)이란 무엇인가요? (초보자용 3분 요약)</h3>
+      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
+        인터넷 쇼핑몰에서 <strong>'트래픽'</strong>이란 특정 웹페이지나 상품 상세페이지에 방문하는 사용자(사람)들의 유입량과 발길을 뜻합니다. 
+      </p>
+      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
+        쿠팡 알고리즘은 <strong>"사람들이 많이 찾는 상품이 곧 좋은 상품이다"</strong>라는 원칙을 가지고 있습니다. 즉, 타겟 키워드 검색 결과에서 내 상품으로 꾸준히 유입이 발생하고 체류하는 신호(트래픽)가 감지되면, 알고리즘은 이 상품의 인기도가 높다고 판단하여 검색 순위를 최상단으로 끌어올려 줍니다.
+      </p>
+    </div>
+
+    <div class="status-section-grid">
+      <div class="card-box" style="border-top: 4px solid var(--success); background: #fafafa;">
+        <h3 style="color: var(--success); font-size: 1.05rem; margin-bottom: 10px;">✅ 트래픽(슬롯)을 사용했을 때의 장점</h3>
+        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
+          <li><strong style="color: var(--success);">최단 기간 검색 상위 노출:</strong> 신규 상품이나 후발 주자도 원하는 타겟 키워드 상단에 빠르게 진입할 수 있습니다.</li>
+          <li><strong style="color: var(--success);">자연 유입(Organic) 선순환:</strong> 상단에 노출되면서 일반 고객들의 실구매와 자연 검색 유입이 폭발적으로 동반 상승합니다.</li>
+          <li><strong style="color: var(--success);">알고리즘 점수 극대화:</strong> 쿠팡 검색봇이 선호하는 클릭률(CTR)과 체류 시간 지표를 안정적으로 확보합니다.</li>
+          <li><strong style="color: var(--success);">마케팅 비용 절감:</strong> 무분별하고 비싼 키워드 광고비를 아끼고 효율적인 슬롯 운영으로 ROI를 극대화합니다.</li>
+        </ul>
+      </div>
+
+      <div class="card-box" style="border-top: 4px solid var(--danger); background: #fafafa;">
+        <h3 style="color: var(--danger); font-size: 1.05rem; margin-bottom: 10px;">❌ 트래픽을 사용하지 않았을 때의 단점</h3>
+        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
+          <li><strong style="color: var(--danger);">끝없는 페이지 하단 침체:</strong> 아무리 좋은 상품을 등록해도 검색 10페이지 뒤에 묻혀 단 1명의 구매자도 만나지 못합니다.</li>
+          <li><strong style="color: var(--danger);">재고 악성화 및 자금 묶임:</strong> 판매가 일어나지 않아 창고에 재고가 쌓이고, 현금 흐름이 막혀 결국 폐업 위기에 처하게 됩니다.</li>
+          <li><strong style="color: var(--danger);">높은 광고비로 인한 적자:</strong> 트래픽 없이 비싼 수동/자동 광고에만 의존하다가 광고비가 매출을 초과하여 적자가 누적됩니다.</li>
+          <li><strong style="color: var(--danger);">경쟁사에 완전한 주도권 피탈:</strong> 먼저 트래픽과 상위 노출을 선점한 경쟁사에게 시장 파이와 브랜드 인지도 모두를 빼앗깁니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">📚 쿠팡 셀러 필수 마케팅 & 무역 용어 사전</h3>
+      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 14px;">셀러 커뮤니티, 단톡방, 컨설팅에서 매일 쓰이는 핵심 지표들의 정확한 의미입니다.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 8px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <strong style="font-size: 0.9rem; color: var(--primary);">CVR (Conversion Rate / 구매전환율)</strong>
+            <span style="font-size: 0.7rem; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 4px; font-weight: 700;">알고리즘 핵심 지표</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.5;">상세페이지에 방문한 전체 고객 중 실제로 상품을 구매한 고객의 비율입니다. 쿠팡 알고리즘에서 트래픽 대비 CVR이 높을수록 순위 점수가 폭발적으로 상승합니다.</p>
+        </div>
+
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <strong style="font-size: 0.9rem; color: #059669;">ROAS (Return On Ad Spend / 광고 수익률)</strong>
+            <span style="font-size: 0.7rem; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 700;">광고 효율 지표</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.5;">광고비로 100원을 썼을 때 얼마의 매출이 발생했는지를 나타냅니다. 예컨대 ROAS가 500%라면 광고비 1만 원으로 5만 원어치 매출을 낸 것을 뜻합니다.</p>
+        </div>
+
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <strong style="font-size: 0.9rem; color: #d97706;">Target ROAS (목표 광고 수익률)</strong>
+            <span style="font-size: 0.7rem; background: #fffbeb; color: #d97706; padding: 2px 6px; border-radius: 4px; font-weight: 700;">마진 방어 기준</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.5;">상품 원가, 쿠팡 판매 수수료, 물류 비용, 배송비를 모두 계산하여 내 상품이 적자를 보지 않고 살아남기 위해 반드시 달성해야 하는 최소한의 목표 광고 수익률입니다.</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ⭐ 네이버 리워드 트래픽 상세 가이드 뷰 -->
+  <!-- ⭐ 네이버 리워드 트래픽 상세 가이드 및 용어 사전 뷰 (긴 설명글 복원 완료) -->
   <div id="view-naver-reward-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
-      <span style="font-size: 0.75rem; color: var(--success); font-weight: 700; background: var(--success-bg); padding: 4px 10px; border-radius: 20px;">NAVER REWARD GUIDE</span>
+      <span style="font-size: 0.75rem; color: var(--success); font-weight: 700; background: var(--success-bg); padding: 4px 10px; border-radius: 20px;">NAVER REWARD SELLER GUIDE & GLOSSARY</span>
     </div>
-    <div class="card-box" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; text-align: center; padding: 32px 18px;">
-      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 리워드 쇼핑 트래픽 완벽 가이드</h2>
-      <p style="font-size: 0.88rem; opacity: 0.95;">스마트스토어 랭킹 상승을 위한 장바구니, 찜, 소액결제 리워드 액션과 시간대별 유입 분산 노하우</p>
+
+    <div class="card-box" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
+      <div style="font-size: 2.2rem; margin-bottom: 6px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
+        <span style="background: #ffffff; color: #059669; padding: 4px 14px; border-radius: 8px; display: inline-block;">Naver Shopping</span>
+      </div>
+      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 리워드 쇼핑 트래픽 완벽 가이드 및 용어 사전</h2>
+      <p style="font-size: 0.88rem; opacity: 0.95; max-width: 640px; margin: 0 auto; line-height: 1.6;">
+        스마트스토어 랭킹 상승을 위한 장바구니, 찜, 소액결제 리워드 액션과 시간대별 유입 분산 노하우를 초보자 눈높이에 맞춰 상세히 안내합니다.
+      </p>
     </div>
+
     <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px;">⭐ 네이버 쇼핑 리워드 트래픽이란?</h3>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6;">장바구니 담기, 상품 찜하기, 소액 결제 등 사용자들의 적극적인 참여 행동에 높은 가중치를 부여하는 네이버 알고리즘 특성을 활용한 솔루션입니다.</p>
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">⭐ 네이버 쇼핑 리워드 트래픽이란 무엇인가요? (초보자용 3분 요약)</h3>
+      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
+        네이버 쇼핑 검색 알고리즘은 단순히 상품 페이지를 조회하는 것 외에도 <strong>장바구니 담기, 상품 찜하기, 소액 결제(체험단 액션)</strong> 등 사용자들의 적극적인 참여 행동(리워드 액션)에 매우 높은 가중치를 부여합니다. 
+      </p>
+      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
+        HUNSTER는 실제 유저 기반으로 자연스러운 미션을 수행하여 스토어 지수를 폭발적으로 끌어올리며, 네이버 검색봇이 감지하는 체류 시간과 인터랙션 지표를 최상위권으로 구축해 줍니다.
+      </p>
+    </div>
+
+    <div class="status-section-grid">
+      <div class="card-box" style="border-top: 4px solid var(--success); background: #fafafa;">
+        <h3 style="color: var(--success); font-size: 1.05rem; margin-bottom: 10px;">✅ 네이버 리워드 사용 장점</h3>
+        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
+          <li><strong style="color: var(--success);">스토어 찜 및 장바구니 폭발적 상승:</strong> 고객들의 단골 등록과 찜 수치가 동반 상승하여 스토어 자체 신뢰도가 급등합니다.</li>
+          <li><strong style="color: var(--success);">네이버 쇼핑랭킹 상위 진입:</strong> 쇼핑 탭 알고리즘이 선호하는 복합 인터랙션 점수를 안정적으로 확보합니다.</li>
+          <li><strong style="color: var(--success);">시간대별 유입 분산 패턴:</strong> 24시간 균등 유입이 아닌 황금시간대 집중 분산으로 자연스러운 트래픽을 연출합니다.</li>
+          <li><strong style="color: var(--success);">스팸 필터 완벽 회피:</strong> 저품질 페널티를 원천 차단하는 정교한 프록시 및 행동 패턴을 적용합니다.</li>
+        </ul>
+      </div>
+
+      <div class="card-box" style="border-top: 4px solid var(--danger); background: #fafafa;">
+        <h3 style="color: var(--danger); font-size: 1.05rem; margin-bottom: 10px;">❌ 네이버 리워드 미사용 단점</h3>
+        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
+          <li><strong style="color: var(--danger);">검색 노출 누락 및 순위 정체:</strong> 기계식 매크로 방식이나 무분별한 유입으로 인해 네이버 알고리즘에 차단당하거나 순위가 하락합니다.</li>
+          <li><strong style="color: var(--danger);">스토어 지수 침체:</strong> 찜과 장바구니 데이터가 쌓이지 않아 신규 유입 고객의 구매 전환율이 바닥을 칩니다.</li>
+          <li><strong style="color: var(--danger);">경쟁사에게 시장 피탈:</strong> 체계적인 리워드 관리를 수행하는 경쟁 업체들에게 모든 상위 노출 자리를 빼앗깁니다.</li>
+          <li><strong style="color: var(--danger);">마케팅 자금 낭비:</strong> 효율 없는 광고에만 매달리다 예산만 소진하고 스토어가 도태됩니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">📚 네이버 리워드 & 쇼핑 전문 용어 사전</h3>
+      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 14px;">스마트스토어 운영 시 필수적으로 알아야 하는 핵심 알고리즘 및 마케팅 용어입니다.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #059669;">스토어 찜 지수 (Wishlist Index)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">고객이 스토어를 단골로 등록하거나 상품을 찜한 누적 수치로, 네이버 검색 알고리즘에서 스토어 신뢰도를 평가하는 핵심 척도입니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #059669;">장바구니 전환율 (Cart Conversion)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">상품 유입 후 바로 구매하지 않고 장바구니에 담는 행위로, 네이버 로봇이 구매 의도가 높은 우수 상품으로 인식하게 만듭니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #059669;">소액 결제 / 0원 결제 액션 (Micro Payment)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">체험단 및 실구매 형태로 네이버페이를 통한 실제 결제 이력을 생성하여 구매 점수를 극대화하는 최상위 리워드 미션입니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #059669;">시간대별 유입 분산 패턴 (Traffic Distribution)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">새벽 시간대와 주간/야간 황금시간대의 트래픽 유입 비율을 인위적이지 않게 자연스럽게 분산하여 스팸 필터를 우회하는 기술입니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #059669;">저품질 / 스팸 필터 (Anti-Abuse Filter)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">비정상적인 매크로 IP나 가짜 트래픽을 감지하여 검색 결과에서 누락(저품질 처분)시키는 네이버의 보안 알고리즘입니다.</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- 📍 네이버 플레이스 트래픽 상세 가이드 뷰 -->
+  <!-- 📍 네이버 플레이스 트래픽 상세 가이드 및 용어 사전 뷰 (긴 설명글 복원 완료) -->
   <div id="view-naver-place-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
-      <span style="font-size: 0.75rem; color: #d97706; font-weight: 700; background: #fffbeb; padding: 4px 10px; border-radius: 20px;">NAVER PLACE GUIDE</span>
+      <span style="font-size: 0.75rem; color: #d97706; font-weight: 700; background: #fffbeb; padding: 4px 10px; border-radius: 20px;">NAVER PLACE SELLER GUIDE & GLOSSARY</span>
     </div>
-    <div class="card-box" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; text-align: center; padding: 32px 18px;">
-      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 플레이스 지도 상위 노출 가이드</h2>
-      <p style="font-size: 0.88rem; opacity: 0.95;">플레이스 ID, 지역 상권 키워드, 저장·길찾기 액션을 통한 지도 순위 급상승 노하우</p>
+
+    <div class="card-box" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
+      <div style="font-size: 2.2rem; margin-bottom: 6px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
+        <span style="background: #ffffff; color: #d97706; padding: 4px 14px; border-radius: 8px; display: inline-block;">Naver Place</span>
+      </div>
+      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 플레이스 지도 상위 노출 가이드 및 용어 사전</h2>
+      <p style="font-size: 0.88rem; opacity: 0.95; max-width: 640px; margin: 0 auto; line-height: 1.6;">
+        플레이스 ID, 지역 상권 키워드, 그리고 저장하기·길찾기·알림받기 액션을 통한 오프라인 매장 지도 순위 급상승 노하우를 상세히 안내합니다.
+      </p>
     </div>
+
     <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px;">📍 네이버 플레이스 트래픽이란?</h3>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6;">오프라인 매장 방문객을 위한 저장하기, 길찾기, 알림받기 등 사용자 행동 점수를 누적하여 지도 상위 1~5위 안착을 돕는 솔루션입니다.</p>
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">📍 네이버 플레이스 트래픽이란 무엇인가요? (초보자용 3분 요약)</h3>
+      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
+        음식점, 미용실, 병원 등 오프라인 매장 운영자에게 네이버 플레이스 지도 상위 노출은 곧 매출 직결입니다. 플레이스 고유 번호(Place ID)와 지역 키워드(예: '강남역 맛집') 조합을 통해 <strong>저장하기, 길찾기, 알림받기</strong> 등 사용자 행동 점수를 누적시켜 지도 영역 1위~5위 안착을 돕는 솔루션입니다.
+      </p>
+    </div>
+
+    <div class="status-section-grid">
+      <div class="card-box" style="border-top: 4px solid var(--success); background: #fafafa;">
+        <h3 style="color: var(--success); font-size: 1.05rem; margin-bottom: 10px;">✅ 네이버 플레이스 사용 장점</h3>
+        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
+          <li><strong style="color: var(--success);">지도 검색 최상단(1~3위) 독점 노출:</strong> 모바일 지도 검색 결과에서 고객들의 시선을 한몸에 받아 예약률이 폭증합니다.</li>
+          <li><strong style="color: var(--success);">오프라인 방문 및 전화 문의 급증:</strong> 실질적인 매장 방문 의도가 있는 유저들의 길찾기 요청이 누적됩니다.</li>
+          <li><strong style="color: var(--success);">GPS 프록시 지역 매칭:</strong> 실제 해당 지역(예: 서울 강남구) IP 대역을 매칭하여 지역성 알고리즘을 완벽 충족합니다.</li>
+          <li><strong style="color: var(--success);">마케팅 비용 대비 고효율:</strong> 효과 없는 오프라인 전단지 광고보다 훨씬 저렴한 비용으로 상권을 장악합니다.</li>
+        </ul>
+      </div>
+
+      <div class="card-box" style="border-top: 4px solid var(--danger); background: #fafafa;">
+        <h3 style="color: var(--danger); font-size: 1.05rem; margin-bottom: 10px;">❌ 네이버 플레이스 미사용 단점</h3>
+        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
+          <li><strong style="color: var(--danger);">지도 검색 3페이지 이후로 추락:</strong> 신규 고객들이 내 매장을 발견조차 하지 못하고 지나치게 됩니다.</li>
+          <li><strong style="color: var(--danger);">예약 및 매출 저조:</strong> 방문객 발길이 끊겨 고정 임대료와 인건비 부담으로 폐업 위기에 직면합니다.</li>
+          <li><strong style="color: var(--danger);">경쟁사에 상권 완전 피탈:</strong> 주변 경쟁 업체들이 플레이스 순위를 독점하여 지역 단골들을 모두 빼앗깁니다.</li>
+          <li><strong style="color: var(--danger);">브랜드 인지도 상실:</strong> 온라인 지도 가시성이 사라져 오프라인 매장 전체의 생존이 위협받습니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">📚 네이버 플레이스 전문 용어 사전</h3>
+      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 14px;">지도 상위 노출과 지역 상권 마케팅에 필수적인 핵심 지표 용어입니다.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #d97706;">플레이스 ID (Place Unique ID)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">네이버 지도 시스템이 각 오프라인 업체를 고유하게 식별하는 디지털 번호로, 타겟 트래픽 집중의 핵심 앵커가 됩니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #d97706;">저장하기 / 즐겨찾기 지수 (Bookmark Metric)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">소비자가 나중에 방문하려고 매장을 저장한 횟수로, 네이버 알고리즘이 해당 업체의 인기도를 측정하는 최우선 지표입니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #d97706;">길찾기 요청 수치 (Navigation Request)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">내비게이션 연동을 통해 매장 위치까지 경로를 탐색한 실 사용자 액션으로, 오프라인 실제 방문 의도를 입증합니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #d97706;">알림받기 / 쿠폰 다운로드 (Notification & Coupon)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">매장 소식 알림을 신청하거나 할인 쿠폰을 다운로드한 비율로, 단골 고객 충성도를 판가름하는 지표입니다.</p>
+        </div>
+        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
+          <strong style="font-size: 0.9rem; color: #d97706;">GPS 지역 인증 및 프록시 매칭 (Geo-Targeting IP)</strong>
+          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">실제 해당 지역(예: 서울 강남구)에 거주하거나 위치한 유저의 IP 대역을 프록시로 매칭하여 지역성 검색 알고리즘을 완벽히 충족하는 기술입니다.</p>
+        </div>
+      </div>
     </div>
   </div>
 
