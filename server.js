@@ -52,9 +52,9 @@ app.post('/api/log', (req, res) => {
   res.json({ success: true });
 });
 
-// 회원가입 (플랫폼별 상세 세팅 수용)
+// 회원가입 (플랫폼별 맞춤 세팅 수용)
 app.post('/api/register', (req, res) => {
-  const { name, id, pw, phone, address, businessNumber, email, service, reason, slots, storeName, targetKeyword, targetUrl, actionType, gpsSetting, rankStatus } = req.body;
+  const { name, id, pw, phone, address, businessNumber, email, service, reason, slots, storeName, targetKeyword, targetUrl, actionType } = req.body;
   
   const existing = db.users.find(u => u.id === id);
   if (existing) {
@@ -76,11 +76,8 @@ app.post('/api/register', (req, res) => {
     targetKeyword: targetKeyword || '-',
     targetUrl: targetUrl || '-',
     actionType: actionType || '단순유입',
-    gpsSetting: gpsSetting || '서울 강남구 (기본)',
-    rankStatus: rankStatus || '진입 대기중 (권장)',
     depositStatus: '입금대기',
-    taxStatus: '발행대기',
-    spamFilter: '정상 (Clean)'
+    taxStatus: '발행대기'
   };
 
   db.users.push(newUser);
