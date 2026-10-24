@@ -52,7 +52,7 @@ app.post('/api/log', (req, res) => {
   res.json({ success: true });
 });
 
-// 회원가입 (쿠팡 / 네이버 리워드 / 네이버 플레이스 서비스 구분 수용)
+// 회원가입 (서비스 구분 수용)
 app.post('/api/register', (req, res) => {
   const { name, id, pw, phone, address, businessNumber, email, service, reason, slots } = req.body;
   
