@@ -52,9 +52,9 @@ app.post('/api/log', (req, res) => {
   res.json({ success: true });
 });
 
-// 회원가입 (신규 필수 정보 모두 수용)
+// 회원가입 (쿠팡 / 네이버 리워드 / 네이버 플레이스 서비스 구분 수용)
 app.post('/api/register', (req, res) => {
-  const { name, id, pw, phone, address, businessNumber, email, coupangSub, reason, slots } = req.body;
+  const { name, id, pw, phone, address, businessNumber, email, service, reason, slots } = req.body;
   
   const existing = db.users.find(u => u.id === id);
   if (existing) {
@@ -69,7 +69,7 @@ app.post('/api/register', (req, res) => {
     address,
     businessNumber,
     email,
-    service: coupangSub === 'agricultural' ? '쿠팡 농산물 트래픽' : '쿠팡 공산품 트래픽',
+    service: service || '쿠팡 트래픽',
     reason,
     slots: slots || 5,
     depositStatus: '입금대기',
