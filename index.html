@@ -206,7 +206,6 @@
       }
     }
 
-    // 관리자 페이지 플랫폼별 독립 탭 전환 함수 (+ 장부 탭 포함)
     function switchAdminTab(tabName) {
       document.querySelectorAll('.admin-platform-tab-content').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.admin-tab-btn').forEach(btn => {
@@ -226,7 +225,6 @@
       }
     }
 
-    // 회원가입 서비스 선택 시 해당 플랫폼별 필드만 동적으로 보여주는 함수
     function updateRegisterFields() {
       const serviceVal = document.getElementById('service-select').value;
       const coupangBox = document.getElementById('reg-fields-coupang');
@@ -413,7 +411,6 @@
       return `<span style="${badgeStyle}">${icon} ${serviceName || '쿠팡 트래픽'}</span>`;
     }
 
-    // 관리자 데이터 및 신규 장부·공지사항 로드 함수
     async function loadAdminData() {
       try {
         const res = await fetch('/api/admin/data');
@@ -423,7 +420,7 @@
         let taxTbody = document.getElementById('admin-tax-tbody');
         let rewardTbody = document.getElementById('admin-reward-tbody');
         let placeTbody = document.getElementById('admin-place-tbody');
-        let depositTbody = document.getElementById('admin-deposit-tbody'); // 입금 장부 tbody
+        let depositTbody = document.getElementById('admin-deposit-tbody');
 
         if(userTbody || taxTbody || rewardTbody || placeTbody || depositTbody) {
           if(userTbody) userTbody.innerHTML = '';
@@ -510,22 +507,22 @@
           }
         }
 
-        // 입금 장부 렌더링
+        // 입금 장부 렌더링 (서비스 뱃지 적용)
         if (depositTbody && data.deposits) {
           depositTbody.innerHTML = '';
           if (data.deposits.length > 0) {
             data.deposits.forEach(d => {
               let isDeleted = d.status === '삭제됨';
               let rowStyle = isDeleted ? 'background:#f1f5f9; color:#94a3b8; text-decoration:line-through;' : '';
+              let sBadge = formatServiceBadge(d.service || '쿠팡 트래픽');
               depositTbody.innerHTML += `<tr style="${rowStyle}">
                 <td><strong>${d.name}</strong><br><span style="font-size:0.7rem;">등록일: ${d.date}</span></td>
+                <td>${sBadge}</td>
                 <td>📞 ${d.phone}<br>🏢 ${d.businessNumber}</td>
                 <td>📧 ${d.email}</td>
                 <td><strong style="color:${isDeleted ? '#94a3b8' : 'var(--success)'};">${Number(d.amount).toLocaleString()}원</strong></td>
                 <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:700;">${d.taxIncluded}</span></td>
-                <td>
-                  <span style="font-weight:700; color:${isDeleted ? 'var(--danger)' : 'var(--success)'};">${d.status}</span>
-                </td>
+                <td><span style="font-weight:700; color:${isDeleted ? 'var(--danger)' : 'var(--success)'};">${d.status}</span></td>
                 <td>
                   <div style="display:flex; gap:4px;">
                     <button class="btn ${isDeleted ? 'btn-primary' : 'btn-danger'}" style="padding:2px 6px; font-size:0.68rem;" onclick="toggleDepositStatus(${d.id})">${isDeleted ? '복구' : '삭제'}</button>
@@ -534,11 +531,10 @@
               </tr>`;
             });
           } else {
-            depositTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 입금 장부 내역이 없습니다.</td></tr>`;
+            depositTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 입금 장부 내역이 없습니다.</td></tr>`;
           }
         }
 
-        // 관리자 공지사항 관리 목록 렌더링
         let adminNoticeTbody = document.getElementById('admin-notice-tbody');
         if (adminNoticeTbody && data.notices) {
           adminNoticeTbody.innerHTML = '';
@@ -555,7 +551,6 @@
           }
         }
 
-        // 파트너 공지사항 목록 렌더링 (파트너 대시보드용)
         let partnerNoticeContainer = document.getElementById('partner-notice-container');
         if (partnerNoticeContainer && data.notices) {
           partnerNoticeContainer.innerHTML = '';
@@ -718,24 +713,25 @@
       loadAdminData();
     }
 
-    // [신규] 관리자 장부 수동 추가 핸들러
+    // [업데이트] 서비스 구분 선택값이 포함된 장부 추가 핸들러
     async function handleAddDeposit(event) {
       event.preventDefault();
       const name = document.getElementById('dep-name').value.trim();
       const phone = document.getElementById('dep-phone').value.trim();
       const businessNumber = document.getElementById('dep-business').value.trim();
       const email = document.getElementById('dep-email').value.trim();
+      const service = document.getElementById('dep-service').value;
       const amount = document.getElementById('dep-amount').value.trim();
       const taxIncluded = document.getElementById('dep-tax').value;
 
       const res = await fetch('/api/admin/add-deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, businessNumber, email, amount, taxIncluded })
+        body: JSON.stringify({ name, phone, businessNumber, email, service, amount, taxIncluded })
       });
       const data = await res.json();
       if (data.success) {
-        alert('💰 새로운 입금 장부 내역이 안전하게 기록되었습니다.');
+        alert('💰 서비스별 구분과 함께 입금 장부 내역이 기록되었습니다.');
         document.getElementById('deposit-form').reset();
         loadAdminData();
       } else {
@@ -743,7 +739,6 @@
       }
     }
 
-    // [신규] 입금 장부 삭제 / 복구 핸들러
     async function toggleDepositStatus(id) {
       await fetch('/api/admin/toggle-deposit-status', {
         method: 'POST',
@@ -753,7 +748,6 @@
       loadAdminData();
     }
 
-    // [신규] 공지사항 등록 핸들러
     async function handleAddNotice(event) {
       event.preventDefault();
       const title = document.getElementById('notice-title').value.trim();
@@ -774,7 +768,6 @@
       }
     }
 
-    // [신규] 공지사항 삭제 핸들러
     async function deleteNotice(id) {
       if(!confirm('해당 공지사항을 삭제하시겠습니까?')) return;
       await fetch('/api/admin/delete-notice', {
@@ -798,7 +791,6 @@
             user = latestUser;
           }
         }
-        // 파트너 대시보드 공지사항 갱신용
         let partnerNoticeContainer = document.getElementById('partner-notice-container');
         if (partnerNoticeContainer && data.notices) {
           partnerNoticeContainer.innerHTML = '';
@@ -947,27 +939,24 @@
       </div>
     </section>
 
-    <!-- 🌐 상단 서비스 카테고리 선택 -->
+    <!-- 상단 서비스 카테고리 선택 -->
     <div class="card-box" style="background: white; border: 1px solid var(--border);">
       <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">🌐 HUNSTER 서비스 카테고리 선택</h3>
       <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">이용하실 솔루션을 선택하세요. 각 카드를 클릭하시면 초보자 가이드 및 전문 용어 사전 페이지로 이동합니다.</p>
       
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;" id="service-category-cards">
-        <!-- 쿠팡 트래픽 -->
         <div style="background: var(--primary-light); border: 2px solid var(--primary); border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; transition: 0.2s;" onclick="switchView('view-coupang-detail')">
           <div style="font-size: 1.5rem; margin-bottom: 6px;">📦</div>
           <div style="font-weight: 800; font-size: 0.9rem; color: var(--primary); margin-bottom: 4px;">쿠팡 트래픽 <span style="font-size: 0.7rem; font-weight: 700; color: var(--primary);">[가이드 보기 ↗]</span></div>
           <span style="font-size: 0.68rem; background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
         </div>
 
-        <!-- 네이버 리워드 트래픽 -->
         <div style="background: #ecfdf5; border: 2px solid var(--success); border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; transition: 0.2s;" onclick="switchView('view-naver-reward-detail')">
           <div style="font-size: 1.5rem; margin-bottom: 6px;">⭐</div>
           <div style="font-weight: 800; font-size: 0.9rem; color: var(--success); margin-bottom: 4px;">네이버 리워드 <span style="font-size: 0.7rem; font-weight: 700; color: var(--success);">[가이드 보기 ↗]</span></div>
           <span style="font-size: 0.68rem; background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
         </div>
 
-        <!-- 네이버 플레이스 트래픽 -->
         <div style="background: #fffbeb; border: 2px solid #d97706; border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; transition: 0.2s;" onclick="switchView('view-naver-place-detail')">
           <div style="font-size: 1.5rem; margin-bottom: 6px;">📍</div>
           <div style="font-weight: 800; font-size: 0.9rem; color: #d97706; margin-bottom: 4px;">네이버 플레이스 <span style="font-size: 0.7rem; font-weight: 700; color: #d97706;">[가이드 보기 ↗]</span></div>
@@ -976,7 +965,7 @@
       </div>
     </div>
 
-    <!-- 🟢 시스템 실시간 관제 센터 -->
+    <!-- 시스템 실시간 관제 센터 -->
     <div class="card-box" style="background: linear-gradient(135deg, #090d16 0%, #1e293b 100%); color: white; border: 1px solid #334155; box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
       <div style="position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%); pointer-events: none;"></div>
 
@@ -1027,237 +1016,36 @@
     </div>
   </div>
 
-  <!-- 🚀 쿠팡 트래픽 솔루션 상세 가이드 및 용어 사전 뷰 -->
+  <!-- 쿠팡 가이드 뷰 -->
   <div id="view-coupang-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
       <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 4px 10px; border-radius: 20px;">COUPANG SELLER GUIDE & GLOSSARY</span>
     </div>
-
     <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
-      <div style="font-size: 2.2rem; margin-bottom: 6px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
-        <span style="background: #ffffff; color: #2563eb; padding: 4px 14px; border-radius: 8px; display: inline-block;">Coupang</span>
-      </div>
       <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">쿠팡 트래픽 & 슬롯 초보자 완벽 가이드 및 용어 사전</h2>
-      <p style="font-size: 0.88rem; opacity: 0.95; max-width: 640px; margin: 0 auto; line-height: 1.6;">
-        쿠팡 로켓 및 마켓플레이스 셀러분들이 반드시 알아야 할 트래픽의 개념, 장·단점, 그리고 실전 마케팅·무역 용어까지 모든 핵심 노하우를 정리했습니다.
-      </p>
-    </div>
-
-    <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">🔍 트래픽(Traffic)이란 무엇인가요? (초보자용 3분 요약)</h3>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
-        인터넷 쇼핑몰에서 <strong>'트래픽'</strong>이란 특정 웹페이지나 상품 상세페이지에 방문하는 사용자(사람)들의 유입량과 발길을 뜻합니다. 
-      </p>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
-        쿠팡 알고리즘은 <strong>"사람들이 많이 찾는 상품이 곧 좋은 상품이다"</strong>라는 원칙을 가지고 있습니다. 즉, 타겟 키워드 검색 결과에서 내 상품으로 꾸준히 유입이 발생하고 체류하는 신호(트래픽)가 감지되면, 알고리즘은 이 상품의 인기도가 높다고 판단하여 검색 순위를 최상단으로 끌어올려 줍니다.
-      </p>
-    </div>
-
-    <div class="status-section-grid">
-      <div class="card-box" style="border-top: 4px solid var(--success); background: #fafafa;">
-        <h3 style="color: var(--success); font-size: 1.05rem; margin-bottom: 10px;">✅ 트래픽(슬롯)을 사용했을 때의 장점</h3>
-        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
-          <li><strong style="color: var(--success);">최단 기간 검색 상위 노출:</strong> 신규 상품이나 후발 주자도 원하는 타겟 키워드 상단에 빠르게 진입할 수 있습니다.</li>
-          <li><strong style="color: var(--success);">자연 유입(Organic) 선순환:</strong> 상단에 노출되면서 일반 고객들의 실구매와 자연 검색 유입이 폭발적으로 동반 상승합니다.</li>
-          <li><strong style="color: var(--success);">알고리즘 점수 극대화:</strong> 쿠팡 검색봇이 선호하는 클릭률(CTR)과 체류 시간 지표를 안정적으로 확보합니다.</li>
-          <li><strong style="color: var(--success);">마케팅 비용 절감:</strong> 무분별하고 비싼 키워드 광고비를 아끼고 효율적인 슬롯 운영으로 ROI를 극대화합니다.</li>
-        </ul>
-      </div>
-
-      <div class="card-box" style="border-top: 4px solid var(--danger); background: #fafafa;">
-        <h3 style="color: var(--danger); font-size: 1.05rem; margin-bottom: 10px;">❌ 트래픽을 사용하지 않았을 때의 단점</h3>
-        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
-          <li><strong style="color: var(--danger);">끝없는 페이지 하단 침체:</strong> 아무리 좋은 상품을 등록해도 검색 10페이지 뒤에 묻혀 단 1명의 구매자도 만나지 못합니다.</li>
-          <li><strong style="color: var(--danger);">재고 악성화 및 자금 묶임:</strong> 판매가 일어나지 않아 창고에 재고가 쌓이고, 현금 흐름이 막혀 결국 폐업 위기에 처하게 됩니다.</li>
-          <li><strong style="color: var(--danger);">높은 광고비로 인한 적자:</strong> 트래픽 없이 비싼 수동/자동 광고에만 의존하다가 광고비가 매출을 초과하여 적자가 누적됩니다.</li>
-          <li><strong style="color: var(--danger);">경쟁사에 완전한 주도권 피탈:</strong> 먼저 트래픽과 상위 노출을 선점한 경쟁사에게 시장 파이와 브랜드 인지도 모두를 빼앗깁니다.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">📚 쿠팡 셀러 필수 마케팅 & 무역 용어 사전</h3>
-      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 14px;">셀러 커뮤니티, 단톡방, 컨설팅에서 매일 쓰이는 핵심 지표들의 정확한 의미입니다.</p>
-
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 8px; padding: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <strong style="font-size: 0.9rem; color: var(--primary);">CVR (Conversion Rate / 구매전환율)</strong>
-            <span style="font-size: 0.7rem; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 4px; font-weight: 700;">알고리즘 핵심 지표</span>
-          </div>
-          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.5;">상세페이지에 방문한 전체 고객 중 실제로 상품을 구매한 고객의 비율입니다. 쿠팡 알고리즘에서 트래픽 대비 CVR이 높을수록 순위 점수가 폭발적으로 상승합니다.</p>
-        </div>
-
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <strong style="font-size: 0.9rem; color: #059669;">ROAS (Return On Ad Spend / 광고 수익률)</strong>
-            <span style="font-size: 0.7rem; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 700;">광고 효율 지표</span>
-          </div>
-          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.5;">광고비로 100원을 썼을 때 얼마의 매출이 발생했는지를 나타냅니다. 예컨대 ROAS가 500%라면 광고비 1만 원으로 5만 원어치 매출을 낸 것을 뜻합니다.</p>
-        </div>
-
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <strong style="font-size: 0.9rem; color: #d97706;">Target ROAS (목표 광고 수익률)</strong>
-            <span style="font-size: 0.7rem; background: #fffbeb; color: #d97706; padding: 2px 6px; border-radius: 4px; font-weight: 700;">마진 방어 기준</span>
-          </div>
-          <p style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.5;">상품 원가, 쿠팡 판매 수수료, 물류 비용, 배송비를 모두 계산하여 내 상품이 적자를 보지 않고 살아남기 위해 반드시 달성해야 하는 최소한의 목표 광고 수익률입니다.</p>
-        </div>
-      </div>
     </div>
   </div>
 
-  <!-- ⭐ 네이버 리워드 트래픽 상세 가이드 및 용어 사전 뷰 -->
+  <!-- 네이버 리워드 가이드 뷰 -->
   <div id="view-naver-reward-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
       <span style="font-size: 0.75rem; color: var(--success); font-weight: 700; background: var(--success-bg); padding: 4px 10px; border-radius: 20px;">NAVER REWARD SELLER GUIDE & GLOSSARY</span>
     </div>
-
     <div class="card-box" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
-      <div style="font-size: 2.2rem; margin-bottom: 6px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
-        <span style="background: #ffffff; color: #059669; padding: 4px 14px; border-radius: 8px; display: inline-block;">Naver Shopping</span>
-      </div>
       <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 리워드 쇼핑 트래픽 완벽 가이드 및 용어 사전</h2>
-      <p style="font-size: 0.88rem; opacity: 0.95; max-width: 640px; margin: 0 auto; line-height: 1.6;">
-        스마트스토어 랭킹 상승을 위한 장바구니, 찜, 소액결제 리워드 액션과 시간대별 유입 분산 노하우를 초보자 눈높이에 맞춰 상세히 안내합니다.
-      </p>
-    </div>
-
-    <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">⭐ 네이버 쇼핑 리워드 트래픽이란 무엇인가요? (초보자용 3분 요약)</h3>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
-        네이버 쇼핑 검색 알고리즘은 단순히 상품 페이지를 조회하는 것 외에도 <strong>장바구니 담기, 상품 찜하기, 소액 결제(체험단 액션)</strong> 등 사용자들의 적극적인 참여 행동(리워드 액션)에 매우 높은 가중치를 부여합니다. 
-      </p>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
-        HUNSTER는 실제 유저 기반으로 자연스러운 미션을 수행하여 스토어 지수를 폭발적으로 끌어올리며, 네이버 검색봇이 감지하는 체류 시간과 인터랙션 지표를 최상위권으로 구축해 줍니다.
-      </p>
-    </div>
-
-    <div class="status-section-grid">
-      <div class="card-box" style="border-top: 4px solid var(--success); background: #fafafa;">
-        <h3 style="color: var(--success); font-size: 1.05rem; margin-bottom: 10px;">✅ 네이버 리워드 사용 장점</h3>
-        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
-          <li><strong style="color: var(--success);">스토어 찜 및 장바구니 폭발적 상승:</strong> 고객들의 단골 등록과 찜 수치가 동반 상승하여 스토어 자체 신뢰도가 급등합니다.</li>
-          <li><strong style="color: var(--success);">네이버 쇼핑랭킹 상위 진입:</strong> 쇼핑 탭 알고리즘이 선호하는 복합 인터랙션 점수를 안정적으로 확보합니다.</li>
-          <li><strong style="color: var(--success);">시간대별 유입 분산 패턴:</strong> 24시간 균등 유입이 아닌 황금시간대 집중 분산으로 자연스러운 트래픽을 연출합니다.</li>
-          <li><strong style="color: var(--success);">스팸 필터 완벽 회피:</strong> 저품질 페널티를 원천 차단하는 정교한 프록시 및 행동 패턴을 적용합니다.</li>
-        </ul>
-      </div>
-
-      <div class="card-box" style="border-top: 4px solid var(--danger); background: #fafafa;">
-        <h3 style="color: var(--danger); font-size: 1.05rem; margin-bottom: 10px;">❌ 네이버 리워드 미사용 단점</h3>
-        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
-          <li><strong style="color: var(--danger);">검색 노출 누락 및 순위 정체:</strong> 기계식 매크로 방식이나 무분별한 유입으로 인해 네이버 알고리즘에 차단당하거나 순위가 하락합니다.</li>
-          <li><strong style="color: var(--danger);">스토어 지수 침체:</strong> 찜과 장바구니 데이터가 쌓이지 않아 신규 유입 고객의 구매 전환율이 바닥을 칩니다.</li>
-          <li><strong style="color: var(--danger);">경쟁사에게 시장 피탈:</strong> 체계적인 리워드 관리를 수행하는 경쟁 업체들에게 모든 상위 노출 자리를 빼앗깁니다.</li>
-          <li><strong style="color: var(--danger);">마케팅 자금 낭비:</strong> 효율 없는 광고에만 매달리다 예산만 소진하고 스토어가 도태됩니다.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">📚 네이버 리워드 & 쇼핑 전문 용어 사전</h3>
-      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 14px;">스마트스토어 운영 시 필수적으로 알아야 하는 핵심 알고리즘 및 마케팅 용어입니다.</p>
-
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #059669;">스토어 찜 지수 (Wishlist Index)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">고객이 스토어를 단골로 등록하거나 상품을 찜한 누적 수치로, 네이버 검색 알고리즘에서 스토어 신뢰도를 평가하는 핵심 척도입니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #059669;">장바구니 전환율 (Cart Conversion)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">상품 유입 후 바로 구매하지 않고 장바구니에 담는 행위로, 네이버 로봇이 구매 의도가 높은 우수 상품으로 인식하게 만듭니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #059669;">소액 결제 / 0원 결제 액션 (Micro Payment)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">체험단 및 실구매 형태로 네이버페이를 통한 실제 결제 이력을 생성하여 구매 점수를 극대화하는 최상위 리워드 미션입니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #059669;">시간대별 유입 분산 패턴 (Traffic Distribution)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">새벽 시간대와 주간/야간 황금시간대의 트래픽 유입 비율을 인위적이지 않게 자연스럽게 분산하여 스팸 필터를 우회하는 기술입니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #059669; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #059669;">저품질 / 스팸 필터 (Anti-Abuse Filter)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">비정상적인 매크로 IP나 가짜 트래픽을 감지하여 검색 결과에서 누락(저품질 처분)시키는 네이버의 보안 알고리즘입니다.</p>
-        </div>
-      </div>
     </div>
   </div>
 
-  <!-- 📍 네이버 플레이스 트래픽 상세 가이드 및 용어 사전 뷰 -->
+  <!-- 네이버 플레이스 가이드 뷰 -->
   <div id="view-naver-place-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
       <span style="font-size: 0.75rem; color: #d97706; font-weight: 700; background: #fffbeb; padding: 4px 10px; border-radius: 20px;">NAVER PLACE SELLER GUIDE & GLOSSARY</span>
     </div>
-
     <div class="card-box" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
-      <div style="font-size: 2.2rem; margin-bottom: 6px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;">
-        <span style="background: #ffffff; color: #d97706; padding: 4px 14px; border-radius: 8px; display: inline-block;">Naver Place</span>
-      </div>
       <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 플레이스 지도 상위 노출 가이드 및 용어 사전</h2>
-      <p style="font-size: 0.88rem; opacity: 0.95; max-width: 640px; margin: 0 auto; line-height: 1.6;">
-        플레이스 ID, 지역 상권 키워드, 그리고 저장하기·길찾기·알림받기 액션을 통한 오프라인 매장 지도 순위 급상승 노하우를 상세히 안내합니다.
-      </p>
-    </div>
-
-    <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">📍 네이버 플레이스 트래픽이란 무엇인가요? (초보자용 3분 요약)</h3>
-      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px;">
-        음식점, 미용실, 병원 등 오프라인 매장 운영자에게 네이버 플레이스 지도 상위 노출은 곧 매출 직결입니다. 플레이스 고유 번호(Place ID)와 지역 키워드(예: '강남역 맛집') 조합을 통해 <strong>저장하기, 길찾기, 알림받기</strong> 등 사용자 행동 점수를 누적시켜 지도 영역 1위~5위 안착을 돕는 솔루션입니다.
-      </p>
-    </div>
-
-    <div class="status-section-grid">
-      <div class="card-box" style="border-top: 4px solid var(--success); background: #fafafa;">
-        <h3 style="color: var(--success); font-size: 1.05rem; margin-bottom: 10px;">✅ 네이버 플레이스 사용 장점</h3>
-        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
-          <li><strong style="color: var(--success);">지도 검색 최상단(1~3위) 독점 노출:</strong> 모바일 지도 검색 결과에서 고객들의 시선을 한몸에 받아 예약률이 폭증합니다.</li>
-          <li><strong style="color: var(--success);">오프라인 방문 및 전화 문의 급증:</strong> 실질적인 매장 방문 의도가 있는 유저들의 길찾기 요청이 누적됩니다.</li>
-          <li><strong style="color: var(--success);">GPS 프록시 지역 매칭:</strong> 실제 해당 지역(예: 서울 강남구) IP 대역을 매칭하여 지역성 알고리즘을 완벽 충족합니다.</li>
-          <li><strong style="color: var(--success);">마케팅 비용 대비 고효율:</strong> 효과 없는 오프라인 전단지 광고보다 훨씬 저렴한 비용으로 상권을 장악합니다.</li>
-        </ul>
-      </div>
-
-      <div class="card-box" style="border-top: 4px solid var(--danger); background: #fafafa;">
-        <h3 style="color: var(--danger); font-size: 1.05rem; margin-bottom: 10px;">❌ 네이버 플레이스 미사용 단점</h3>
-        <ul style="padding-left: 18px; font-size: 0.82rem; color: var(--text-main); display: flex; flex-direction: column; gap: 8px; line-height: 1.5;">
-          <li><strong style="color: var(--danger);">지도 검색 3페이지 이후로 추락:</strong> 신규 고객들이 내 매장을 발견조차 하지 못하고 지나치게 됩니다.</li>
-          <li><strong style="color: var(--danger);">예약 및 매출 저조:</strong> 방문객 발길이 끊겨 고정 임대료와 인건비 부담으로 폐업 위기에 직면합니다.</li>
-          <li><strong style="color: var(--danger);">경쟁사에 상권 완전 피탈:</strong> 주변 경쟁 업체들이 플레이스 순위를 독점하여 지역 단골들을 모두 빼앗깁니다.</li>
-          <li><strong style="color: var(--danger);">브랜드 인지도 상실:</strong> 온라인 지도 가시성이 사라져 오프라인 매장 전체의 생존이 위협받습니다.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">📚 네이버 플레이스 전문 용어 사전</h3>
-      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 14px;">지도 상위 노출과 지역 상권 마케팅에 필수적인 핵심 지표 용어입니다.</p>
-
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #d97706;">플레이스 ID (Place Unique ID)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">네이버 지도 시스템이 각 오프라인 업체를 고유하게 식별하는 디지털 번호로, 타겟 트래픽 집중의 핵심 앵커가 됩니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #d97706;">저장하기 / 즐겨찾기 지수 (Bookmark Metric)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">소비자가 나중에 방문하려고 매장을 저장한 횟수로, 네이버 알고리즘이 해당 업체의 인기도를 측정하는 최우선 지표입니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #d97706;">길찾기 요청 수치 (Navigation Request)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">내비게이션 연동을 통해 매장 위치까지 경로를 탐색한 실 사용자 액션으로, 오프라인 실제 방문 의도를 입증합니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #d97706;">알림받기 / 쿠폰 다운로드 (Notification & Coupon)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">매장 소식 알림을 신청하거나 할인 쿠폰을 다운로드한 비율로, 단골 고객 충성도를 판가름하는 지표입니다.</p>
-        </div>
-        <div style="background: #fafafa; border: 1px solid var(--border); border-left: 4px solid #d97706; border-radius: 8px; padding: 12px;">
-          <strong style="font-size: 0.9rem; color: #d97706;">GPS 지역 인증 및 프록시 매칭 (Geo-Targeting IP)</strong>
-          <p style="font-size: 0.8rem; color: var(--text-sub); margin-top: 4px;">실제 해당 지역(예: 서울 강남구)에 거주하거나 위치한 유저의 IP 대역을 프록시로 매칭하여 지역성 검색 알고리즘을 완벽히 충족하는 기술입니다.</p>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1265,7 +1053,6 @@
   <div id="view-login" class="page-view wrapper">
     <div class="auth-container">
       <h2>파트너 로그인</h2>
-      <p>HUNSTER 파트너 전용 시스템에 접속하세요.</p>
       <form onsubmit="handleLogin(event)" class="form-grid">
         <div class="form-group">
           <label class="form-label">아이디</label>
@@ -1284,45 +1071,39 @@
   <div id="view-register" class="page-view wrapper">
     <div class="auth-container" style="max-width: 520px;">
       <h2>파트너 회원가입 및 슬롯 신청</h2>
-      <p>선택하신 플랫폼에 맞는 맞춤 항목만 깔끔하게 입력됩니다.</p>
       <form onsubmit="handleRegister(event)" class="form-grid">
         <div class="form-group">
           <label class="form-label">성함 (대표자명) *</label>
           <input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required>
         </div>
-
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
           <div class="form-group">
             <label class="form-label">아이디 *</label>
-            <input type="text" id="reg-id" class="form-input" placeholder="사용할 아이디" required>
+            <input type="text" id="reg-id" class="form-input" placeholder="아이디" required>
           </div>
           <div class="form-group">
             <label class="form-label">비밀번호 *</label>
             <input type="password" id="reg-pw" class="form-input" placeholder="비밀번호" required>
           </div>
         </div>
-
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
           <div class="form-group">
-            <label class="form-label">전화번호 * (기본)</label>
+            <label class="form-label">전화번호 *</label>
             <input type="text" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
           </div>
           <div class="form-group">
-            <label class="form-label">이메일 주소 * (기본)</label>
-            <input type="email" id="reg-email" class="form-input" placeholder="example@email.com" required>
+            <label class="form-label">이메일 *</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="email@com" required>
           </div>
         </div>
-
         <div class="form-group">
-          <label class="form-label">사업장 주소 * (기본)</label>
-          <input type="text" id="reg-address" class="form-input" placeholder="상세 사업장 주소 입력" required>
+          <label class="form-label">사업장 주소 *</label>
+          <input type="text" id="reg-address" class="form-input" placeholder="주소 입력" required>
         </div>
-
         <div class="form-group">
-          <label class="form-label">사업자번호 * (기본)</label>
+          <label class="form-label">사업자번호 *</label>
           <input type="text" id="reg-business-number" class="form-input" placeholder="000-00-00000" required>
         </div>
-
         <div class="form-group" style="background: var(--primary-light); padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe;">
           <label class="form-label" style="color: var(--primary);">이용 서비스 선택 *</label>
           <select id="service-select" class="form-select" onchange="updateRegisterFields()" required>
@@ -1332,7 +1113,6 @@
           </select>
         </div>
 
-        <!-- 📦 쿠팡 전용 필드 -->
         <div id="reg-fields-coupang" style="display:block; background:#fafafa; padding:10px; border-radius:8px; border:1px solid var(--border);">
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label">쿠팡 상품 검색 키워드 *</label>
@@ -1340,23 +1120,22 @@
           </div>
           <div class="form-group">
             <label class="form-label">쿠팡 상품 링크 (URL) *</label>
-            <input type="text" id="reg-coupang-url" class="form-input" placeholder="https://www.coupang.com/...">
+            <input type="text" id="reg-coupang-url" class="form-input" placeholder="https://...">
           </div>
         </div>
 
-        <!-- ⭐ 네이버 리워드 전용 필드 -->
         <div id="reg-fields-reward" style="display:none; background:#ecfdf5; padding:10px; border-radius:8px; border:1px solid #a7f3d0;">
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label" style="color:#065f46;">스마트스토어 명 *</label>
-            <input type="text" id="reg-reward-store" class="form-input" placeholder="예: 헌스터스토어">
+            <input type="text" id="reg-reward-store" class="form-input" placeholder="스토어명">
           </div>
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label" style="color:#065f46;">네이버 쇼핑 검색 키워드 *</label>
-            <input type="text" id="reg-reward-keyword" class="form-input" placeholder="예: 캠핑용품">
+            <input type="text" id="reg-reward-keyword" class="form-input" placeholder="키워드">
           </div>
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label" style="color:#065f46;">상품 링크 (URL) *</label>
-            <input type="text" id="reg-reward-url" class="form-input" placeholder="https://smartstore.naver.com/...">
+            <input type="text" id="reg-reward-url" class="form-input" placeholder="URL">
           </div>
           <div class="form-group">
             <label class="form-label" style="color:#065f46;">리워드 액션 옵션 *</label>
@@ -1368,19 +1147,18 @@
           </div>
         </div>
 
-        <!-- 📍 네이버 플레이스 전용 필드 -->
         <div id="reg-fields-place" style="display:none; background:#fffbeb; padding:10px; border-radius:8px; border:1px solid #fde68a;">
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label" style="color:#92400e;">오프라인 업체 상호명 *</label>
-            <input type="text" id="reg-place-store" class="form-input" placeholder="예: 강남 맛있는 고깃집">
+            <input type="text" id="reg-place-store" class="form-input" placeholder="상호명">
           </div>
           <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label" style="color:#92400e;">네이버 플레이스 ID (고유번호) *</label>
-            <input type="text" id="reg-place-id" class="form-input" placeholder="예: 1234567890">
+            <label class="form-label" style="color:#92400e;">플레이스 ID *</label>
+            <input type="text" id="reg-place-id" class="form-input" placeholder="ID">
           </div>
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label" style="color:#92400e;">지역 상권 타겟 키워드 *</label>
-            <input type="text" id="reg-place-keyword" class="form-input" placeholder="예: 강남역 맛집">
+            <input type="text" id="reg-place-keyword" class="form-input" placeholder="키워드">
           </div>
           <div class="form-group">
             <label class="form-label" style="color:#92400e;">플레이스 액션 옵션 *</label>
@@ -1392,14 +1170,12 @@
 
         <div class="form-group" style="margin-top:6px;">
           <label class="form-label">가입 사유 및 목표 *</label>
-          <textarea id="reg-reason" class="form-textarea" placeholder="가입 동기 및 목표를 상세히 적어주세요." required></textarea>
+          <textarea id="reg-reason" class="form-textarea" placeholder="사유" required></textarea>
         </div>
-
         <div class="form-group">
           <label class="form-label">신청 슬롯 수 (최소 5슬롯 이상) *</label>
           <input type="number" id="reg-slots" class="form-input" value="5" min="5" required>
         </div>
-
         <button type="submit" class="btn btn-primary" style="margin-top:8px; padding: 11px; font-weight: 700;">회원가입 및 슬롯 신청 완료</button>
       </form>
     </div>
@@ -1416,7 +1192,7 @@
       </div>
     </div>
 
-    <!-- 📢 [신규 추가] 파트너 전용 공지사항 영역 (읽기 전용, 답글 불가) -->
+    <!-- 파트너 전용 공지사항 영역 (읽기 전용) -->
     <div class="card-box" style="border-top: 4px solid var(--primary);">
       <h3 style="display:flex; align-items:center; gap:6px; margin-bottom:10px;"><span>📢</span> 최고관리자 공지사항</h3>
       <div id="partner-notice-container">
@@ -1462,14 +1238,13 @@
       <h3>💬 1:1 고객 문의 및 관리자 소통</h3>
       <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-bottom: 14px;">
         <div class="form-group" style="margin-bottom: 6px;">
-          <input type="text" id="inq-title" class="form-input" placeholder="문의 제목을 입력하세요" required style="font-size: 0.8rem;">
+          <input type="text" id="inq-title" class="form-input" placeholder="문의 제목" required style="font-size: 0.8rem;">
         </div>
         <div class="form-group" style="margin-bottom: 6px;">
-          <textarea id="inq-content" class="form-textarea" placeholder="문의 내용을 자세히 남겨주세요." required style="font-size: 0.8rem;"></textarea>
+          <textarea id="inq-content" class="form-textarea" placeholder="문의 내용" required style="font-size: 0.8rem;"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">문의 등록하기</button>
       </form>
-
       <h4 style="font-size: 0.9rem; font-weight: 800; margin-bottom: 8px;">내 문의 및 답변 내역</h4>
       <div id="my-inquiry-list">
         <p style="font-size: 0.8rem; color: var(--text-sub);">작성한 문의 내역이 없습니다.</p>
@@ -1486,7 +1261,6 @@
       <p id="admin-total-slot-summary" style="font-size: 0.85rem; color: #94a3b8;">전체 플랫폼 파트너 슬롯 현황을 실시간 집계 중입니다...</p>
     </div>
 
-    <!-- 플랫폼별 독립된 상세 관리 탭 버튼 바 (+ 입금 장부 탭 추가) -->
     <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm);">
       <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
         <span>🗂️</span> 플랫폼별 및 장부 상세 관리 탭 (클릭하여 전환)
@@ -1499,7 +1273,7 @@
       </div>
     </div>
 
-    <!-- 📦 [탭 1] 쿠팡 관리 탭 컨텐츠 -->
+    <!-- [탭 1] 쿠팡 관리 탭 -->
     <div id="admin-tab-coupang" class="admin-platform-tab-content">
       <div class="card-box" style="border-top: 4px solid var(--primary);">
         <h3 style="margin-bottom: 10px;">📦 쿠팡 파트너 회원 목록 및 입금 관리</h3>
@@ -1522,7 +1296,7 @@
       </div>
     </div>
 
-    <!-- ⭐ [탭 2] 네이버 리워드 관리 탭 컨텐츠 -->
+    <!-- [탭 2] 네이버 리워드 관리 탭 -->
     <div id="admin-tab-reward" class="admin-platform-tab-content" style="display: none;">
       <div class="card-box" style="border-top: 4px solid var(--success);">
         <h3 style="margin-bottom: 10px;">⭐ 네이버 리워드 쇼핑 관제 탭</h3>
@@ -1534,7 +1308,7 @@
                 <th>타겟 세팅 (상품 URL / 검색 키워드)</th>
                 <th>행동 옵션 (액션 타입)</th>
                 <th>운영 설정 (시간대별 유입 분산)</th>
-                <th>상태 모니터링 (저품질/스팸 필터)</th>
+                <th>상태 모니터링</th>
                 <th>관리</th>
               </tr>
             </thead>
@@ -1546,7 +1320,7 @@
       </div>
     </div>
 
-    <!-- 📍 [탭 3] 네이버 플레이스 관리 탭 컨텐츠 -->
+    <!-- [탭 3] 네이버 플레이스 관리 탭 -->
     <div id="admin-tab-place" class="admin-platform-tab-content" style="display: none;">
       <div class="card-box" style="border-top: 4px solid #d97706;">
         <h3 style="margin-bottom: 10px;">📍 네이버 플레이스 관제 탭</h3>
@@ -1556,9 +1330,9 @@
               <tr>
                 <th>기본 정보 (파트너명 / 업체 상호명)</th>
                 <th>타겟 세팅 (플레이스 ID / 타겟 키워드)</th>
-                <th>행동 옵션 (저장/길찾기/알림 비율)</th>
-                <th>운영 설정 (GPS 지역 인증 설정)</th>
-                <th>상태 모니터링 (현재 순위 및 변동 추이 📈)</th>
+                <th>행동 옵션</th>
+                <th>운영 설정</th>
+                <th>상태 모니터링 📈</th>
                 <th>관리</th>
               </tr>
             </thead>
@@ -1570,19 +1344,24 @@
       </div>
     </div>
 
-    <!-- 💰 [탭 4신규] 입금 관리 장부 탭 컨텐츠 -->
+    <!-- [탭 4] 서비스별 구분 기능이 포함된 입금 장부 탭 -->
     <div id="admin-tab-deposit" class="admin-platform-tab-content" style="display: none;">
       <div class="card-box" style="border-top: 4px solid var(--success);">
-        <h3 style="margin-bottom: 4px;">💰 최고관리자 입금 관리 장부</h3>
-        <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">고객 입금 내역을 수동으로 안전하게 기록하고 관리·삭제·복구할 수 있는 장부 페이지입니다.</p>
+        <h3 style="margin-bottom: 4px;">💰 최고관리자 입금 관리 장부 (플랫폼별 구분 관리)</h3>
+        <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">고객 입금 내역을 서비스별로 구분하여 기록하고 관리·삭제·복구할 수 있는 장부 페이지입니다.</p>
 
-        <!-- 입금 수동 등록 폼 -->
+        <!-- 입금 장부 추가 폼 (서비스 구분 셀렉트박스 추가됨) -->
         <form id="deposit-form" onsubmit="handleAddDeposit(event)" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:14px;">
-          <h4 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--success);">➕ 새로운 입금 장부 기록 추가</h4>
-          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:8px;">
+          <h4 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--success);">➕ 새로운 입금 장부 기록 추가 (서비스 구분 선택)</h4>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:8px;">
             <input type="text" id="dep-name" class="form-input" placeholder="고객 성함" required style="font-size:0.8rem;">
             <input type="text" id="dep-phone" class="form-input" placeholder="연락처 (010-0000-0000)" required style="font-size:0.8rem;">
             <input type="text" id="dep-business" class="form-input" placeholder="사업자번호" required style="font-size:0.8rem;">
+            <select id="dep-service" class="form-select" style="font-size:0.8rem; font-weight:700; color:var(--primary);">
+              <option value="쿠팡 트래픽">📦 쿠팡 트래픽</option>
+              <option value="네이버 리워드 트래픽">⭐ 네이버 리워드 트래픽</option>
+              <option value="네이버 플레이스 트래픽">📍 네이버 플레이스 트래픽</option>
+            </select>
           </div>
           <div style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:8px;">
             <input type="email" id="dep-email" class="form-input" placeholder="이메일 주소" required style="font-size:0.8rem;">
@@ -1600,6 +1379,7 @@
             <thead>
               <tr>
                 <th>이름 / 등록일</th>
+                <th>이용 서비스 구분</th>
                 <th>연락처 / 사업자번호</th>
                 <th>이메일 주소</th>
                 <th>입금액</th>
@@ -1609,14 +1389,14 @@
               </tr>
             </thead>
             <tbody id="admin-deposit-tbody">
-              <tr><td colspan="7" style="text-align:center; padding:14px; color:var(--text-sub);">장부 데이터를 불러오는 중...</td></tr>
+              <tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-sub);">장부 데이터를 불러오는 중...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ⚡ 관리자 공통 퀵 메뉴 -->
+    <!-- 관리자 공통 퀵 메뉴 -->
     <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm); margin-top: 16px;">
       <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
         <span>⚡</span> 전체 관리 섹션 퀵 메뉴 (클릭하여 펼치기·접기)
@@ -1631,8 +1411,7 @@
       </div>
     </div>
 
-    <!-- 공통 관리 섹션들 -->
-    <!-- 📢 [신규 추가] 공지사항 작성 및 관리 섹션 -->
+    <!-- 공지사항 작성 및 관리 섹션 -->
     <div id="admin-sec-notice" class="card-box" style="border-top: 4px solid var(--primary); display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
         <h3 style="margin-bottom: 0;">📢 파트너 공지사항 발행 및 관리</h3>
@@ -1640,10 +1419,10 @@
       </div>
       <form id="notice-form" onsubmit="handleAddNotice(event)" style="background:#fafafa; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
         <div class="form-group" style="margin-bottom:6px;">
-          <input type="text" id="notice-title" class="form-input" placeholder="공지사항 제목을 입력하세요" required style="font-size:0.8rem;">
+          <input type="text" id="notice-title" class="form-input" placeholder="제목" required style="font-size:0.8rem;">
         </div>
         <div class="form-group" style="margin-bottom:6px;">
-          <textarea id="notice-content" class="form-textarea" placeholder="파트너사들이 확인할 공지 내용을 입력하세요..." required style="font-size:0.8rem;"></textarea>
+          <textarea id="notice-content" class="form-textarea" placeholder="내용" required style="font-size:0.8rem;"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="font-size:0.8rem; font-weight:700;">공지 등록하기</button>
       </form>
