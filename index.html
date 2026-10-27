@@ -484,14 +484,18 @@
                 }
               }
 
+              // 네이버 플레이스 관제 탭 (관리자가 직접 순위 상태 메시지를 수정할 수 있도록 입력창 추가)
               if(u.service && u.service.includes('네이버 플레이스')) {
                 if(placeTbody) {
                   placeTbody.innerHTML += `<tr>
                     <td><strong>${u.name}</strong><br><span style="color:#d97706; font-weight:700; font-size:0.8rem;">📍 ${u.storeName || '오프라인 상호명'}</span></td>
                     <td><strong>ID:</strong> ${u.targetUrl || '12345678'}<br><strong>키워드:</strong> ${u.targetKeyword || '-'}</td>
-                    <td><span style="background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-weight:700; font-size:0.73rem;">⭐ 저장 40% / 🗺️ 길찾기 40% / 🔔 알림 20%</span></td>
-                    <td><span style="font-size:0.75rem; font-weight:700; color:var(--primary);">🛡️ 프록시 IP 지역 매칭 (서울 강남구)</span></td>
-                    <td><strong style="color:var(--success); font-size:0.85rem;">📈 실시간 3위 안착 (▲2위 상승)</strong></td>
+                    <td><span style="background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-weight:700; font-size:0.73rem;">⭐ 저장 40% / 길찾기 40% / 알림 20%</span></td>
+                    <td><span style="font-size:0.75rem; font-weight:700; color:var(--primary);">🛡️ GPS 프록시 지역 매칭</span></td>
+                    <td>
+                      <textarea id="place-status-${u.id}" class="form-input" style="font-size:0.75rem; margin-bottom:4px; min-height:45px;" placeholder="순위 및 상태 입력...">${u.placeStatusMessage || ''}</textarea>
+                      <button class="btn btn-primary" style="padding:2px 6px; font-size:0.68rem;" onclick="updatePlaceStatus('${u.id}')">상태 저장</button>
+                    </td>
                     <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
                   </tr>`;
                 }
@@ -507,7 +511,6 @@
           }
         }
 
-        // 입금 장부 렌더링 (서비스 뱃지 적용)
         if (depositTbody && data.deposits) {
           depositTbody.innerHTML = '';
           if (data.deposits.length > 0) {
@@ -655,6 +658,23 @@
       } catch(err) {}
     }
 
+    // [신규] 플레이스 관리자 커스텀 상태 저장 함수
+    async function updatePlaceStatus(userId) {
+      const msg = document.getElementById('place-status-' + userId).value;
+      const res = await fetch('/api/admin/update-place-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, statusMessage: msg })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('📈 네이버 플레이스 실시간 상태 메시지가 성공적으로 저장되었습니다!');
+        loadAdminData();
+      } else {
+        alert('상태 저장에 실패했습니다.');
+      }
+    }
+
     async function toggleStatus(userId, type) {
       await fetch('/api/admin/status', {
         method: 'POST',
@@ -713,7 +733,6 @@
       loadAdminData();
     }
 
-    // [업데이트] 서비스 구분 선택값이 포함된 장부 추가 핸들러
     async function handleAddDeposit(event) {
       event.preventDefault();
       const name = document.getElementById('dep-name').value.trim();
@@ -818,7 +837,13 @@
       document.getElementById('my-slots').innerText = (user.slots || 5) + ' 슬롯 활성 가동 중';
       
       const slotsNum = user.slots || 5;
-      document.getElementById('my-traffic-count').innerText = "현재 " + slotsNum + "슬롯 정상 가동 중 (실시간 활성)";
+      
+      // 파트너 대시보드 실시간 상태 메시지 동적 연동 (플레이스인 경우 관리자가 적은 메시지 노출)
+      let trafficText = "현재 " + slotsNum + "슬롯 정상 가동 중 (실시간 활성)";
+      if (user.service && user.service.includes('네이버 플레이스') && user.placeStatusMessage) {
+        trafficText = user.placeStatusMessage;
+      }
+      document.getElementById('my-traffic-count').innerText = trafficText;
       
       const depositEl = document.getElementById('my-deposit-status');
       if (depositEl) {
@@ -1056,11 +1081,11 @@
       <form onsubmit="handleLogin(event)" class="form-grid">
         <div class="form-group">
           <label class="form-label">아이디</label>
-          <input type="text" id="login-id" class="form-input" placeholder="아이디 입력" required>
+          <input type="text" id="login-id" class="form-input" placeholder="아이디" required>
         </div>
         <div class="form-group">
           <label class="form-label">비밀번호</label>
-          <input type="password" id="login-pw" class="form-input" placeholder="비밀번호 입력" required>
+          <input type="password" id="login-pw" class="form-input" placeholder="비밀번호" required>
         </div>
         <button type="submit" class="btn btn-primary" style="margin-top:6px; padding: 10px;">로그인</button>
       </form>
@@ -1074,7 +1099,7 @@
       <form onsubmit="handleRegister(event)" class="form-grid">
         <div class="form-group">
           <label class="form-label">성함 (대표자명) *</label>
-          <input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required>
+          <input type="text" id="reg-name" class="form-input" placeholder="성함" required>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
           <div class="form-group">
@@ -1098,7 +1123,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">사업장 주소 *</label>
-          <input type="text" id="reg-address" class="form-input" placeholder="주소 입력" required>
+          <input type="text" id="reg-address" class="form-input" placeholder="주소" required>
         </div>
         <div class="form-group">
           <label class="form-label">사업자번호 *</label>
@@ -1116,7 +1141,7 @@
         <div id="reg-fields-coupang" style="display:block; background:#fafafa; padding:10px; border-radius:8px; border:1px solid var(--border);">
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label">쿠팡 상품 검색 키워드 *</label>
-            <input type="text" id="reg-coupang-keyword" class="form-input" placeholder="예: 무선청소기">
+            <input type="text" id="reg-coupang-keyword" class="form-input" placeholder="키워드">
           </div>
           <div class="form-group">
             <label class="form-label">쿠팡 상품 링크 (URL) *</label>
@@ -1185,7 +1210,8 @@
   <div id="view-user-dashboard" class="page-view dashboard-container">
     <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
       <h3 id="my-name" style="color: white; font-size: 1.2rem; margin-bottom: 4px;">파트너님</h3>
-      <p id="my-traffic-count" style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 10px;">현재 5슬롯 정상 가동 중 (실시간 활성)</p>
+      <!-- 파트너 대시보드 (플레이스인 경우 관리자가 입력한 순위/상태 메시지가 실시간 노출됨) -->
+      <p id="my-traffic-count" style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 10px; font-weight:700;">현재 5슬롯 정상 가동 중 (실시간 활성)</p>
       <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.8rem;">
         <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">연락처: <span id="my-phone">-</span></span>
         <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">주소: <span id="my-address">-</span></span>
@@ -1238,10 +1264,10 @@
       <h3>💬 1:1 고객 문의 및 관리자 소통</h3>
       <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-bottom: 14px;">
         <div class="form-group" style="margin-bottom: 6px;">
-          <input type="text" id="inq-title" class="form-input" placeholder="문의 제목" required style="font-size: 0.8rem;">
+          <input type="text" id="inq-title" class="form-input" placeholder="제목" required style="font-size: 0.8rem;">
         </div>
         <div class="form-group" style="margin-bottom: 6px;">
-          <textarea id="inq-content" class="form-textarea" placeholder="문의 내용" required style="font-size: 0.8rem;"></textarea>
+          <textarea id="inq-content" class="form-textarea" placeholder="내용" required style="font-size: 0.8rem;"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">문의 등록하기</button>
       </form>
@@ -1320,10 +1346,10 @@
       </div>
     </div>
 
-    <!-- [탭 3] 네이버 플레이스 관리 탭 -->
+    <!-- [탭 3] 네이버 플레이스 관제 탭 (관리자가 직접 순위 및 상태를 적고 저장할 수 있도록 수정됨) -->
     <div id="admin-tab-place" class="admin-platform-tab-content" style="display: none;">
       <div class="card-box" style="border-top: 4px solid #d97706;">
-        <h3 style="margin-bottom: 10px;">📍 네이버 플레이스 관제 탭</h3>
+        <h3 style="margin-bottom: 10px;">📍 네이버 플레이스 관제 탭 (실시간 순위 및 상태 직접 입력)</h3>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
@@ -1332,7 +1358,7 @@
                 <th>타겟 세팅 (플레이스 ID / 타겟 키워드)</th>
                 <th>행동 옵션</th>
                 <th>운영 설정</th>
-                <th>상태 모니터링 📈</th>
+                <th>상태 모니터링 📈 (직접 수정 가능)</th>
                 <th>관리</th>
               </tr>
             </thead>
@@ -1344,18 +1370,17 @@
       </div>
     </div>
 
-    <!-- [탭 4] 서비스별 구분 기능이 포함된 입금 장부 탭 -->
+    <!-- [탭 4] 입금 장부 탭 -->
     <div id="admin-tab-deposit" class="admin-platform-tab-content" style="display: none;">
       <div class="card-box" style="border-top: 4px solid var(--success);">
         <h3 style="margin-bottom: 4px;">💰 최고관리자 입금 관리 장부 (플랫폼별 구분 관리)</h3>
         <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">고객 입금 내역을 서비스별로 구분하여 기록하고 관리·삭제·복구할 수 있는 장부 페이지입니다.</p>
 
-        <!-- 입금 장부 추가 폼 (서비스 구분 셀렉트박스 추가됨) -->
         <form id="deposit-form" onsubmit="handleAddDeposit(event)" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:14px;">
           <h4 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--success);">➕ 새로운 입금 장부 기록 추가 (서비스 구분 선택)</h4>
           <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:8px;">
             <input type="text" id="dep-name" class="form-input" placeholder="고객 성함" required style="font-size:0.8rem;">
-            <input type="text" id="dep-phone" class="form-input" placeholder="연락처 (010-0000-0000)" required style="font-size:0.8rem;">
+            <input type="text" id="dep-phone" class="form-input" placeholder="연락처" required style="font-size:0.8rem;">
             <input type="text" id="dep-business" class="form-input" placeholder="사업자번호" required style="font-size:0.8rem;">
             <select id="dep-service" class="form-select" style="font-size:0.8rem; font-weight:700; color:var(--primary);">
               <option value="쿠팡 트래픽">📦 쿠팡 트래픽</option>
@@ -1411,7 +1436,7 @@
       </div>
     </div>
 
-    <!-- 공지사항 작성 및 관리 섹션 -->
+    <!-- 공지사항 섹션 -->
     <div id="admin-sec-notice" class="card-box" style="border-top: 4px solid var(--primary); display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
         <h3 style="margin-bottom: 0;">📢 파트너 공지사항 발행 및 관리</h3>
