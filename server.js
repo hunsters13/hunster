@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 🌟 [핵심 추가] index.html 파일을 브라우저에 띄워주기 위한 정적 파일 및 루트 라우트 설정
+// index.html 파일을 브라우저에 띄워주기 위한 정적 파일 및 루트 라우트 설정
 app.use(express.static(path.join(__dirname)));
 
 app.get('/', (req, res) => {
@@ -73,12 +73,14 @@ app.post('/api/register', (req, res) => {
 
     db.users.push(newUser);
     
+    // 회원가입 시 선택한 서비스 정보를 장부에도 함께 연동 저장
     db.deposits.unshift({
         id: Date.now(),
         name,
         phone,
         businessNumber: businessNumber || '-',
         email: email || '-',
+        service: service || '쿠팡 트래픽',
         amount: (parseInt(slots) || 5) * 10000,
         taxIncluded: '포함',
         status: '활성',
@@ -215,16 +217,17 @@ app.post('/api/admin/delete-inquiry', (req, res) => {
     res.json({ success: true });
 });
 
-// 12. 관리자 입금 장부 직접 추가 API
+// 12. 관리자 입금 장부 직접 추가 API (서비스 구분 포함)
 app.post('/api/admin/add-deposit', (req, res) => {
     const db = readData();
-    const { name, phone, businessNumber, email, amount, taxIncluded } = req.body;
+    const { name, phone, businessNumber, email, service, amount, taxIncluded } = req.body;
     db.deposits.unshift({
         id: Date.now(),
         name,
         phone,
         businessNumber: businessNumber || '-',
         email: email || '-',
+        service: service || '쿠팡 트래픽',
         amount: parseInt(amount) || 0,
         taxIncluded: taxIncluded || '포함',
         status: '활성',
