@@ -64,6 +64,7 @@ app.post('/api/register', (req, res) => {
         targetKeyword: targetKeyword || '-',
         targetUrl: targetUrl || '-',
         actionType: actionType || '단순유입',
+        placeStatusMessage: '🛡️ 프록시 IP 매칭 및 실시간 순위 변동 대기 중', // 플레이스 관리자 커스텀 메시지 초기값
         depositStatus: '입금대기',
         taxStatus: '발행대기',
         createdAt: new Date().toLocaleString()
@@ -71,7 +72,6 @@ app.post('/api/register', (req, res) => {
 
     db.users.push(newUser);
     
-    // 회원가입 시 자동으로 서비스 종류를 포함하여 장부에 등록
     db.deposits.unshift({
         id: Date.now(),
         name,
@@ -156,7 +156,21 @@ app.post('/api/admin/update-slots', (req, res) => {
     }
 });
 
-// 7. 파트너 삭제 API
+// 7. [신규] 네이버 플레이스 관리자 커스텀 상태 메시지 업데이트 API
+app.post('/api/admin/update-place-status', (req, res) => {
+    const db = readData();
+    const { userId, statusMessage } = req.body;
+    const user = db.users.find(u => u.id === userId);
+    if (user) {
+        user.placeStatusMessage = statusMessage || '정보 없음';
+        writeData(db);
+        res.json({ success: true });
+    } else {
+        res.status(404).json({ success: false });
+    }
+});
+
+// 8. 파트너 삭제 API
 app.post('/api/admin/delete-user', (req, res) => {
     const db = readData();
     const { userId } = req.body;
@@ -165,7 +179,7 @@ app.post('/api/admin/delete-user', (req, res) => {
     res.json({ success: true });
 });
 
-// 8. 1:1 문의 등록 API
+// 9. 1:1 문의 등록 API
 app.post('/api/inquiry', (req, res) => {
     const db = readData();
     const { author, userId, title, content } = req.body;
@@ -183,7 +197,7 @@ app.post('/api/inquiry', (req, res) => {
     res.json({ success: true });
 });
 
-// 9. 파트너별 문의 조회 API
+// 10. 파트너별 문의 조회 API
 app.get('/api/inquiries', (req, res) => {
     const db = readData();
     const { id } = req.query;
@@ -191,7 +205,7 @@ app.get('/api/inquiries', (req, res) => {
     res.json(list);
 });
 
-// 10. 관리자 문의 답변 등록 API
+// 11. 관리자 문의 답변 등록 API
 app.post('/api/admin/reply', (req, res) => {
     const db = readData();
     const { id, reply } = req.body;
@@ -206,7 +220,7 @@ app.post('/api/admin/reply', (req, res) => {
     }
 });
 
-// 11. 관리자 문의 삭제 API
+// 12. 관리자 문의 삭제 API
 app.post('/api/admin/delete-inquiry', (req, res) => {
     const db = readData();
     const { id } = req.body;
@@ -215,7 +229,7 @@ app.post('/api/admin/delete-inquiry', (req, res) => {
     res.json({ success: true });
 });
 
-// 12. 관리자 입금 장부 직접 추가 API (서비스 구분 포함)
+// 13. 관리자 입금 장부 직접 추가 API
 app.post('/api/admin/add-deposit', (req, res) => {
     const db = readData();
     const { name, phone, businessNumber, email, service, amount, taxIncluded } = req.body;
@@ -235,7 +249,7 @@ app.post('/api/admin/add-deposit', (req, res) => {
     res.json({ success: true });
 });
 
-// 13. 입금 장부 삭제 / 복구 토글 API
+// 14. 입금 장부 삭제 / 복구 토글 API
 app.post('/api/admin/toggle-deposit-status', (req, res) => {
     const db = readData();
     const { id } = req.body;
@@ -249,7 +263,7 @@ app.post('/api/admin/toggle-deposit-status', (req, res) => {
     }
 });
 
-// 14. 관리자 공지사항 등록 API
+// 15. 관리자 공지사항 등록 API
 app.post('/api/admin/add-notice', (req, res) => {
     const db = readData();
     const { title, content } = req.body;
@@ -263,7 +277,7 @@ app.post('/api/admin/add-notice', (req, res) => {
     res.json({ success: true });
 });
 
-// 15. 공지사항 삭제 API
+// 16. 공지사항 삭제 API
 app.post('/api/admin/delete-notice', (req, res) => {
     const db = readData();
     const { id } = req.body;
