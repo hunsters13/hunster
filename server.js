@@ -7,7 +7,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// index.html 파일을 브라우저에 띄워주기 위한 정적 파일 및 루트 라우트 설정
 app.use(express.static(path.join(__dirname)));
 
 app.get('/', (req, res) => {
@@ -16,7 +15,6 @@ app.get('/', (req, res) => {
 
 const DATA_FILE = path.join(__dirname, 'database.json');
 
-// 초기 데이터 파일 생성 함수
 function initDatabase() {
     if (!fs.existsSync(DATA_FILE)) {
         const initialData = {
@@ -73,7 +71,7 @@ app.post('/api/register', (req, res) => {
 
     db.users.push(newUser);
     
-    // 회원가입 시 선택한 서비스 정보를 장부에도 함께 연동 저장
+    // 회원가입 시 자동으로 서비스 종류를 포함하여 장부에 등록
     db.deposits.unshift({
         id: Date.now(),
         name,
