@@ -7,6 +7,13 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 🌟 [핵심 추가] index.html 파일을 브라우저에 띄워주기 위한 정적 파일 및 루트 라우트 설정
+app.use(express.static(path.join(__dirname)));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 const DATA_FILE = path.join(__dirname, 'database.json');
 
 // 초기 데이터 파일 생성 함수
@@ -17,8 +24,8 @@ function initDatabase() {
             inquiries: [],
             ipLogs: [],
             statusLogs: [],
-            deposits: [], // 새로 추가된 입금 장부 데이터 배열
-            notices: []   // 새로 추가된 공지사항 데이터 배열
+            deposits: [],
+            notices: []
         };
         fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf8');
     }
@@ -66,14 +73,13 @@ app.post('/api/register', (req, res) => {
 
     db.users.push(newUser);
     
-    // 자동 입금 장부 연동 등록 (입금액은 슬롯당 기본 단가 적용 또는 기본 0원 처리 가능, 여기서는 슬롯 * 기본단가 예시 또는 빈값)
     db.deposits.unshift({
         id: Date.now(),
         name,
         phone,
         businessNumber: businessNumber || '-',
         email: email || '-',
-        amount: (parseInt(slots) || 5) * 10000, // 예시 자동 계산 혹은 기본금액
+        amount: (parseInt(slots) || 5) * 10000,
         taxIncluded: '포함',
         status: '활성',
         date: new Date().toLocaleDateString()
@@ -209,7 +215,7 @@ app.post('/api/admin/delete-inquiry', (req, res) => {
     res.json({ success: true });
 });
 
-// 12. [신규] 관리자 입금 장부 직접 추가 API
+// 12. 관리자 입금 장부 직접 추가 API
 app.post('/api/admin/add-deposit', (req, res) => {
     const db = readData();
     const { name, phone, businessNumber, email, amount, taxIncluded } = req.body;
@@ -228,7 +234,7 @@ app.post('/api/admin/add-deposit', (req, res) => {
     res.json({ success: true });
 });
 
-// 13. [신규] 입금 장부 삭제 / 복구 토글(소프트 딜리트 또는 하드 딜리트) API
+// 13. 입금 장부 삭제 / 복구 토글 API
 app.post('/api/admin/toggle-deposit-status', (req, res) => {
     const db = readData();
     const { id } = req.body;
@@ -242,7 +248,7 @@ app.post('/api/admin/toggle-deposit-status', (req, res) => {
     }
 });
 
-// 14. [신규] 관리자 공지사항 등록 API
+// 14. 관리자 공지사항 등록 API
 app.post('/api/admin/add-notice', (req, res) => {
     const db = readData();
     const { title, content } = req.body;
@@ -256,7 +262,7 @@ app.post('/api/admin/add-notice', (req, res) => {
     res.json({ success: true });
 });
 
-// 15. [신규] 공지사항 삭제 API
+// 15. 공지사항 삭제 API
 app.post('/api/admin/delete-notice', (req, res) => {
     const db = readData();
     const { id } = req.body;
