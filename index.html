@@ -148,6 +148,7 @@
         `;
       }
       authActions.innerHTML = authHtml;
+
       if (mobileNav) {
         mobileNav.innerHTML = `
           <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
@@ -205,7 +206,7 @@
       }
     }
 
-    // 관리자 페이지 플랫폼별 독립 탭 전환 함수
+    // 관리자 페이지 플랫폼별 독립 탭 전환 함수 (+ 장부 탭 포함)
     function switchAdminTab(tabName) {
       document.querySelectorAll('.admin-platform-tab-content').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.admin-tab-btn').forEach(btn => {
@@ -412,6 +413,7 @@
       return `<span style="${badgeStyle}">${icon} ${serviceName || '쿠팡 트래픽'}</span>`;
     }
 
+    // 관리자 데이터 및 신규 장부·공지사항 로드 함수
     async function loadAdminData() {
       try {
         const res = await fetch('/api/admin/data');
@@ -421,12 +423,14 @@
         let taxTbody = document.getElementById('admin-tax-tbody');
         let rewardTbody = document.getElementById('admin-reward-tbody');
         let placeTbody = document.getElementById('admin-place-tbody');
+        let depositTbody = document.getElementById('admin-deposit-tbody'); // 입금 장부 tbody
 
-        if(userTbody || taxTbody || rewardTbody || placeTbody) {
+        if(userTbody || taxTbody || rewardTbody || placeTbody || depositTbody) {
           if(userTbody) userTbody.innerHTML = '';
           if(taxTbody) taxTbody.innerHTML = '';
           if(rewardTbody) rewardTbody.innerHTML = '';
           if(placeTbody) placeTbody.innerHTML = '';
+          if(depositTbody) depositTbody.innerHTML = '';
 
           if(data.users && data.users.length > 0) {
             data.users.forEach((u) => {
@@ -495,7 +499,6 @@
                   </tr>`;
                 }
               }
-
             });
 
             if(rewardTbody && rewardTbody.innerHTML === '') {
@@ -504,12 +507,71 @@
             if(placeTbody && placeTbody.innerHTML === '') {
               placeTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 네이버 플레이스 파트너가 없습니다.</td></tr>`;
             }
+          }
+        }
 
+        // 입금 장부 렌더링
+        if (depositTbody && data.deposits) {
+          depositTbody.innerHTML = '';
+          if (data.deposits.length > 0) {
+            data.deposits.forEach(d => {
+              let isDeleted = d.status === '삭제됨';
+              let rowStyle = isDeleted ? 'background:#f1f5f9; color:#94a3b8; text-decoration:line-through;' : '';
+              depositTbody.innerHTML += `<tr style="${rowStyle}">
+                <td><strong>${d.name}</strong><br><span style="font-size:0.7rem;">등록일: ${d.date}</span></td>
+                <td>📞 ${d.phone}<br>🏢 ${d.businessNumber}</td>
+                <td>📧 ${d.email}</td>
+                <td><strong style="color:${isDeleted ? '#94a3b8' : 'var(--success)'};">${Number(d.amount).toLocaleString()}원</strong></td>
+                <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:700;">${d.taxIncluded}</span></td>
+                <td>
+                  <span style="font-weight:700; color:${isDeleted ? 'var(--danger)' : 'var(--success)'};">${d.status}</span>
+                </td>
+                <td>
+                  <div style="display:flex; gap:4px;">
+                    <button class="btn ${isDeleted ? 'btn-primary' : 'btn-danger'}" style="padding:2px 6px; font-size:0.68rem;" onclick="toggleDepositStatus(${d.id})">${isDeleted ? '복구' : '삭제'}</button>
+                  </div>
+                </td>
+              </tr>`;
+            });
           } else {
-            if(userTbody) userTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
-            if(taxTbody) taxTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
-            if(rewardTbody) rewardTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
-            if(placeTbody) placeTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너 회원이 없습니다.</td></tr>`;
+            depositTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 입금 장부 내역이 없습니다.</td></tr>`;
+          }
+        }
+
+        // 관리자 공지사항 관리 목록 렌더링
+        let adminNoticeTbody = document.getElementById('admin-notice-tbody');
+        if (adminNoticeTbody && data.notices) {
+          adminNoticeTbody.innerHTML = '';
+          if (data.notices.length > 0) {
+            data.notices.forEach(n => {
+              adminNoticeTbody.innerHTML += `<tr>
+                <td>${n.date}</td>
+                <td><strong>${n.title}</strong><br><span style="font-size:0.78rem; color:var(--text-sub);">${n.content}</span></td>
+                <td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.68rem;" onclick="deleteNotice(${n.id})">삭제</button></td>
+              </tr>`;
+            });
+          } else {
+            adminNoticeTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 공지사항이 없습니다.</td></tr>`;
+          }
+        }
+
+        // 파트너 공지사항 목록 렌더링 (파트너 대시보드용)
+        let partnerNoticeContainer = document.getElementById('partner-notice-container');
+        if (partnerNoticeContainer && data.notices) {
+          partnerNoticeContainer.innerHTML = '';
+          if (data.notices.length > 0) {
+            data.notices.forEach(n => {
+              partnerNoticeContainer.innerHTML += `<div style="background:var(--primary-light); border:1px solid #bfdbfe; padding:12px; border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.73rem; color:var(--primary); font-weight:700; margin-bottom:4px;">
+                  <span>📢 최고관리자 공지</span>
+                  <span>${n.date}</span>
+                </div>
+                <div style="font-weight:800; font-size:0.88rem; color:#1e3a8a; margin-bottom:4px;">${n.title}</div>
+                <div style="font-size:0.82rem; color:#334155; line-height:1.5;">${n.content}</div>
+              </div>`;
+            });
+          } else {
+            partnerNoticeContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-sub);">등록된 공지사항이 없습니다.</p>`;
           }
         }
 
@@ -574,7 +636,7 @@
               </tr>`;
             });
           } else {
-            ipTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">접속 로그가 없습니다.</td></tr>`;
+            ipTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">기록된 접속 로그가 없습니다.</td></tr>`;
           }
         }
 
@@ -656,6 +718,74 @@
       loadAdminData();
     }
 
+    // [신규] 관리자 장부 수동 추가 핸들러
+    async function handleAddDeposit(event) {
+      event.preventDefault();
+      const name = document.getElementById('dep-name').value.trim();
+      const phone = document.getElementById('dep-phone').value.trim();
+      const businessNumber = document.getElementById('dep-business').value.trim();
+      const email = document.getElementById('dep-email').value.trim();
+      const amount = document.getElementById('dep-amount').value.trim();
+      const taxIncluded = document.getElementById('dep-tax').value;
+
+      const res = await fetch('/api/admin/add-deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, businessNumber, email, amount, taxIncluded })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('💰 새로운 입금 장부 내역이 안전하게 기록되었습니다.');
+        document.getElementById('deposit-form').reset();
+        loadAdminData();
+      } else {
+        alert('장부 기록에 실패했습니다.');
+      }
+    }
+
+    // [신규] 입금 장부 삭제 / 복구 핸들러
+    async function toggleDepositStatus(id) {
+      await fetch('/api/admin/toggle-deposit-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      loadAdminData();
+    }
+
+    // [신규] 공지사항 등록 핸들러
+    async function handleAddNotice(event) {
+      event.preventDefault();
+      const title = document.getElementById('notice-title').value.trim();
+      const content = document.getElementById('notice-content').value.trim();
+
+      const res = await fetch('/api/admin/add-notice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('📢 파트너 공지사항이 성공적으로 등록되었습니다.');
+        document.getElementById('notice-form').reset();
+        loadAdminData();
+      } else {
+        alert('공지 등록에 실패했습니다.');
+      }
+    }
+
+    // [신규] 공지사항 삭제 핸들러
+    async function deleteNotice(id) {
+      if(!confirm('해당 공지사항을 삭제하시겠습니까?')) return;
+      await fetch('/api/admin/delete-notice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      alert('공지사항이 삭제되었습니다.');
+      loadAdminData();
+    }
+
     async function renderUserDashboard(user) {
       try {
         const res = await fetch('/api/admin/data');
@@ -666,6 +796,25 @@
             currentUser = latestUser;
             localStorage.setItem('hunster_user', JSON.stringify(currentUser));
             user = latestUser;
+          }
+        }
+        // 파트너 대시보드 공지사항 갱신용
+        let partnerNoticeContainer = document.getElementById('partner-notice-container');
+        if (partnerNoticeContainer && data.notices) {
+          partnerNoticeContainer.innerHTML = '';
+          if (data.notices.length > 0) {
+            data.notices.forEach(n => {
+              partnerNoticeContainer.innerHTML += `<div style="background:var(--primary-light); border:1px solid #bfdbfe; padding:12px; border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.73rem; color:var(--primary); font-weight:700; margin-bottom:4px;">
+                  <span>📢 최고관리자 공지</span>
+                  <span>${n.date}</span>
+                </div>
+                <div style="font-weight:800; font-size:0.88rem; color:#1e3a8a; margin-bottom:4px;">${n.title}</div>
+                <div style="font-size:0.82rem; color:#334155; line-height:1.5;">${n.content}</div>
+              </div>`;
+            });
+          } else {
+            partnerNoticeContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-sub);">등록된 공지사항이 없습니다.</p>`;
           }
         }
       } catch (e) {}
@@ -878,7 +1027,7 @@
     </div>
   </div>
 
-  <!-- 🚀 쿠팡 트래픽 솔루션 상세 가이드 및 용어 사전 뷰 (긴 설명글 복원 완료) -->
+  <!-- 🚀 쿠팡 트래픽 솔루션 상세 가이드 및 용어 사전 뷰 -->
   <div id="view-coupang-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
@@ -959,7 +1108,7 @@
     </div>
   </div>
 
-  <!-- ⭐ 네이버 리워드 트래픽 상세 가이드 및 용어 사전 뷰 (긴 설명글 복원 완료) -->
+  <!-- ⭐ 네이버 리워드 트래픽 상세 가이드 및 용어 사전 뷰 -->
   <div id="view-naver-reward-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
@@ -1037,7 +1186,7 @@
     </div>
   </div>
 
-  <!-- 📍 네이버 플레이스 트래픽 상세 가이드 및 용어 사전 뷰 (긴 설명글 복원 완료) -->
+  <!-- 📍 네이버 플레이스 트래픽 상세 가이드 및 용어 사전 뷰 -->
   <div id="view-naver-place-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
       <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
@@ -1131,13 +1280,12 @@
     </div>
   </div>
 
-  <!-- 회원가입 뷰 (서비스 선택에 따른 동적 필드 분리 적용) -->
+  <!-- 회원가입 뷰 -->
   <div id="view-register" class="page-view wrapper">
     <div class="auth-container" style="max-width: 520px;">
       <h2>파트너 회원가입 및 슬롯 신청</h2>
       <p>선택하신 플랫폼에 맞는 맞춤 항목만 깔끔하게 입력됩니다.</p>
       <form onsubmit="handleRegister(event)" class="form-grid">
-        <!-- 기본 필수 정보 (항상 표시) -->
         <div class="form-group">
           <label class="form-label">성함 (대표자명) *</label>
           <input type="text" id="reg-name" class="form-input" placeholder="성함 입력" required>
@@ -1175,7 +1323,6 @@
           <input type="text" id="reg-business-number" class="form-input" placeholder="000-00-00000" required>
         </div>
 
-        <!-- 이용 서비스 선택 (변경 시 필드 동적 전환) -->
         <div class="form-group" style="background: var(--primary-light); padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe;">
           <label class="form-label" style="color: var(--primary);">이용 서비스 선택 *</label>
           <select id="service-select" class="form-select" onchange="updateRegisterFields()" required>
@@ -1185,7 +1332,7 @@
           </select>
         </div>
 
-        <!-- 📦 쿠팡 선택 시 표시되는 전용 필드 -->
+        <!-- 📦 쿠팡 전용 필드 -->
         <div id="reg-fields-coupang" style="display:block; background:#fafafa; padding:10px; border-radius:8px; border:1px solid var(--border);">
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label">쿠팡 상품 검색 키워드 *</label>
@@ -1197,7 +1344,7 @@
           </div>
         </div>
 
-        <!-- ⭐ 네이버 리워드 선택 시 표시되는 전용 필드 -->
+        <!-- ⭐ 네이버 리워드 전용 필드 -->
         <div id="reg-fields-reward" style="display:none; background:#ecfdf5; padding:10px; border-radius:8px; border:1px solid #a7f3d0;">
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label" style="color:#065f46;">스마트스토어 명 *</label>
@@ -1221,7 +1368,7 @@
           </div>
         </div>
 
-        <!-- 📍 네이버 플레이스 선택 시 표시되는 전용 필드 -->
+        <!-- 📍 네이버 플레이스 전용 필드 -->
         <div id="reg-fields-place" style="display:none; background:#fffbeb; padding:10px; border-radius:8px; border:1px solid #fde68a;">
           <div class="form-group" style="margin-bottom:8px;">
             <label class="form-label" style="color:#92400e;">오프라인 업체 상호명 *</label>
@@ -1243,7 +1390,6 @@
           </div>
         </div>
 
-        <!-- 공통 하단 정보 -->
         <div class="form-group" style="margin-top:6px;">
           <label class="form-label">가입 사유 및 목표 *</label>
           <textarea id="reg-reason" class="form-textarea" placeholder="가입 동기 및 목표를 상세히 적어주세요." required></textarea>
@@ -1267,6 +1413,14 @@
       <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.8rem;">
         <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">연락처: <span id="my-phone">-</span></span>
         <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">주소: <span id="my-address">-</span></span>
+      </div>
+    </div>
+
+    <!-- 📢 [신규 추가] 파트너 전용 공지사항 영역 (읽기 전용, 답글 불가) -->
+    <div class="card-box" style="border-top: 4px solid var(--primary);">
+      <h3 style="display:flex; align-items:center; gap:6px; margin-bottom:10px;"><span>📢</span> 최고관리자 공지사항</h3>
+      <div id="partner-notice-container">
+        <p style="font-size: 0.8rem; color: var(--text-sub);">등록된 공지사항이 없습니다.</p>
       </div>
     </div>
 
@@ -1323,7 +1477,7 @@
     </div>
   </div>
 
-  <!-- 관리자 대시보드 뷰 (플랫폼별 독립된 상세 관리 탭 구조 적용) -->
+  <!-- 관리자 대시보드 뷰 -->
   <div id="view-admin" class="page-view dashboard-container">
     <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155;">
       <h3 style="color: white; font-size: 1.15rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
@@ -1332,15 +1486,16 @@
       <p id="admin-total-slot-summary" style="font-size: 0.85rem; color: #94a3b8;">전체 플랫폼 파트너 슬롯 현황을 실시간 집계 중입니다...</p>
     </div>
 
-    <!-- 플랫폼별 독립된 상세 관리 탭 버튼 바 -->
+    <!-- 플랫폼별 독립된 상세 관리 탭 버튼 바 (+ 입금 장부 탭 추가) -->
     <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm);">
       <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
-        <span>🗂️</span> 플랫폼별 상세 관리 탭 (클릭하여 전환)
+        <span>🗂️</span> 플랫폼별 및 장부 상세 관리 탭 (클릭하여 전환)
       </h4>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-        <button type="button" id="admin-btn-coupang" class="btn admin-tab-btn" onclick="switchAdminTab('coupang')" style="font-weight: 800; padding: 10px; font-size: 0.85rem; background: var(--primary); color: white; border-color: var(--primary);">📦 쿠팡 관리 탭</button>
-        <button type="button" id="admin-btn-reward" class="btn admin-tab-btn" onclick="switchAdminTab('reward')" style="font-weight: 800; padding: 10px; font-size: 0.85rem;">⭐ 네이버 리워드 탭</button>
-        <button type="button" id="admin-btn-place" class="btn admin-tab-btn" onclick="switchAdminTab('place')" style="font-weight: 800; padding: 10px; font-size: 0.85rem;">📍 네이버 플레이스 탭</button>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+        <button type="button" id="admin-btn-coupang" class="btn admin-tab-btn" onclick="switchAdminTab('coupang')" style="font-weight: 800; padding: 10px; font-size: 0.8rem; background: var(--primary); color: white; border-color: var(--primary);">📦 쿠팡 관리</button>
+        <button type="button" id="admin-btn-reward" class="btn admin-tab-btn" onclick="switchAdminTab('reward')" style="font-weight: 800; padding: 10px; font-size: 0.8rem;">⭐ 리워드 관리</button>
+        <button type="button" id="admin-btn-place" class="btn admin-tab-btn" onclick="switchAdminTab('place')" style="font-weight: 800; padding: 10px; font-size: 0.8rem;">📍 플레이스 관리</button>
+        <button type="button" id="admin-btn-deposit" class="btn admin-tab-btn" onclick="switchAdminTab('deposit')" style="font-weight: 800; padding: 10px; font-size: 0.8rem; background: #ecfdf5; color: var(--success); border-color: var(--success);">💰 입금장부 관리</button>
       </div>
     </div>
 
@@ -1415,12 +1570,59 @@
       </div>
     </div>
 
+    <!-- 💰 [탭 4신규] 입금 관리 장부 탭 컨텐츠 -->
+    <div id="admin-tab-deposit" class="admin-platform-tab-content" style="display: none;">
+      <div class="card-box" style="border-top: 4px solid var(--success);">
+        <h3 style="margin-bottom: 4px;">💰 최고관리자 입금 관리 장부</h3>
+        <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">고객 입금 내역을 수동으로 안전하게 기록하고 관리·삭제·복구할 수 있는 장부 페이지입니다.</p>
+
+        <!-- 입금 수동 등록 폼 -->
+        <form id="deposit-form" onsubmit="handleAddDeposit(event)" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:14px;">
+          <h4 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--success);">➕ 새로운 입금 장부 기록 추가</h4>
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:8px;">
+            <input type="text" id="dep-name" class="form-input" placeholder="고객 성함" required style="font-size:0.8rem;">
+            <input type="text" id="dep-phone" class="form-input" placeholder="연락처 (010-0000-0000)" required style="font-size:0.8rem;">
+            <input type="text" id="dep-business" class="form-input" placeholder="사업자번호" required style="font-size:0.8rem;">
+          </div>
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:8px;">
+            <input type="email" id="dep-email" class="form-input" placeholder="이메일 주소" required style="font-size:0.8rem;">
+            <input type="number" id="dep-amount" class="form-input" placeholder="입금액 (원)" required style="font-size:0.8rem;">
+            <select id="dep-tax" class="form-select" style="font-size:0.8rem;">
+              <option value="포함">세금계산서 포함</option>
+              <option value="미포함">세금계산서 미포함</option>
+            </select>
+            <button type="submit" class="btn btn-primary" style="font-size:0.8rem; font-weight:700;">장부 기록</button>
+          </div>
+        </form>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>이름 / 등록일</th>
+                <th>연락처 / 사업자번호</th>
+                <th>이메일 주소</th>
+                <th>입금액</th>
+                <th>세금계산서 여부</th>
+                <th>상태</th>
+                <th>관리 (삭제/복구)</th>
+              </tr>
+            </thead>
+            <tbody id="admin-deposit-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:14px; color:var(--text-sub);">장부 데이터를 불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- ⚡ 관리자 공통 퀵 메뉴 -->
     <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm); margin-top: 16px;">
       <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
         <span>⚡</span> 전체 관리 섹션 퀵 메뉴 (클릭하여 펼치기·접기)
       </h4>
-      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;" id="admin-quick-nav">
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="admin-quick-nav">
+        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-notice')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer; background:var(--primary-light); color:var(--primary);">📢 공지작성</button>
         <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-tax')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🧾 세금계산서</button>
         <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-slots')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🔥 슬롯현황</button>
         <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-inquiry')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">💬 1:1문의</button>
@@ -1430,6 +1632,37 @@
     </div>
 
     <!-- 공통 관리 섹션들 -->
+    <!-- 📢 [신규 추가] 공지사항 작성 및 관리 섹션 -->
+    <div id="admin-sec-notice" class="card-box" style="border-top: 4px solid var(--primary); display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin-bottom: 0;">📢 파트너 공지사항 발행 및 관리</h3>
+        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-notice')">닫기 ✕</button>
+      </div>
+      <form id="notice-form" onsubmit="handleAddNotice(event)" style="background:#fafafa; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
+        <div class="form-group" style="margin-bottom:6px;">
+          <input type="text" id="notice-title" class="form-input" placeholder="공지사항 제목을 입력하세요" required style="font-size:0.8rem;">
+        </div>
+        <div class="form-group" style="margin-bottom:6px;">
+          <textarea id="notice-content" class="form-textarea" placeholder="파트너사들이 확인할 공지 내용을 입력하세요..." required style="font-size:0.8rem;"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="font-size:0.8rem; font-weight:700;">공지 등록하기</button>
+      </form>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>등록일시</th>
+              <th>공지 제목 및 내용</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="admin-notice-tbody">
+            <tr><td colspan="3" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 공지사항이 없습니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div id="admin-sec-tax" class="card-box" style="border-top: 4px solid #059669; display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
         <h3 style="margin-bottom: 0;">🧾 파트너 세금 계산서 관리</h3>
