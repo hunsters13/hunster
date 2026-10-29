@@ -64,7 +64,7 @@ app.post('/api/register', (req, res) => {
         targetKeyword: targetKeyword || '-',
         targetUrl: targetUrl || '-',
         actionType: actionType || '단순유입',
-        placeStatusMessage: '🛡️ 프록시 IP 매칭 및 실시간 순위 변동 대기 중', // 플레이스 관리자 커스텀 메시지 초기값
+        placeStatusMessage: '🛡️ 프록시 IP 매칭 및 실시간 순위 변동 대기 중',
         depositStatus: '입금대기',
         taxStatus: '발행대기',
         createdAt: new Date().toLocaleString()
@@ -156,7 +156,7 @@ app.post('/api/admin/update-slots', (req, res) => {
     }
 });
 
-// 7. [신규] 네이버 플레이스 관리자 커스텀 상태 메시지 업데이트 API
+// 7. 네이버 플레이스 관리자 커스텀 상태 메시지 업데이트 API
 app.post('/api/admin/update-place-status', (req, res) => {
     const db = readData();
     const { userId, statusMessage } = req.body;
