@@ -2,152 +2,141 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>HUNSTER - Enterprise Traffic & Slot Operations</title>
-  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUNSTER - Enterprise Traffic & Slots Operations</title>
   <style>
     :root {
-      --bg-body: #f8fafc; --bg-card: #ffffff; --border: #e2e8f0; --border-subtle: #f1f5f9;
-      --text-main: #0f172a; --text-sub: #64748b; --primary: #2563eb; --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff; --success: #059669; --success-bg: #ecfdf5; --warning-bg: #fffbeb; --warning-text: #d97706;
-      --danger: #dc2626; --danger-bg: #ffeeef;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.06); --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; word-break: keep-all; overflow-x: hidden; padding-bottom: 60px; }
-    
-    header { height: 60px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 14px; background: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
-    .logo-area { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer; }
-    
-    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1rem; box-shadow: 0 0 12px rgba(37, 99, 235, 0.6); flex-shrink: 0; animation: logoGlow 2s infinite alternate; }
-    @keyframes logoGlow {
-      0% { box-shadow: 0 0 6px rgba(37, 99, 235, 0.4); transform: scale(1); }
-      100% { box-shadow: 0 0 18px rgba(37, 99, 235, 0.95), 0 0 28px rgba(59, 130, 246, 0.6); transform: scale(1.04); }
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --bg-main: #f8fafc;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.5; display: flex; flex-direction: column; min-height: 100vh; }
+
+    header {
+      background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; box-shadow: var(--shadow-sm);
+    }
+    .logo-area { display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
+    .logo-icon { width: 36px; height: 36px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: var(--shadow-sm); }
     .logo-text-box { display: flex; flex-direction: column; }
-    .logo-main-title { font-weight: 900; font-size: 1rem; letter-spacing: -0.5px; background: linear-gradient(90deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; }
-    .logo-sub-title { font-size: 0.55rem; font-weight: 700; color: var(--primary); letter-spacing: 0.8px; text-transform: uppercase; }
-    
-    .header-right { display: flex; gap: 6px; align-items: center; }
-    .auth-actions { display: flex; gap: 4px; align-items: center; }
-    
-    .bgm-player-box { display: flex; align-items: center; gap: 4px; background: var(--primary-light); padding: 3px 6px; border-radius: 10px; border: 1px solid #bfdbfe; }
-    .bgm-btn { background: var(--primary); color: white; border: none; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; white-space: nowrap; }
-    .bgm-btn:hover { background: var(--primary-hover); }
-    .bgm-label { font-size: 0.65rem; font-weight: 700; color: var(--primary); white-space: nowrap; display: inline-block; }
+    .logo-main-title { font-weight: 900; font-size: 1.05rem; color: var(--text-main); letter-spacing: -0.5px; }
+    .logo-sub-title { font-size: 0.68rem; color: var(--text-sub); font-weight: 600; }
 
-    .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); padding: 2px; }
-    .mobile-nav { display: none; position: absolute; top: 60px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 14px; flex-direction: column; gap: 10px; box-shadow: var(--shadow-lg); z-index: 99; }
-    .mobile-nav.active { display: flex; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .bgm-player-box { display: flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; border: 1px solid var(--border); }
+    .bgm-label { font-weight: 700; color: var(--text-main); }
+    .bgm-btn { background: var(--primary); color: white; text-decoration: none; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.7rem; transition: 0.2s; }
+    .bgm-btn:hover { background: #1d4ed8; }
 
-    .btn { padding: 6px 12px; border-radius: 7px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); white-space: nowrap; transition: 0.2s; }
+    .auth-actions { display: flex; gap: 6px; }
+    .btn { background: white; border: 1px solid var(--border); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
     .btn:hover { background: #f1f5f9; }
     .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-danger { background: var(--danger-bg); border-color: #fca5a5; color: var(--danger); font-weight: 700; }
-    .btn-danger:hover { background: #fee2e2; }
-    
-    .page-view { display: none !important; }
-    .page-view.active { display: block !important; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-danger { background: var(--danger); border-color: var(--danger); color: white; }
+    .btn-danger:hover { background: #b91c1c; }
 
-    .wrapper { max-width: 1200px; margin: 0 auto; padding: 20px 12px; display: flex; flex-direction: column; gap: 24px; }
-    
-    .hero { text-align: center; padding: 16px 0; }
-    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
-    .hero h1 { font-size: 1.6rem; font-weight: 800; color: #0f172a; line-height: 1.3; margin-bottom: 10px; word-break: keep-all; }
-    .hero p { font-size: 0.9rem; color: var(--text-sub); max-width: 580px; margin: 0 auto 16px auto; word-break: keep-all; }
-    
-    .card-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
-    .card-box h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 10px; color: #0f172a; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: #fafafa; border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; gap: 6px; }
-    .server-status-item:last-child { margin-bottom: 0; }
+    .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-main); }
+    .mobile-nav { display: none; position: absolute; top: 60px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 14px 20px; box-shadow: var(--shadow-md); flex-direction: column; gap: 8px; }
+    .mobile-nav.active { display: flex; }
 
-    .pulse-dot { width: 9px; height: 9px; background-color: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 0 rgb(5 150 105 / 0.4); animation: pulse 1.6s infinite; }
-    @keyframes pulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.6); }
-      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
-    }
+    .wrapper { max-width: 1100px; width: 100%; margin: 0 auto; padding: 20px; flex: 1; }
+    .page-view { display: none; }
+    .page-view.active { display: block; }
 
-    .auth-container { width: 100%; max-width: 480px; margin: 16px auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 18px; box-shadow: var(--shadow-md); }
-    .auth-container h2 { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; color: #0f172a; }
-    .auth-container p { color: var(--text-sub); font-size: 0.8rem; margin-bottom: 14px; }
-    .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .hero { text-align: center; padding: 36px 16px; background: white; border: 1px solid var(--border); border-radius: 14px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+    .hero-badge { background: var(--primary-light); color: var(--primary); font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 10px; border: 1px solid #bfdbfe; }
+    .hero h1 { font-size: 1.55rem; font-weight: 900; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.5px; }
+    .hero p { font-size: 0.88rem; color: var(--text-sub); max-width: 600px; margin: 0 auto 16px; }
+
+    .card-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+    
+    .pulse-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+    .auth-container { max-width: 440px; margin: 40px auto; background: white; border: 1px solid var(--border); border-radius: 14px; padding: 28px; box-shadow: var(--shadow-md); }
+    .auth-container h2 { font-size: 1.25rem; font-weight: 900; margin-bottom: 16px; text-align: center; }
+    
+    .form-grid { display: flex; flex-direction: column; gap: 10px; }
     .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-label { font-size: 0.78rem; font-weight: 700; color: #334155; }
-    .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 0.9rem; background: #fafafa; outline: none; color: #0f172a; font-weight: 500; }
-    .form-textarea { resize: vertical; min-height: 80px; }
-    
-    .dashboard-container { max-width: 1200px; margin: 12px auto; padding: 0 4px; }
-    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    
-    .data-table-wrapper { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid var(--border); margin-top: 8px; -webkit-overflow-scrolling: touch; }
-    .data-table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
-    .data-table th { background: var(--border-subtle); color: var(--text-sub); font-size: 0.75rem; font-weight: 700; }
-    
-    .badge-status { padding: 4px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; cursor: pointer; border: none; display: inline-block; text-align: center; white-space: nowrap; }
-    .status-pending { background: var(--warning-bg); color: var(--warning-text); }
-    .status-complete { background: var(--success-bg); color: var(--success); }
+    .form-label { font-size: 0.78rem; font-weight: 700; color: var(--text-main); }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; outline: none; transition: 0.2s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+    .form-textarea { resize: vertical; min-height: 70px; }
 
-    footer { text-align: center; padding: 20px 12px; color: var(--text-sub); font-size: 0.75rem; border-top: 1px solid var(--border); background: white; margin-top: 24px; line-height: 1.6; }
+    .dashboard-container { max-width: 1000px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+    .server-status-item:last-child { border-bottom: none; }
 
-    @media (max-width: 768px) {
-      header { padding: 0 10px; height: 54px; }
-      .logo-main-title { font-size: 0.9rem; }
-      .logo-sub-title { font-size: 0.5rem; }
-      .logo-icon { width: 28px; height: 28px; font-size: 0.9rem; border-radius: 6px; }
-      .bgm-label { display: none; }
-      .bgm-player-box { padding: 2px 5px; border-radius: 8px; }
-      .bgm-btn { font-size: 0.65rem; padding: 2px 5px; }
+    .badge-status { padding: 3px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: none; }
+    .status-pending { background: #fef3c7; color: #b45309; }
+    .status-complete { background: #ecfdf5; color: #047857; }
+
+    .data-table-wrapper { width: 100%; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; text-align: left; }
+    .data-table th, .data-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+    .data-table th { background: #f8fafc; font-weight: 800; color: var(--text-main); }
+
+    footer { background: white; border-top: 1px solid var(--border); padding: 20px; text-align: center; font-size: 0.75rem; color: var(--text-sub); margin-top: auto; }
+
+    @media(max-width: 768px) {
+      .auth-actions { display: none; }
       .mobile-menu-btn { display: block; }
-      .mobile-nav { top: 54px; padding: 12px; }
-      
-      .wrapper { padding: 12px 10px; gap: 16px; }
-      .hero { padding: 8px 0; }
-      .hero h1 { font-size: 1.3rem; line-height: 1.25; margin-bottom: 8px; }
-      .hero p { font-size: 0.82rem; margin-bottom: 12px; }
-      
-      .card-box { padding: 14px 12px; border-radius: 10px; margin-bottom: 12px; }
-      .card-box h3 { font-size: 0.95rem; margin-bottom: 8px; }
-      
-      .server-status-item { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 12px; }
-      .server-status-item > div { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-      
-      .status-section-grid { grid-template-columns: 1fr; gap: 10px; }
-      .auth-container { margin: 10px auto; padding: 16px 12px; border-radius: 10px; max-width: 100%; }
-      .auth-container h2 { font-size: 1.15rem; }
-      .dashboard-container { padding: 0; }
-      
-      .btn { padding: 6px 10px; font-size: 0.78rem; }
-      #admin-quick-nav { grid-template-columns: repeat(3, 1fr) !important; gap: 5px; }
-      #admin-quick-nav .btn { font-size: 0.7rem; padding: 8px 2px; }
+      .status-section-grid { grid-template-columns: 1fr; }
       #service-category-cards { grid-template-columns: 1fr !important; }
+      .admin-tab-btn { font-size: 0.7rem !important; padding: 6px !important; }
     }
   </style>
+
   <script>
-    const ACCOUNT_INFO = { bank: "카카오뱅크", accountNumber: "3333-22-922-9190", holder: "김*훈" };
+    const ACCOUNT_INFO = {
+      bank: "우리은행",
+      accountNumber: "1002-862-588371",
+      holder: "김종훈( HUNSTER )"
+    };
+
     let currentUser = null;
 
     function updateHeaderAuthUI() {
-      const authActions = document.getElementById('auth-actions-container');
+      const authContainer = document.getElementById('auth-actions-container');
       const mobileNav = document.getElementById('mobile-nav');
-      const savedUser = localStorage.getItem('hunster_user');
       const savedRole = localStorage.getItem('hunster_role');
+      const savedUser = localStorage.getItem('hunster_user');
 
-      if (!authActions) return;
-
-      let authHtml = '';
-      if (savedRole === 'admin' || savedUser) {
-        authHtml = `<button class="btn btn-danger" onclick="handleLogout()">로그아웃</button>`;
-      } else {
-        authHtml = `
-          <button class="btn" onclick="switchView('view-login')">로그인</button>
-          <button class="btn btn-primary" onclick="switchView('view-register')">회원가입</button>
-        `;
+      if (authContainer) {
+        if (savedRole === 'admin') {
+          authContainer.innerHTML = `
+            <span style="font-size: 0.78rem; font-weight: 800; color: var(--danger);">👑 최고관리자 모드</span>
+            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="handleLogout()">로그아웃</button>
+          `;
+        } else if (savedUser) {
+          let uName = '파트너';
+          try { uName = JSON.parse(savedUser).name; } catch(e) {}
+          authContainer.innerHTML = `
+            <span style="font-size: 0.78rem; font-weight: 800; color: var(--primary);">👤 ${uName} 파트너님</span>
+            <button class="btn" style="padding: 5px 10px; font-size: 0.75rem;" onclick="goHome()">대시보드</button>
+            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="handleLogout()">로그아웃</button>
+          `;
+        } else {
+          authContainer.innerHTML = `
+            <button class="btn" onclick="switchView('view-login')">로그인</button>
+            <button class="btn btn-primary" onclick="switchView('view-register')">파트너 회원가입</button>
+          `;
+        }
       }
-      authActions.innerHTML = authHtml;
 
       if (mobileNav) {
         mobileNav.innerHTML = `
@@ -484,7 +473,6 @@
                 }
               }
 
-              // 네이버 플레이스 관제 탭 (관리자가 직접 순위 상태 메시지를 수정할 수 있도록 입력창 추가)
               if(u.service && u.service.includes('네이버 플레이스')) {
                 if(placeTbody) {
                   placeTbody.innerHTML += `<tr>
@@ -658,7 +646,6 @@
       } catch(err) {}
     }
 
-    // [신규] 플레이스 관리자 커스텀 상태 저장 함수
     async function updatePlaceStatus(userId) {
       const msg = document.getElementById('place-status-' + userId).value;
       const res = await fetch('/api/admin/update-place-status', {
@@ -837,8 +824,6 @@
       document.getElementById('my-slots').innerText = (user.slots || 5) + ' 슬롯 활성 가동 중';
       
       const slotsNum = user.slots || 5;
-      
-      // 파트너 대시보드 실시간 상태 메시지 동적 연동 (플레이스인 경우 관리자가 적은 메시지 노출)
       let trafficText = "현재 " + slotsNum + "슬롯 정상 가동 중 (실시간 활성)";
       if (user.service && user.service.includes('네이버 플레이스') && user.placeStatusMessage) {
         trafficText = user.placeStatusMessage;
@@ -1041,36 +1026,207 @@
     </div>
   </div>
 
-  <!-- 쿠팡 가이드 뷰 -->
+  <!-- 쿠팡 가이드 뷰 (방대한 용어사전 및 장점/근거 포함) -->
   <div id="view-coupang-detail" class="page-view wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
-      <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 4px 10px; border-radius: 20px;">COUPANG SELLER GUIDE & GLOSSARY</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
+      <span style="font-size: 0.75rem; color: #2563eb; font-weight: 800; background: #eff6ff; padding: 6px 12px; border-radius: 20px; border: 1px solid #bfdbfe;">📦 COUPANG SELLER ULTIMATE GUIDE & GLOSSARY</span>
     </div>
-    <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
-      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">쿠팡 트래픽 & 슬롯 초보자 완벽 가이드 및 용어 사전</h2>
+    
+    <div class="card-box" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: var(--shadow-lg); margin-bottom: 20px; border-radius: 14px;">
+      <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">HUNSTER ENTERPRISE INSIGHT</span>
+      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">쿠팡 트래픽 솔루션을 반드시 도입해야 하는 이유와 완벽 분석</h2>
+      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">아이템위너 방어부터 로켓검색 상위 노출까지, 쿠팡 이커머스 생태계에서 살아남기 위한 전략적 근거와 실전 용어 사전입니다.</p>
+    </div>
+
+    <div class="card-box" style="border-top: 5px solid #2563eb; margin-bottom: 20px;">
+      <h3 style="color: #1e3a8a; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>💡</span> 왜 쿠팡 트래픽 솔루션을 사용해야 하는가? (핵심 장점 및 알고리즘 근거)
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr; gap: 12px; line-height: 1.6;">
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.92rem;">1. 아이템위너(Item Winner) 방어 및 독점권 유지</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 쿠팡은 가격, 배송뿐만 아니라 상품 페이지 방문자 수와 전환 추이를 종합적으로 평가합니다. 경쟁사가 진입했을 때 자체적인 유입량(Traffic)을 지속적으로 공급해 주면 알고리즘 상 점유율 방어에 유리하게 작용하여 마진을 지켜낼 수 있습니다.
+          </p>
+        </div>
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.92rem;">2. 쿠팡 검색 알고리즘 상위 노출 (CTR 및 체류시간 극대화)</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 쿠팡 검색창에 특정 키워드를 검색한 뒤 타겟 상품으로 유입되어 일정 시간 머무는 행위는, 쿠팡 알고리즘에 "해당 키워드와 상품의 연관성이 매우 높다"는 강력한 시그널을 전달하여 자연 유입을 폭발적으로 견인합니다.
+          </p>
+        </div>
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.92rem;">3. 신규 등록 상품의 초기 부스팅 (Cold Start 문제 해결)</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 갓 등록한 신상품은 리뷰와 판매 데이터가 없어 고객의 눈에 띄기 어렵습니다. 슬롯 가동을 통한 초기 트래픽 유입은 쿠팡 로켓검색 시스템이 상품을 빠르게 인덱싱하고 노출 순위에 반영하도록 돕는 가장 확실한 부스터입니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-box" style="border-top: 5px solid #1e3a8a;">
+      <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>📚</span> 쿠팡 셀러 필수 전문 용어 사전 (A to Z)
+      </h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">1. 아이템위너 (Item Winner)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">동일한 바코드(SKU)를 가진 상품을 판매하는 여러 판매자 중 가격, 배송 속도, 고객 응대율 등을 평가하여 가장 높은 점수를 받은 단 1명에게 대표 주문 버튼 권한을 부여하는 쿠팡 고유의 독점 판매 시스템입니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">2. 쿠팡 트래픽 슬롯 (Traffic Slot)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">특정 키워드 기반으로 쿠팡 앱/웹 환경에서 상품을 검색, 유입시킨 뒤 상세페이지 체류 및 스크롤 등의 사용자 행동 패턴을 수행하도록 배당된 가동 수량 단위입니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">3. CTR (Click-Through Rate, 클릭률)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">상품이 검색 결과 화면에 노출된 횟수 대비 실제 유저가 클릭하여 상세페이지에 진입한 비율입니다. CTR이 높을수록 쿠팡 알고리즘은 매력적인 상품으로 판단하여 상위 노출 가중치를 부여합니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">4. CVR (Conversion Rate, 구매 전환율)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">상세페이지에 방문한 총 유저 수 대비 실제 구매로 이어진 건수의 비율입니다. 트래픽 유입과 함께 CVR이 안정적으로 유지될 때 검색 순위가 계단식으로 급상승하게 됩니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">5. 로켓그로스 (Rocket Growth) 및 CGF</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">판매자가 상품을 쿠팡 물류센터에 입고시키면 쿠팡이 보관, 포장, 로켓배송 및 CS까지 대행해 주는 풀필먼트 서비스입니다. 로켓배송 딱지가 붙기 때문에 트래픽 유입 시 시너지 효과가 극대화됩니다.</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- 네이버 리워드 가이드 뷰 -->
+  <!-- 네이버 리워드 가이드 뷰 (방대한 용어사전 및 장점/근거 포함) -->
   <div id="view-naver-reward-detail" class="page-view wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
-      <span style="font-size: 0.75rem; color: var(--success); font-weight: 700; background: var(--success-bg); padding: 4px 10px; border-radius: 20px;">NAVER REWARD SELLER GUIDE & GLOSSARY</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
+      <span style="font-size: 0.75rem; color: #059669; font-weight: 800; background: #ecfdf5; padding: 6px 12px; border-radius: 20px; border: 1px solid #a7f3d0;">⭐ NAVER REWARD ULTIMATE GUIDE & GLOSSARY</span>
     </div>
-    <div class="card-box" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
-      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 리워드 쇼핑 트래픽 완벽 가이드 및 용어 사전</h2>
+
+    <div class="card-box" style="background: linear-gradient(135deg, #065f46 0%, #059669 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: var(--shadow-lg); margin-bottom: 20px; border-radius: 14px;">
+      <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">HUNSTER ENTERPRISE INSIGHT</span>
+      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">네이버 리워드 쇼핑 트래픽을 반드시 도입해야 하는 이유와 완벽 분석</h2>
+      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">다이아플러스(D.I.A.+) 알고리즘 대응, 스마트스토어 쇼핑랭킹 장악, 그리고 찜하기·장바구니 인터랙션의 전략적 가치입니다.</p>
+    </div>
+
+    <div class="card-box" style="border-top: 5px solid #059669; margin-bottom: 20px;">
+      <h3 style="color: #065f46; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>💡</span> 왜 네이버 리워드 쇼핑 트래픽을 사용해야 하는가? (핵심 장점 및 알고리즘 근거)
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr; gap: 12px; line-height: 1.6;">
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #059669; font-size: 0.92rem;">1. 네이버 쇼핑 D.I.A.+ 및 C-Rank 알고리즘 동시 충족</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 네이버는 문서의 신뢰도(C-Rank)뿐만 아니라 실제 사용자가 문서를 얼마나 깊이 있게 소비하는지(D.I.A.+)를 정밀하게 측정합니다. 리워드 트래픽은 단순 유입을 넘어 체류, 스크롤, 찜하기 등의 풍부한 사용자 피드백을 제공하여 알고리즘 평가 점수를 극대화합니다.
+          </p>
+        </div>
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #059669; font-size: 0.92rem;">2. 09시~23시 황금시간대 분산 패턴을 통한 자연스러움 확보</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 비정상적인 시간대에 트래픽이 몰리면 포털의 어뷰징 필터에 걸릴 위험이 있습니다. HUNSTER는 24시간 중 쇼핑 활성도가 가장 높은 골든타임(09시~23시)에 트래픽을 지능적으로 분산시켜 인위적 느낌 없는 안전한 랭킹 상승을 유도합니다.
+          </p>
+        </div>
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #059669; font-size: 0.92rem;">3. 찜하기·장바구니 액션을 통한 구매 의도(Intent) 신호 증폭</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 네이버 쇼핑 스코어에는 단순 클릭 외에도 '스토어 찜', '상품 찜', '장바구니 담기' 등의 인터랙션 지표가 매우 높은 가중치로 반영됩니다. 리워드 옵션을 통해 이 지표들을 함께 끌어올려 쇼핑 판도를 바꿀 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-box" style="border-top: 5px solid #065f46;">
+      <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>📚</span> 네이버 쇼핑 셀러 필수 전문 용어 사전 (A to Z)
+      </h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">1. D.I.A.+ 알고리즘 (Direct Intent Analysis Plus)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">사용자가 검색한 의도에 부합하는 문서인지 평가하기 위해 문서의 신뢰도, 인기도뿐만 아니라 체류 시간, 유입 경로, 쇼핑 피드백 등을 복합적으로 분석하여 랭킹에 반영하는 네이버의 핵심 검색 엔진입니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">2. C-Rank (Creator Rank)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">특정 출처(블로그, 스토어 등)가 얼마나 전문적이고 신뢰도 있는 정보를 지속적으로 생산해 왔는지를 평가하는 맥락 기반의 랭킹 지표입니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">3. 쇼핑랭킹 스코어 (Shopping Ranking Score)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">적합도, 인기도, 최신성 등 네이버가 산출하는 공식에 따라 상품별로 부여되는 점수 총합입니다. 리워드 트래픽과 인터랙션은 이 중 '인기도' 영역의 스코어를 급격히 끌어올리는 역할을 합니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">4. 찜하기 및 장바구니 전환율</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">고객이 상품에 보낸 적극적인 관심 표현으로, 네이버 검색 알고리즘에 '수요가 높은 인기 상품'이라는 명확한 긍정 신호를 주어 순위 방어와 상승에 결정적인 기여를 합니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">5. 황금시간대 분산 패턴 (Gold-Time Traffic Distribution)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">트래픽 유입 시 특정 순간에 몰리지 않고 쇼핑 이용객이 가장 많은 오전 9시부터 밤 11시 사이에 시간대별로 균등하게 분산되도록 프로그래밍된 HUNSTER만의 안전 운영 로직입니다.</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- 네이버 플레이스 가이드 뷰 -->
+  <!-- 네이버 플레이스 가이드 뷰 (방대한 용어사전 및 장점/근거 포함) -->
   <div id="view-naver-place-detail" class="page-view wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <button class="btn" onclick="switchView('view-main')">← 메인으로 돌아가기</button>
-      <span style="font-size: 0.75rem; color: #d97706; font-weight: 700; background: #fffbeb; padding: 4px 10px; border-radius: 20px;">NAVER PLACE SELLER GUIDE & GLOSSARY</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
+      <span style="font-size: 0.75rem; color: #d97706; font-weight: 800; background: #fffbeb; padding: 6px 12px; border-radius: 20px; border: 1px solid #fde68a;">📍 NAVER PLACE ULTIMATE GUIDE & GLOSSARY</span>
     </div>
-    <div class="card-box" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; text-align: center; padding: 32px 18px; box-shadow: var(--shadow-lg);">
-      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: white;">네이버 플레이스 지도 상위 노출 가이드 및 용어 사전</h2>
+
+    <div class="card-box" style="background: linear-gradient(135deg, #b45309 0%, #d97706 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: var(--shadow-lg); margin-bottom: 20px; border-radius: 14px;">
+      <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">HUNSTER ENTERPRISE INSIGHT</span>
+      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">네이버 플레이스 트래픽을 반드시 도입해야 하는 이유와 완벽 분석</h2>
+      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">지역 소상공인과 오프라인 매장의 지도 상위 랭크 점령, 저장·길찾기 액션의 가치, 그리고 GPS 프록시 매칭의 원리입니다.</p>
+    </div>
+
+    <div class="card-box" style="border-top: 5px solid #d97706; margin-bottom: 20px;">
+      <h3 style="color: #b45309; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>💡</span> 왜 네이버 플레이스 트래픽을 사용해야 하는가? (핵심 장점 및 알고리즘 근거)
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr; gap: 12px; line-height: 1.6;">
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #d97706; font-size: 0.92rem;">1. 지역 로컬 검색 1페이지 점령을 통한 오프라인 매출 극대화</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 모바일 지도 검색 특성상 상위 3개 업체(플레이스 뷰)에 노출되느냐 여부가 오프라인 매장의 생존을 결정합니다. 플레이스 트래픽은 지역 키워드 검색량과 인기도 지표를 끌어올려 상위 랭크 진입을 현실화합니다.
+          </p>
+        </div>
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #d97706; font-size: 0.92rem;">2. '저장하기'와 '길찾기' 요청의 강력한 랭킹 가중치 확보</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 네이버 플레이스 알고리즘은 단순 조회수보다 실제 유저가 해당 장소를 '즐겨찾기(저장)'하거나 찾아오기 위해 '길찾기'를 실행한 횟수에 매우 높은 점수를 부여합니다. 본 솔루션은 이 핵심 액션들을 정밀 조합하여 반영합니다.
+          </p>
+        </div>
+        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #d97706; font-size: 0.92rem;">3. GPS 프록시 지역 매칭 기술을 통한 허위 필터 회피</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
+            <strong>[근거]</strong> 플레이스는 지역성과 위치 기반 신호가 생명입니다. HUNSTER는 GPS 프록시 지역 매칭 기술을 적용하여 실제 해당 상권 반경 내에서 검색하고 유입되는 것처럼 자연스러운 위치 신호를 만들어 안전합니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-box" style="border-top: 5px solid #d97706;">
+      <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>📚</span> 네이버 플레이스 셀러 필수 전문 용어 사전 (A to Z)
+      </h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">1. 플레이스 ID (Place ID)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">네이버 지도 및 스마트어라운드 시스템 상에서 개별 오프라인 사업장, 식당, 병원, 뷰티숍 등을 유일하게 식별하는 고유의 시스템 데이터 번호입니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">2. 저장하기 (즐겨찾기) & 길찾기 액션 비율</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">네이버 플레이스 랭킹 알고리즘에서 가장 높은 가중치를 가진 인기도 지표입니다. 기계적인 유입으로 보이지 않도록 저장(40%), 길찾기(40%), 알림받기(20%) 등의 황금 비율로 배분되어 실행됩니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">3. GPS 프록시 지역 매칭 (GPS Proxy Regional Matching)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">오프라인 매장이 위치한 해당 상권 지역의 GPS 좌표와 통신망 환경을 시뮬레이션하여, 포털 서버가 해당 사용자를 진정한 지역 방문 수요자로 인식하게 만드는 위치 인증 최적화 기술입니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">4. 스마트어라운드 (Smart Around)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">네이버가 사용자의 현재 위치, 시간대, 성별, 연령대 등을 기반으로 주변의 맛집, 카페, 놀거리 등을 맞춤 추천해 주는 AI 기반 로컬 추천 서비스입니다.</p>
+        </div>
+        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">5. 리뷰 퀄리티 및 피드백 지표 (Review Engagement)</strong>
+          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">방문자 영수증 리뷰 및 블로그 리뷰에 포함된 키워드와 사진 장수, 그리고 고객 답글 소통 여부 등 플레이스 활성도를 증명하는 복합적인 지표입니다.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1210,7 +1366,6 @@
   <div id="view-user-dashboard" class="page-view dashboard-container">
     <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
       <h3 id="my-name" style="color: white; font-size: 1.2rem; margin-bottom: 4px;">파트너님</h3>
-      <!-- 파트너 대시보드 (플레이스인 경우 관리자가 입력한 순위/상태 메시지가 실시간 노출됨) -->
       <p id="my-traffic-count" style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 10px; font-weight:700;">현재 5슬롯 정상 가동 중 (실시간 활성)</p>
       <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.8rem;">
         <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">연락처: <span id="my-phone">-</span></span>
@@ -1218,7 +1373,6 @@
       </div>
     </div>
 
-    <!-- 파트너 전용 공지사항 영역 (읽기 전용) -->
     <div class="card-box" style="border-top: 4px solid var(--primary);">
       <h3 style="display:flex; align-items:center; gap:6px; margin-bottom:10px;"><span>📢</span> 최고관리자 공지사항</h3>
       <div id="partner-notice-container">
@@ -1346,7 +1500,7 @@
       </div>
     </div>
 
-    <!-- [탭 3] 네이버 플레이스 관제 탭 (관리자가 직접 순위 및 상태를 적고 저장할 수 있도록 수정됨) -->
+    <!-- [탭 3] 네이버 플레이스 관제 탭 -->
     <div id="admin-tab-place" class="admin-platform-tab-content" style="display: none;">
       <div class="card-box" style="border-top: 4px solid #d97706;">
         <h3 style="margin-bottom: 10px;">📍 네이버 플레이스 관제 탭 (실시간 순위 및 상태 직접 입력)</h3>
