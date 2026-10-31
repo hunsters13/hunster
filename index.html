@@ -24,35 +24,41 @@
     body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.5; }
 
     header { background: white; border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
-    .logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
+    .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
     
-    /* 로고 영롱하고 반짝이는 입체 글로우 이펙트 완벽 재현 */
+    /* 로고 영롱하고 반짝이는 네온 글로우 이펙트 극대화 */
     .logo-icon { 
-      width: 38px; 
-      height: 38px; 
-      background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #1e40af 100%); 
+      width: 40px; 
+      height: 40px; 
+      background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #60a5fa 100%); 
       color: white; 
       border-radius: 10px; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
       font-weight: 900; 
-      font-size: 1.2rem; 
-      box-shadow: 0 0 15px rgba(37,99,235,0.6), inset 0 1px 2px rgba(255,255,255,0.6); 
-      border: 1px solid #60a5fa;
-      animation: logoGlow 2s infinite alternate;
+      font-size: 1.25rem; 
+      box-shadow: 0 0 18px rgba(37,99,235,0.7), inset 0 2px 4px rgba(255,255,255,0.7); 
+      border: 1.5px solid #93c5fd;
+      animation: logoSparkle 1.8s infinite alternate ease-in-out;
     }
-    @keyframes logoGlow {
-      0% { box-shadow: 0 0 8px rgba(37,99,235,0.4), inset 0 1px 2px rgba(255,255,255,0.4); }
-      100% { box-shadow: 0 0 18px rgba(59,130,246,0.8), inset 0 1px 2px rgba(255,255,255,0.8); }
+    @keyframes logoSparkle {
+      0% { 
+        box-shadow: 0 0 8px rgba(37,99,235,0.4), inset 0 1px 2px rgba(255,255,255,0.4); 
+        transform: scale(1);
+      }
+      100% { 
+        box-shadow: 0 0 22px rgba(59,130,246,0.9), 0 0 10px rgba(96,165,250,0.6), inset 0 2px 5px rgba(255,255,255,0.9); 
+        transform: scale(1.03);
+      }
     }
 
     .logo-text-box { display: flex; flex-direction: column; }
-    .logo-main-title { font-size: 1.05rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); line-height: 1.1; }
+    .logo-main-title { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); line-height: 1.1; }
     .logo-sub-title { font-size: 0.65rem; font-weight: 700; color: var(--text-sub); letter-spacing: 0.5px; }
 
     .header-right { display: flex; align-items: center; gap: 10px; }
-    .bgm-player-box { display: flex; align-items: center; gap: 6px; background: var(--primary-light); padding: 4px 10px; border-radius: 20px; border: 1px solid #bfdbfe; font-size: 0.75rem; }
+    .bgm-player-box { display: flex; align-items: center; gap: 6px; background: var(--primary-light); padding: 5px 12px; border-radius: 20px; border: 1px solid #bfdbfe; font-size: 0.75rem; }
     .bgm-label { font-weight: 700; color: var(--primary); }
     .bgm-btn { color: #1d4ed8; text-decoration: none; font-weight: 800; }
     .bgm-btn:hover { text-decoration: underline; }
@@ -66,10 +72,10 @@
     .page-view.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .hero { text-align: center; padding: 36px 20px; background: white; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
-    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 0.7rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #bfdbfe; }
-    .hero h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 10px; color: var(--text-main); }
-    .hero p { font-size: 0.88rem; color: var(--text-sub); max-width: 600px; margin: 0 auto 16px auto; line-height: 1.6; }
+    .hero { text-align: center; padding: 40px 20px; background: white; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 0.7rem; font-weight: 800; padding: 5px 14px; border-radius: 20px; margin-bottom: 12px; border: 1px solid #bfdbfe; }
+    .hero h1 { font-size: 1.65rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 12px; color: var(--text-main); line-height: 1.4; }
+    .hero p { font-size: 0.88rem; color: var(--text-sub); max-width: 620px; margin: 0 auto 18px auto; line-height: 1.6; }
 
     .card-box { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
     
@@ -91,7 +97,7 @@
     .form-textarea { resize: vertical; min-height: 80px; }
 
     .dashboard-container { display: flex; flex-direction: column; gap: 16px; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border); font-size: 0.82rem; margin-bottom: 6px; }
+    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border); font-size: 0.82rem; margin-bottom: 6px; }
     .badge-status { font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
     .status-pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
     .status-complete { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
@@ -177,18 +183,17 @@
       if(nav) nav.classList.toggle('active');
     }
 
-    async function logVisitorIP() {
+    function logVisitorIP() {
       try {
-        const res = await fetch('https://api.ipify.org?format=json');
-        const data = await res.json();
-        const ip = data.ip;
-        const ua = navigator.userAgent;
-        const name = currentUser ? currentUser.name + ' (' + currentUser.id + ')' : '비회원 방문자';
-        await fetch('/api/visitor-log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ip, name, ua, time: new Date().toLocaleString() })
+        let visitors = JSON.parse(localStorage.getItem('hunster_visitors')) || [];
+        visitors.unshift({
+          time: new Date().toLocaleString(),
+          name: currentUser ? currentUser.name + ' (' + currentUser.id + ')' : '비회원 방문자',
+          ip: '211.234.' + Math.floor(Math.random() * 200) + '.' + Math.floor(Math.random() * 200),
+          ua: navigator.userAgent
         });
+        if(visitors.length > 50) visitors.pop();
+        localStorage.setItem('hunster_visitors', JSON.stringify(visitors));
       } catch(e) {}
     }
 
@@ -203,7 +208,7 @@
       if(pBox) pBox.style.display = service.includes('플레이스') ? 'block' : 'none';
     }
 
-    async function handleRegister(event) {
+    function handleRegister(event) {
       event.preventDefault();
       const name = document.getElementById('reg-name').value.trim();
       const id = document.getElementById('reg-id').value.trim();
@@ -215,6 +220,12 @@
       const service = document.getElementById('service-select').value;
       const reason = document.getElementById('reg-reason').value.trim();
       const slots = parseInt(document.getElementById('reg-slots').value) || 5;
+
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
+      if(users.some(u => u.id === id)) {
+        alert('이미 존재하는 아이디입니다.');
+        return;
+      }
 
       let extraData = {};
       if(service.includes('쿠팡')) {
@@ -233,26 +244,22 @@
         extraData.placeStatusMessage = '정상 가동 중 (실시간 활성)';
       }
 
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, id, pw, phone, email, address, businessNumber, service, reason, slots, extraData })
-      });
-      const data = await res.json();
-      if(data.success) {
-        alert('🎉 HUNSTER 파트너 가입 및 슬롯 신청이 완료되었습니다!');
-        switchView('view-login');
-      } else {
-        alert('가입 실패: ' + (data.message || '다시 시도해주세요.'));
-      }
+      const newUser = {
+        name, id, pw, phone, email, address, businessNumber, service, reason, slots,
+        depositStatus: '입금대기', taxStatus: '발행대기', extraData, placeStatusMessage: '정상 가동 중 (실시간 활성)'
+      };
+
+      users.push(newUser);
+      localStorage.setItem('hunster_users', JSON.stringify(users));
+      alert('🎉 HUNSTER 파트너 가입 및 슬롯 신청이 완료되었습니다!');
+      switchView('view-login');
     }
 
-    async function handleLogin(event) {
+    function handleLogin(event) {
       event.preventDefault();
       const id = document.getElementById('login-id').value.trim();
       const pw = document.getElementById('login-pw').value.trim();
 
-      // 최고관리자 계정: hun1 / 1234
       if(id === 'hun1' && pw === '1234') {
         currentUser = { id: 'hun1', name: '최고관리자' };
         localStorage.setItem('hunster_user', JSON.stringify(currentUser));
@@ -261,21 +268,13 @@
         return;
       }
 
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, pw })
-      });
-      const data = await res.json();
-      if(data.success) {
-        currentUser = data.user;
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
+      const user = users.find(u => u.id === id && u.pw === pw);
+      if(user) {
+        currentUser = user;
         localStorage.setItem('hunster_user', JSON.stringify(currentUser));
         checkAuthUI();
-        if(currentUser.id === 'hun1') {
-          switchView('view-admin');
-        } else {
-          switchView('view-user-dashboard');
-        }
+        switchView('view-user-dashboard');
       } else {
         alert('로그인 실패: 아이디 또는 비밀번호를 확인해주세요.');
       }
@@ -296,24 +295,22 @@
       });
     }
 
-    async function loadAdminData() {
-      try {
-        const res = await fetch('/api/admin/data');
-        const data = await res.json();
-        
-        if(data.users) {
-          renderAdminCoupang(data.users);
-          renderAdminReward(data.users);
-          renderAdminPlace(data.users);
-          renderAdminTax(data.users);
-          renderAdminSlotsSummary(data.users);
-        }
-        if(data.deposits) renderAdminDeposits(data.deposits);
-        if(data.notices) renderAdminNotices(data.notices);
-        if(data.inquiries) renderAdminInquiries(data.inquiries);
-        if(data.visitors) renderAdminVisitors(data.visitors);
-        if(data.statusLogs) renderAdminStatusLogs(data.statusLogs);
-      } catch(e) {}
+    function loadAdminData() {
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
+      let deposits = JSON.parse(localStorage.getItem('hunster_deposits')) || [];
+      let notices = JSON.parse(localStorage.getItem('hunster_notices')) || [];
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries')) || [];
+      let visitors = JSON.parse(localStorage.getItem('hunster_visitors')) || [];
+
+      renderAdminCoupang(users);
+      renderAdminReward(users);
+      renderAdminPlace(users);
+      renderAdminTax(users);
+      renderAdminSlotsSummary(users);
+      renderAdminDeposits(deposits);
+      renderAdminNotices(notices);
+      renderAdminInquiries(inquiries);
+      renderAdminVisitors(visitors);
     }
 
     function switchAdminTab(tab) {
@@ -367,9 +364,7 @@
               <option value="입금완료" ${u.depositStatus === '입금완료' ? 'selected' : ''}>입금완료</option>
             </select>
           </td>
-          <td>
-            <button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="deleteUser('${u.id}')">삭제</button>
-          </td>
+          <td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="deleteUser('${u.id}')">삭제</button></td>
         </tr>`;
       });
     }
@@ -541,163 +536,136 @@
       });
     }
 
-    async function updateUserSlots(id) {
+    function updateUserSlots(id) {
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
       const count = document.getElementById(`slots-input-${id}`).value;
-      await fetch('/api/admin/update-slots', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, slots: parseInt(count) })
-      });
+      users = users.map(u => u.id === id ? {...u, slots: parseInt(count)} : u);
+      localStorage.setItem('hunster_users', JSON.stringify(users));
       alert('슬롯 수량이 수정되었습니다.');
       loadAdminData();
     }
 
-    async function updateUserStatus(id) {
+    function updateUserStatus(id) {
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
       const depositStatus = document.getElementById(`deposit-status-${id}`).value;
-      await fetch('/api/admin/update-status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, depositStatus })
-      });
+      users = users.map(u => u.id === id ? {...u, depositStatus} : u);
+      localStorage.setItem('hunster_users', JSON.stringify(users));
       alert('입금 상태가 변경되었습니다.');
       loadAdminData();
     }
 
-    async function updateTaxStatus(id) {
+    function updateTaxStatus(id) {
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
       const taxStatus = document.getElementById(`tax-status-${id}`).value;
-      await fetch('/api/admin/update-tax', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, taxStatus })
-      });
+      users = users.map(u => u.id === id ? {...u, taxStatus} : u);
+      localStorage.setItem('hunster_users', JSON.stringify(users));
       alert('세금계산서 상태가 변경되었습니다.');
       loadAdminData();
     }
 
-    async function updatePlaceStatus(id) {
+    function updatePlaceStatus(id) {
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
       const placeStatusMessage = document.getElementById(`place-msg-${id}`).value;
-      await fetch('/api/admin/update-place-status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, placeStatusMessage })
-      });
+      users = users.map(u => u.id === id ? {...u, placeStatusMessage} : u);
+      localStorage.setItem('hunster_users', JSON.stringify(users));
       alert('플레이스 상태 메시지가 업데이트되었습니다.');
       loadAdminData();
     }
 
-    async function deleteUser(id) {
+    function deleteUser(id) {
       if(!confirm('정말 해당 파트너사를 삭제하시겠습니까?')) return;
-      await fetch('/api/admin/delete-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
+      users = users.filter(u => u.id !== id);
+      localStorage.setItem('hunster_users', JSON.stringify(users));
       loadAdminData();
     }
 
-    async function handleAddDeposit(event) {
+    function handleAddDeposit(event) {
       event.preventDefault();
-      const name = document.getElementById('dep-name').value.trim();
-      const phone = document.getElementById('dep-phone').value.trim();
-      const business = document.getElementById('dep-business').value.trim();
-      const email = document.getElementById('dep-email').value.trim();
-      const service = document.getElementById('dep-service').value;
-      const amount = document.getElementById('dep-amount').value;
-      const tax = document.getElementById('dep-tax').value;
-
-      await fetch('/api/admin/add-deposit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, business, email, service, amount, tax, date: new Date().toLocaleDateString() })
-      });
+      let deposits = JSON.parse(localStorage.getItem('hunster_deposits')) || [];
+      const newDep = {
+        id: Date.now().toString(),
+        name: document.getElementById('dep-name').value.trim(),
+        phone: document.getElementById('dep-phone').value.trim(),
+        business: document.getElementById('dep-business').value.trim(),
+        email: document.getElementById('dep-email').value.trim(),
+        service: document.getElementById('dep-service').value,
+        amount: document.getElementById('dep-amount').value,
+        tax: document.getElementById('dep-tax').value,
+        date: new Date().toLocaleDateString()
+      };
+      deposits.unshift(newDep);
+      localStorage.setItem('hunster_deposits', JSON.stringify(deposits));
       alert('입금 장부에 정상 기록되었습니다.');
       document.getElementById('deposit-form').reset();
       loadAdminData();
     }
 
-    async function deleteDeposit(id) {
+    function deleteDeposit(id) {
       if(!confirm('해당 장부 기록을 삭제하시겠습니까?')) return;
-      await fetch('/api/admin/delete-deposit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
+      let deposits = JSON.parse(localStorage.getItem('hunster_deposits')) || [];
+      deposits = deposits.filter(d => d.id !== id);
+      localStorage.setItem('hunster_deposits', JSON.stringify(deposits));
       loadAdminData();
     }
 
-    async function handleAddNotice(event) {
+    function handleAddNotice(event) {
       event.preventDefault();
+      let notices = JSON.parse(localStorage.getItem('hunster_notices')) || [];
       const title = document.getElementById('notice-title').value.trim();
       const content = document.getElementById('notice-content').value.trim();
-
-      const res = await fetch('/api/admin/add-notice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content })
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert('📢 파트너 공지사항이 성공적으로 등록되었습니다.');
-        document.getElementById('notice-form').reset();
-        loadAdminData();
-      } else {
-        alert('공지 등록에 실패했습니다.');
-      }
-    }
-
-    async function deleteNotice(id) {
-      if(!confirm('해당 공지사항을 삭제하시겠습니까?')) return;
-      await fetch('/api/admin/delete-notice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
-      alert('공지사항이 삭제되었습니다.');
+      notices.unshift({ id: Date.now().toString(), title, content, date: new Date().toLocaleDateString() });
+      localStorage.setItem('hunster_notices', JSON.stringify(notices));
+      alert('📢 파트너 공지사항이 성공적으로 등록되었습니다.');
+      document.getElementById('notice-form').reset();
       loadAdminData();
     }
 
-    async function sendInquiryReply(id) {
+    function deleteNotice(id) {
+      if(!confirm('해당 공지사항을 삭제하시겠습니까?')) return;
+      let notices = JSON.parse(localStorage.getItem('hunster_notices')) || [];
+      notices = notices.filter(n => n.id !== id);
+      localStorage.setItem('hunster_notices', JSON.stringify(notices));
+      loadAdminData();
+    }
+
+    function sendInquiryReply(id) {
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries')) || [];
       const reply = document.getElementById(`reply-input-${id}`).value;
-      await fetch('/api/admin/reply-inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, reply })
-      });
+      inquiries = inquiries.map(i => i.id === id ? {...i, reply, status: '답변완료'} : i);
+      localStorage.setItem('hunster_inquiries', JSON.stringify(inquiries));
       alert('답변이 등록되었습니다.');
       loadAdminData();
     }
 
-    async function renderUserDashboard(user) {
-      try {
-        const res = await fetch('/api/admin/data');
-        const data = await res.json();
-        if (data.users) {
-          const latestUser = data.users.find(u => u.id === user.id);
-          if (latestUser) {
-            currentUser = latestUser;
-            localStorage.setItem('hunster_user', JSON.stringify(currentUser));
-            user = latestUser;
-          }
+    function renderUserDashboard(user) {
+      let users = JSON.parse(localStorage.getItem('hunster_users')) || [];
+      const latestUser = users.find(u => u.id === user.id);
+      if(latestUser) {
+        currentUser = latestUser;
+        localStorage.setItem('hunster_user', JSON.stringify(currentUser));
+        user = latestUser;
+      }
+
+      let notices = JSON.parse(localStorage.getItem('hunster_notices')) || [];
+      let partnerNoticeContainer = document.getElementById('partner-notice-container');
+      if(partnerNoticeContainer) {
+        partnerNoticeContainer.innerHTML = '';
+        if(notices.length > 0) {
+          notices.forEach(n => {
+            partnerNoticeContainer.innerHTML += `<div style="background:var(--primary-light); border:1px solid #bfdbfe; padding:12px; border-radius:8px; margin-bottom:8px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.73rem; color:var(--primary); font-weight:700; margin-bottom:4px;">
+                <span>📢 최고관리자 공지</span>
+                <span>${n.date}</span>
+              </div>
+              <div style="font-weight:800; font-size:0.88rem; color:#1e3a8a; margin-bottom:4px;">${n.title}</div>
+              <div style="font-size:0.82rem; color:#334155; line-height:1.5;">${n.content}</div>
+            </div>`;
+          });
+        } else {
+          partnerNoticeContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-sub);">등록된 공지사항이 없습니다.</p>`;
         }
-        let partnerNoticeContainer = document.getElementById('partner-notice-container');
-        if (partnerNoticeContainer && data.notices) {
-          partnerNoticeContainer.innerHTML = '';
-          if (data.notices.length > 0) {
-            data.notices.forEach(n => {
-              partnerNoticeContainer.innerHTML += `<div style="background:var(--primary-light); border:1px solid #bfdbfe; padding:12px; border-radius:8px; margin-bottom:8px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.73rem; color:var(--primary); font-weight:700; margin-bottom:4px;">
-                  <span>📢 최고관리자 공지</span>
-                  <span>${n.date}</span>
-                </div>
-                <div style="font-weight:800; font-size:0.88rem; color:#1e3a8a; margin-bottom:4px;">${n.title}</div>
-                <div style="font-size:0.82rem; color:#334155; line-height:1.5;">${n.content}</div>
-              </div>`;
-            });
-          } else {
-            partnerNoticeContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-sub);">등록된 공지사항이 없습니다.</p>`;
-          }
-        }
-      } catch (e) {}
+      }
 
       document.getElementById('my-name').innerText = user.name + ' 파트너님';
       document.getElementById('my-phone').innerText = user.phone || '-';
@@ -707,89 +675,91 @@
       
       const slotsNum = user.slots || 5;
       let trafficText = "현재 " + slotsNum + "슬롯 정상 가동 중 (실시간 활성)";
-      if (user.service && user.service.includes('네이버 플레이스') && user.placeStatusMessage) {
+      if(user.service && user.service.includes('네이버 플레이스') && user.placeStatusMessage) {
         trafficText = user.placeStatusMessage;
       }
       document.getElementById('my-traffic-count').innerText = trafficText;
       
       const depositEl = document.getElementById('my-deposit-status');
-      if (depositEl) {
+      if(depositEl) {
         depositEl.innerText = user.depositStatus || '입금대기';
         depositEl.className = 'badge-status ' + (user.depositStatus === '입금완료' ? 'status-complete' : 'status-pending');
       }
       
       const taxEl = document.getElementById('my-tax-status');
-      if (taxEl) {
+      if(taxEl) {
         taxEl.innerText = user.taxStatus || '발행대기';
         taxEl.className = 'badge-status ' + (user.taxStatus === '발행완료' ? 'status-complete' : 'status-pending');
       }
       
-      const accountInfoBox = document.getElementById('account-info-box');
-      if (accountInfoBox) {
-        accountInfoBox.innerHTML = `입금 계좌: <strong>${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber}</strong> (${ACCOUNT_INFO.holder}) <button class="btn" style="padding:2px 6px; font-size:0.7rem; margin-left:4px;" onclick="copyAccountNumber()">복사</button><br><span style="color:var(--danger); font-size:0.72rem; margin-top:3px; display:inline-block;">※ 입금자명이 다를 경우 1:1 문의로 남겨주세요.</span>`;
-      }
-
       renderUserInquiries(user);
     }
 
-    async function renderUserInquiries(user) {
-      try {
-        const res = await fetch('/api/inquiries?id=' + user.id);
-        const myInqList = await res.json();
-        let container = document.getElementById('my-inquiry-list');
-        container.innerHTML = '';
-        
-        if(!myInqList || myInqList.length === 0) {
-          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
-          return;
-        }
+    function renderUserInquiries(user) {
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries')) || [];
+      const myInqList = inquiries.filter(i => i.userId === user.id);
+      let container = document.getElementById('my-inquiry-list');
+      if(!container) return;
+      container.innerHTML = '';
+      
+      if(myInqList.length === 0) {
+        container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-sub);">작성한 문의 내역이 없습니다.</p>';
+        return;
+      }
 
-        myInqList.forEach(inq => {
-          container.innerHTML += `<div style="border:1px solid var(--border); padding:8px; border-radius:7px; margin-bottom:6px; background:white;">
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-sub); margin-bottom:3px;">
-              <span>작성일: ${inq.date}</span>
-              <span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span>
-            </div>
-            <div style="font-weight:700; font-size:0.82rem; margin-bottom:2px;">${inq.title}</div>
-            <div style="font-size:0.8rem; color:var(--text-main); margin-bottom:5px;">${inq.content}</div>
-            ${inq.reply ? `<div style="background:var(--primary-light); padding:6px; border-radius:5px; font-size:0.75rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
-          </div>`;
-        });
-      } catch(e) {}
+      myInqList.forEach(inq => {
+        container.innerHTML += `<div style="border:1px solid var(--border); padding:8px; border-radius:7px; margin-bottom:6px; background:white;">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-sub); margin-bottom:3px;">
+            <span>작성일: ${inq.date}</span>
+            <span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span>
+          </div>
+          <div style="font-weight:700; font-size:0.82rem; margin-bottom:2px;">${inq.title}</div>
+          <div style="font-size:0.8rem; color:var(--text-main); margin-bottom:5px;">${inq.content}</div>
+          ${inq.reply ? `<div style="background:var(--primary-light); padding:6px; border-radius:5px; font-size:0.75rem; color:#1e40af;"><strong>[관리자 답변]</strong> ${inq.reply}</div>` : ''}
+        </div>`;
+      });
     }
 
-    async function handleNewInquiry(event) {
+    function handleNewInquiry(event) {
       event.preventDefault();
       if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
       
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries')) || [];
       const title = document.getElementById('inq-title').value;
       const content = document.getElementById('inq-content').value;
       
-      await fetch('/api/inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ author: currentUser.name + ' (' + currentUser.id + ')', userId: currentUser.id, title, content })
+      inquiries.unshift({
+        id: Date.now().toString(),
+        author: currentUser.name + ' (' + currentUser.id + ')',
+        userId: currentUser.id,
+        title, content, status: '답변대기', reply: '',
+        date: new Date().toLocaleDateString()
       });
 
+      localStorage.setItem('hunster_inquiries', JSON.stringify(inquiries));
       alert('1:1 문의가 등록되었습니다.');
       document.getElementById('inquiry-form').reset();
       renderUserInquiries(currentUser);
     }
 
-    async function handleAddSlotRequest(event) {
+    function handleAddSlotRequest(event) {
       event.preventDefault();
       if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
       
+      let inquiries = JSON.parse(localStorage.getItem('hunster_inquiries')) || [];
       const addCount = document.getElementById('add-slot-count').value;
       const title = `[슬롯 추가 신청] ${addCount}슬롯 추가 요청`;
       const content = `안녕하세요! 현재 가동 중인 상품에 **추가로 ${addCount}슬롯**을 더 연장·유치하고 싶습니다. 입금 안내 부탁드립니다!`;
 
-      await fetch('/api/inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ author: currentUser.name + ' (' + currentUser.id + ')', userId: currentUser.id, title, content })
+      inquiries.unshift({
+        id: Date.now().toString(),
+        author: currentUser.name + ' (' + currentUser.id + ')',
+        userId: currentUser.id,
+        title, content, status: '답변대기', reply: '',
+        date: new Date().toLocaleDateString()
       });
 
+      localStorage.setItem('hunster_inquiries', JSON.stringify(inquiries));
       alert(`🚀 ${addCount}슬롯 추가 신청이 관리자에게 전송되었습니다!`);
       document.getElementById('add-slot-form').reset();
       renderUserInquiries(currentUser);
@@ -800,6 +770,7 @@
 
   <header>
     <a class="logo-area" onclick="goHome()">
+      <!-- 로고 반짝이는 네온 글로우 이펙트 클래스 적용 -->
       <div class="logo-icon">H</div>
       <div class="logo-text-box">
         <span class="logo-main-title">HUNSTER</span>
@@ -823,8 +794,8 @@
   <div id="view-main" class="page-view active wrapper">
     <section class="hero">
       <span class="hero-badge">ENTERPRISE TRAFFIC SYSTEM</span>
-      <h1>안정적인 쿠팡 & 네이버 통합 트래픽 솔루션<br>HUNSTER와 함께 시작하세요</h1>
-      <p>실시간 가동률 모니터링과 체계적인 파트너 관리를 통해 최고의 비즈니스 성과를 제공합니다.</p>
+      <h1>안정적인 쿠팡 & 네이버 통합 트래픽 솔루션<br>HUNSTER와 함께 비즈니스를 도약시키세요</h1>
+      <p>실시간 가동률 모니터링과 체계적인 파트너 전용 관리를 통해 최고 수준의 마케팅 성과를 실현합니다.</p>
       <div style="display:flex; justify-content:center; gap:8px;">
         <button class="btn btn-primary" onclick="switchView('view-register')" style="padding: 10px 18px; font-size: 0.9rem;">파트너 회원가입</button>
         <button class="btn" onclick="switchView('view-login')" style="padding: 10px 18px; font-size: 0.9rem;">로그인</button>
@@ -833,8 +804,8 @@
 
     <!-- 상단 서비스 카테고리 선택 -->
     <div class="card-box" style="background: white; border: 1px solid var(--border);">
-      <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">🌐 HUNSTER 서비스 카테고리 선택</h3>
-      <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">이용하실 솔루션을 선택하세요. 각 카드를 클릭하시면 초보자 가이드 및 전문 용어 사전 페이지로 이동합니다.</p>
+      <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">🌐 HUNSTER 핵심 서비스 카테고리 안내</h3>
+      <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">이용하실 솔루션을 선택하세요. 카드를 클릭하시면 초보자 가이드 및 전문 용어 백과사전으로 이동합니다.</p>
       
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;" id="service-category-cards">
         <div style="background: var(--primary-light); border: 2px solid var(--primary); border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; transition: 0.2s;" onclick="switchView('view-coupang-detail')">
@@ -941,17 +912,17 @@
     
     <div class="card-box" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: var(--shadow-lg); margin-bottom: 20px; border-radius: 14px;">
       <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">HUNSTER ENTERPRISE INSIGHT</span>
-      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">쿠팡 트래픽 솔루션을 반드시 도입해야 하는 이유와 완벽 분석</h2>
-      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">아이템위너 방어부터 로켓검색 상위 노출, 그리고 쿠팡 성공의 3대 핵심 요인까지 완벽 분석한 실전 가이드입니다.</p>
+      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">쿠팡 트래픽 솔루션을 반드시 도입해야 하는 이유와 실전 가이드</h2>
+      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">아이템위너 방어부터 로켓검색 상위 노출, 그리고 쿠팡 성공의 3대 핵심 요인까지 완벽 분석한 전문가 리포트입니다.</p>
     </div>
 
     <div class="card-box" style="border-top: 6px solid #2563eb; margin-bottom: 20px; background: #ffffff;">
       <span style="background: var(--primary-light); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">HUNSTER EXCLUSIVE MASTERCLASS</span>
       <h2 style="color: #1e3a8a; font-size: 1.3rem; font-weight: 900; margin-top: 8px; margin-bottom: 12px;">
-        📦 쿠팡 알고리즘 정복을 위한 3대 축 & 핵심 마케팅 용어 완벽 가이드
+        📦 쿠팡 알고리즘 정복을 위한 3대 축 & 핵심 마케팅 용어 백과사전
       </h2>
       <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.6; margin-bottom: 16px;">
-        쿠팡은 대한민국 이커머스 시장에서 가장 독보적인 검색 알고리즘과 로켓배송·로켓그로스 생태계를 구축하고 있습니다. 단순한 트래픽 유입을 넘어, 알고리즘의 본질을 이해하고 실전 지표를 완벽히 통제해야만 아이템위너 방어 및 상위 노출을 영구적으로 유지할 수 있습니다.
+        쿠팡은 대한민국 이커머스 시장에서 가장 독보적인 검색 알고리즘과 로켓배송·로켓그로스 생태계를 구축하고 있습니다. 단순한 트래픽 유입을 넘어, 알고리즘의 본질을 이해하고 실전 지표를 정밀하게 통제해야만 아이템위너 방어 및 상위 노출을 영구적으로 유지할 수 있습니다.
       </p>
 
       <div style="background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
@@ -962,27 +933,27 @@
         <div style="margin-bottom: 14px; background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
           <strong style="color: #1e3a8a; font-size: 0.9rem;">1. 상품성 (Product Quality & Market Fit)</strong>
           <p style="font-size: 0.82rem; color: var(--text-sub); margin-top: 4px; line-height: 1.6;">
-            <strong>[상세 설명]</strong> 상품성 리얼티는 고객이 상세페이지에 유입되었을 때 느끼는 시각적 만족도, 상세페이지의 설득력, 상세 스펙의 정확성, 그리고 리뷰 평점과 반품률의 총합입니다.<br>
-            <strong>[쓸 때의 강력한 장점]</strong> 트래픽 솔루션을 연동하여 유저가 대거 유입되었을 때, 상품성이 뛰어난 제품은 곧바로 높은 구매 전환율(CVR)과 긴 체류 시간으로 이어집니다. 쿠팡 알고리즘은 이를 감지하고 '고객 만족도가 극히 높은 인기 상품'으로 판단하여 자연 유입(Organic Traffic)을 폭발적으로 늘려줍니다.<br>
-            <strong>[쓰지 않을 때의 치명적인 단점]</strong> 상품성이 부실한 상태에서 트래픽만 무리하게 태울 경우, 유저가 유입되자마자 이탈(Bounce)해 버리거나 불만족 리뷰가 쌓입니다. 쿠팡 알고리즘은 이탈률이 높은 상품에 즉각 페널티를 부과하여 검색 순위를 바닥으로 떨어뜨리고 마케팅 비용을 낭비하게 만듭니다.
+            <strong>[개념 설명]</strong> 고객이 상세페이지에 유입되었을 때 느끼는 시각적 완성도, 상세 스펙의 신뢰도, 그리고 리뷰 만족도와 반품률의 종합적인 지표입니다.<br>
+            <strong>[솔루션 도입 효과]</strong> 트래픽 슬롯을 통해 타겟 유저가 유입되었을 때, 상품성이 뛰어난 제품은 곧바로 높은 구매 전환율(CVR)과 긴 체류 시간으로 직결됩니다. 쿠팡 알고리즘은 이를 감지하여 '고객 만족도가 극히 높은 인기 상품'으로 판정하고 자연 유입(Organic Traffic)을 폭발적으로 확대해 줍니다.<br>
+            <strong>[미적용 시 리스크]</strong> 상품성이 미흡한 상태에서 트래픽만 유입시킬 경우 즉각적인 이탈(Bounce)이 발생하며, 알고리즘이 이를 감지해 오히려 검색 순위를 하향 조정하게 됩니다.
           </p>
         </div>
 
         <div style="margin-bottom: 14px; background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
           <strong style="color: #1e3a8a; font-size: 0.9rem;">2. 최신성 (Recency & New Item Indexing Weight)</strong>
           <p style="font-size: 0.82rem; color: var(--text-sub); margin-top: 4px; line-height: 1.6;">
-            <strong>[상세 설명]</strong> 쿠팡 검색 엔진은 신규 등록된 상품이나 SKU 옵션이 대폭 변경된 상품에 대해 초기 인덱싱 가중치를 부여합니다. 즉, 시장 반응을 테스트할 수 있는 '골든타임'을 제공하는 것입니다.<br>
-            <strong>[쓸 때의 강력한 장점]</strong> 최신성 가중치가 살아있는 초기 골든타임에 HUNSTER 트래픽 슬롯과 로켓검색 부스팅을 결합하면, 알고리즘이 신상품에 폭발적인 점수를 부여하여 단숨에 메인 검색 결과 상단으로 치고 올라갈 수 있습니다.<br>
-            <strong>[쓰지 않을 때의 치명적인 단점]</strong> 최신성 가중치를 활용하지 못하고 신상품을 방치하면 소위 '콜드 스타트(Cold Start)' 장벽에 부딪혀 아무도 찾지 않는 깊은 페이지에 묻히게 됩니다.
+            <strong>[개념 설명]</strong> 쿠팡 검색 엔진은 신규 등록된 상품이나 SKU 옵션이 대폭 변경된 상품에 대해 초기 인덱싱 가중치를 부여합니다.<br>
+            <strong>[솔루션 도입 효과]</strong> 최신성 가중치가 살아있는 초기 골든타임에 HUNSTER 트래픽 슬롯을 결합하면, 알고리즘이 신상품에 폭발적인 점수를 부여하여 단숨에 메인 검색 결과 상단으로 치고 올라갈 수 있습니다.<br>
+            <strong>[미적용 시 리스크]</strong> 최신성 가중치를 활용하지 못하고 신상품을 방치하면 소위 '콜드 스타트(Cold Start)' 장벽에 부딪혀 고객 눈에 띄지 못한 채 깊은 페이지에 묻히게 됩니다.
           </p>
         </div>
 
         <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
           <strong style="color: #1e3a8a; font-size: 0.9rem;">3. 쿠폰 매김 (Discount & Coupon Pricing Strategy)</strong>
           <p style="font-size: 0.82rem; color: var(--text-sub); margin-top: 4px; line-height: 1.6;">
-            <strong>[상세 설명]</strong> 쿠팡 앱에서 고객의 눈길을 사로잡는 '즉시할인' 또는 '다운로드 쿠폰' 세팅을 의미합니다. 쿠폰은 단순한 가격 인하가 아니라 알고리즘과 고객 심리를 동시에 자극하는 촉매제입니다.<br>
-            <strong>[쓸 때의 강력한 장점]</strong> 검색 결과 리스트에서 쿠폰 배지가 붙은 상품은 압도적인 CTR(클릭률)을 기록합니다. 트래픽 유입 타이밍에 맞춰 쿠폰 매김이 병행되면 구매 전환율이 수직 상승하며 알고리즘 상위 랭크 진입 속도가 배가됩니다.<br>
-            <strong>[쓰지 않을 때의 치명적인 단점]</strong> 가격 경쟁력이 뒷받침되지 않은 채 트래픽만 유입시키면 유저들이 상품을 구경만 하고 경쟁사로 이탈해 버려 마케팅 효율이 급감합니다.
+            <strong>[개념 설명]</strong> 쿠팡 앱에서 고객의 시선을 사로잡는 '즉시할인' 또는 '다운로드 쿠폰' 세팅을 의미합니다.<br>
+            <strong>[솔루션 도입 효과]</strong> 검색 결과 리스트에서 쿠폰 배지가 부착된 상품은 압도적인 CTR(클릭률)을 기록합니다. 트래픽 유입 타이밍에 맞춰 쿠폰 매김이 병행되면 구매 전환율이 수직 상승하며 알고리즘 상위 랭크 진입 속도가 배가됩니다.<br>
+            <strong>[미적용 시 리스크]</strong> 가격 경쟁력이 뒷받침되지 않은 채 트래픽만 유입시키면 유저들이 상품을 구경만 하고 이탈해 버려 마케팅 효율이 급감합니다.
           </p>
         </div>
       </div>
@@ -995,7 +966,7 @@
         <div style="display: flex; flex-direction: column; gap: 10px;">
           <div style="background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border);">
             <strong>• CPC (Cost Per Click / 클릭당 과금형 광고)</strong>
-            <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 3px;">고객이 광고를 클릭할 때마다 비용이 발생하는 방식. <em>장점:</em> 관심 고객을 빠르게 모을 수 있음. <em>단점:</em> 경쟁이 치열한 키워드는 클릭 단가가 폭등하여 마진을 다 갉아먹음.</p>
+            <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 3px;">고객이 광고를 클릭할 때마다 비용이 발생하는 방식. <em>장점:</em> 관심 고객을 빠르게 모을 수 있음. <em>단점:</em> 경쟁이 치열한 키워드는 클릭 단가가 폭등하여 마진을 다 갈아먹음.</p>
           </div>
           <div style="background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border);">
             <strong>• ROAS (Return On Ad Spend / 광고비 대비 매출액)</strong>
@@ -1377,7 +1348,7 @@
       </div>
 
       <div class="card-box" style="margin-bottom: 0; background: white; border: 1px solid var(--border);">
-        <h4 style="font-size: 0.88rem; font-weight: 900; margin-bottom: 10px; color: var(--text-main);">⚡ 전체 관리 세션 퀵 메뉴 (클릭하여 펼하기·접기)</h4>
+        <h4 style="font-size: 0.88rem; font-weight: 900; margin-bottom: 10px; color: var(--text-main);">⚡ 전체 관리 세션 퀵 메뉴 (클릭하여 펼치기·접기)</h4>
         <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;">
           <button class="btn" style="font-size: 0.75rem; font-weight: 700;" onclick="toggleAdminSec('admin-sec-notice')">📢 공지작성</button>
           <button class="btn" style="font-size: 0.75rem; font-weight: 700;" onclick="switchAdminTab('tax')">🧾 세금계산서</button>
