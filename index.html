@@ -8,10 +8,9 @@
     :root {
       --primary: #2563eb;
       --primary-light: #eff6ff;
-      --success: #059669;
-      --success-bg: #ecfdf5;
-      --danger: #dc2626;
-      --warning: #d97706;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
       --bg-main: #f8fafc;
       --text-main: #0f172a;
       --text-sub: #64748b;
@@ -22,265 +21,162 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.5; display: flex; flex-direction: column; min-height: 100vh; }
+    body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.5; }
 
-    header {
-      background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
-      display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; box-shadow: var(--shadow-sm);
-    }
-    .logo-area { display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
-    .logo-icon { width: 36px; height: 36px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: var(--shadow-sm); }
+    header { background: white; border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
+    .logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 2px 4px rgba(37,99,235,0.3); }
     .logo-text-box { display: flex; flex-direction: column; }
-    .logo-main-title { font-weight: 900; font-size: 1.05rem; color: var(--text-main); letter-spacing: -0.5px; }
-    .logo-sub-title { font-size: 0.68rem; color: var(--text-sub); font-weight: 600; }
+    .logo-main-title { font-size: 1rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); line-height: 1.1; }
+    .logo-sub-title { font-size: 0.65rem; font-weight: 700; color: var(--text-sub); letter-spacing: 0.5px; }
 
     .header-right { display: flex; align-items: center; gap: 10px; }
-    .bgm-player-box { display: flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; border: 1px solid var(--border); }
-    .bgm-label { font-weight: 700; color: var(--text-main); }
-    .bgm-btn { background: var(--primary); color: white; text-decoration: none; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.7rem; transition: 0.2s; }
-    .bgm-btn:hover { background: #1d4ed8; }
+    .bgm-player-box { display: flex; align-items: center; gap: 6px; background: var(--primary-light); padding: 4px 10px; border-radius: 20px; border: 1px solid #bfdbfe; font-size: 0.75rem; }
+    .bgm-label { font-weight: 700; color: var(--primary); }
+    .bgm-btn { color: #1d4ed8; text-decoration: none; font-weight: 800; }
+    .bgm-btn:hover { text-decoration: underline; }
 
     .auth-actions { display: flex; gap: 6px; }
-    .btn { background: white; border: 1px solid var(--border); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-    .btn:hover { background: #f1f5f9; }
-    .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-danger { background: var(--danger); border-color: var(--danger); color: white; }
-    .btn-danger:hover { background: #b91c1c; }
+    .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-main); }
+    .mobile-nav { display: none; position: absolute; top: 61px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-md); flex-direction: column; gap: 8px; }
 
-    .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-main); }
-    .mobile-nav { display: none; position: absolute; top: 60px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 14px 20px; box-shadow: var(--shadow-md); flex-direction: column; gap: 8px; }
-    .mobile-nav.active { display: flex; }
-
-    .wrapper { max-width: 1100px; width: 100%; margin: 0 auto; padding: 20px; flex: 1; }
-    .page-view { display: none; }
+    .wrapper { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+    .page-view { display: none; animation: fadeIn 0.2s ease-in-out; }
     .page-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .hero { text-align: center; padding: 36px 16px; background: white; border: 1px solid var(--border); border-radius: 14px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
-    .hero-badge { background: var(--primary-light); color: var(--primary); font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 10px; border: 1px solid #bfdbfe; }
-    .hero h1 { font-size: 1.55rem; font-weight: 900; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.5px; }
-    .hero p { font-size: 0.88rem; color: var(--text-sub); max-width: 600px; margin: 0 auto 16px; }
+    .hero { text-align: center; padding: 36px 20px; background: white; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 0.7rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #bfdbfe; }
+    .hero h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 10px; color: var(--text-main); }
+    .hero p { font-size: 0.88rem; color: var(--text-sub); max-width: 600px; margin: 0 auto 16px auto; line-height: 1.6; }
 
-    .card-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+    .card-box { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
     
-    .pulse-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); text-decoration: none; transition: 0.15s; }
+    .btn:hover { background: var(--bg-main); }
+    .btn-primary { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-danger { background: var(--danger); color: white; border-color: var(--danger); }
+    .btn-danger:hover { background: #dc2626; }
 
-    .auth-container { max-width: 440px; margin: 40px auto; background: white; border: 1px solid var(--border); border-radius: 14px; padding: 28px; box-shadow: var(--shadow-md); }
-    .auth-container h2 { font-size: 1.25rem; font-weight: 900; margin-bottom: 16px; text-align: center; }
+    .auth-container { max-width: 440px; margin: 30px auto; background: white; border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); }
+    .auth-container h2 { font-size: 1.25rem; font-weight: 900; text-align: center; margin-bottom: 16px; color: var(--text-main); }
     
     .form-grid { display: flex; flex-direction: column; gap: 10px; }
     .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-label { font-size: 0.78rem; font-weight: 700; color: var(--text-main); }
-    .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; outline: none; transition: 0.2s; }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
-    .form-textarea { resize: vertical; min-height: 70px; }
+    .form-label { font-size: 0.75rem; font-weight: 800; color: var(--text-main); }
+    .form-input, .form-select, .form-textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; outline: none; background: #fff; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .form-textarea { resize: vertical; min-height: 80px; }
 
-    .dashboard-container { max-width: 1000px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-    .status-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
-    .server-status-item:last-child { border-bottom: none; }
+    .dashboard-container { display: flex; flex-direction: column; gap: 16px; }
+    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border); font-size: 0.82rem; margin-bottom: 6px; }
+    .badge-status { font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+    .status-pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .status-complete { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
 
-    .badge-status { padding: 3px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: none; }
-    .status-pending { background: #fef3c7; color: #b45309; }
-    .status-complete { background: #ecfdf5; color: #047857; }
-
-    .data-table-wrapper { width: 100%; overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; text-align: left; }
-    .data-table th, .data-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+    .data-table-wrapper { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; margin-top: 10px; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.78rem; white-space: nowrap; background: white; }
+    .data-table th, .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
     .data-table th { background: #f8fafc; font-weight: 800; color: var(--text-main); }
+    .data-table tr:hover { background: #fafafa; }
 
-    footer { background: white; border-top: 1px solid var(--border); padding: 20px; text-align: center; font-size: 0.75rem; color: var(--text-sub); margin-top: auto; }
+    footer { text-align: center; padding: 24px; border-top: 1px solid var(--border); margin-top: 40px; font-size: 0.75rem; color: var(--text-sub); background: white; }
+    .pulse-dot { display: inline-block; width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 rgba(16, 185, 129, 0.4); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
-    @media(max-width: 768px) {
+    @media (max-width: 768px) {
       .auth-actions { display: none; }
       .mobile-menu-btn { display: block; }
-      .status-section-grid { grid-template-columns: 1fr; }
-      #service-category-cards { grid-template-columns: 1fr !important; }
-      .admin-tab-btn { font-size: 0.7rem !important; padding: 6px !important; }
+      .mobile-nav.active { display: flex; }
+      .card-box div[style*="grid-template-columns: repeat(3"] { grid-template-columns: 1fr !important; }
+      .card-box div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
     }
   </style>
-
   <script>
-    const ACCOUNT_INFO = {
-      bank: "우리은행",
-      accountNumber: "1002-862-588371",
-      holder: "김종훈( HUNSTER )"
-    };
+    const ACCOUNT_INFO = { bank: "우리은행", accountNumber: "1002-862-588371", holder: "김종훈" };
+    let currentUser = JSON.parse(localStorage.getItem('hunster_user')) || null;
+    let currentAdminTab = 'coupang';
 
-    let currentUser = null;
-
-    function updateHeaderAuthUI() {
-      const authContainer = document.getElementById('auth-actions-container');
-      const mobileNav = document.getElementById('mobile-nav');
-      const savedRole = localStorage.getItem('hunster_role');
-      const savedUser = localStorage.getItem('hunster_user');
-
-      if (authContainer) {
-        if (savedRole === 'admin') {
-          authContainer.innerHTML = `
-            <span style="font-size: 0.78rem; font-weight: 800; color: var(--danger);">👑 최고관리자 모드</span>
-            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="handleLogout()">로그아웃</button>
-          `;
-        } else if (savedUser) {
-          let uName = '파트너';
-          try { uName = JSON.parse(savedUser).name; } catch(e) {}
-          authContainer.innerHTML = `
-            <span style="font-size: 0.78rem; font-weight: 800; color: var(--primary);">👤 ${uName} 파트너님</span>
-            <button class="btn" style="padding: 5px 10px; font-size: 0.75rem;" onclick="goHome()">대시보드</button>
-            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="handleLogout()">로그아웃</button>
-          `;
-        } else {
-          authContainer.innerHTML = `
-            <button class="btn" onclick="switchView('view-login')">로그인</button>
-            <button class="btn btn-primary" onclick="switchView('view-register')">파트너 회원가입</button>
-          `;
-        }
-      }
-
-      if (mobileNav) {
-        mobileNav.innerHTML = `
-          <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
-            <a href="https://www.youtube.com/watch?v=YTdupRzvQ5M&list=RDYTdupRzvQ5M&start_radio=1" target="_blank" class="btn btn-primary" style="text-align:center; padding: 10px;">🎵 비와이 & 씨잼 Puzzle 유튜브 시청</a>
-            ${savedRole === 'admin' || savedUser ? '<button class="btn btn-danger" style="width:100%; padding: 10px;" onclick="handleLogout()">로그아웃</button>' : '<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;"><button class="btn" style="padding: 10px;" onclick="switchView(\'view-login\')">로그인</button><button class="btn btn-primary" style="padding: 10px;" onclick="switchView(\'view-register\')">회원가입</button></div>'}
-          </div>
-        `;
-      }
-    }
-
-    function goHome() {
-      const savedRole = localStorage.getItem('hunster_role');
-      const savedUser = localStorage.getItem('hunster_user');
-
-      if (savedRole === 'admin') {
-        switchView('view-admin');
-        loadAdminData();
-      } else if (savedUser) {
-        try {
-          currentUser = JSON.parse(savedUser);
-          renderUserDashboard(currentUser);
-          switchView('view-user-dashboard');
-        } catch(e) {
-          switchView('view-main');
-        }
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuthUI();
+      logVisitorIP();
+      const path = window.location.hash.replace('#', '');
+      if(path && document.getElementById(path)) {
+        switchView(path);
       } else {
         switchView('view-main');
       }
-    }
+    });
 
     function switchView(viewId) {
       document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(viewId);
-      if(target) target.classList.add('active');
-      const mobileNav = document.getElementById('mobile-nav');
-      if(mobileNav) mobileNav.classList.toggle('active', false);
-      window.scrollTo(0, 0);
-      updateHeaderAuthUI();
-    }
-
-    function toggleMobileMenu() {
-      const mobileNav = document.getElementById('mobile-nav');
-      if(mobileNav) mobileNav.classList.toggle('active');
-    }
-
-    function toggleAdminSec(secId) {
-      const el = document.getElementById(secId);
-      if (el) {
-        if (el.style.display === 'none' || el.style.display === '') {
-          el.style.display = 'block';
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          el.style.display = 'none';
+      if(target) {
+        target.classList.add('active');
+        window.scrollTo(0,0);
+        if(viewId === 'view-user-dashboard' && currentUser) {
+          renderUserDashboard(currentUser);
+        } else if(viewId === 'view-admin') {
+          loadAdminData();
         }
       }
     }
 
-    function switchAdminTab(tabName) {
-      document.querySelectorAll('.admin-platform-tab-content').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-        btn.style.background = 'white';
-        btn.style.color = 'var(--text-main)';
-        btn.style.borderColor = 'var(--border)';
-      });
+    function checkAuthUI() {
+      const container = document.getElementById('auth-actions-container');
+      const mobileNav = document.getElementById('mobile-nav');
+      if(!container) return;
 
-      const targetContent = document.getElementById('admin-tab-' + tabName);
-      const targetBtn = document.getElementById('admin-btn-' + tabName);
-
-      if(targetContent) targetContent.style.display = 'block';
-      if(targetBtn) {
-        targetBtn.style.background = 'var(--primary)';
-        targetBtn.style.color = 'white';
-        targetBtn.style.borderColor = 'var(--primary)';
+      if(currentUser) {
+        let dashBtn = currentUser.id === 'admin' ? 
+          `<button class="btn btn-primary" onclick="switchView('view-admin')" style="padding:6px 12px; font-size:0.75rem;">관리자 대시보드</button>` :
+          `<button class="btn btn-primary" onclick="switchView('view-user-dashboard')" style="padding:6px 12px; font-size:0.75rem;">파트너 대시보드</button>`;
+        
+        container.innerHTML = `${dashBtn} <button class="btn btn-danger" onclick="handleLogout()" style="padding:6px 12px; font-size:0.75rem;">로그아웃</button>`;
+        mobileNav.innerHTML = `${dashBtn} <button class="btn btn-danger" onclick="handleLogout()" style="padding:6px 12px; font-size:0.75rem;">로그아웃</button>`;
+      } else {
+        container.innerHTML = `
+          <button class="btn" onclick="switchView('view-login')" style="padding:6px 12px; font-size:0.75rem;">로그인</button>
+          <button class="btn btn-primary" onclick="switchView('view-register')" style="padding:6px 12px; font-size:0.75rem;">파트너 회원가입</button>
+        `;
+        mobileNav.innerHTML = `
+          <button class="btn" onclick="switchView('view-login')" style="width:100%;">로그인</button>
+          <button class="btn btn-primary" onclick="switchView('view-register')" style="width:100%;">파트너 회원가입</button>
+        `;
       }
     }
 
-    function updateRegisterFields() {
-      const serviceVal = document.getElementById('service-select').value;
-      const coupangBox = document.getElementById('reg-fields-coupang');
-      const rewardBox = document.getElementById('reg-fields-reward');
-      const placeBox = document.getElementById('reg-fields-place');
-
-      coupangBox.style.display = 'none';
-      rewardBox.style.display = 'none';
-      placeBox.style.display = 'none';
-
-      if (serviceVal === '쿠팡 트래픽') {
-        coupangBox.style.display = 'block';
-      } else if (serviceVal === '네이버 리워드 트래픽') {
-        rewardBox.style.display = 'block';
-      } else if (serviceVal === '네이버 플레이스 트래픽') {
-        placeBox.style.display = 'block';
-      }
+    function toggleMobileMenu() {
+      const nav = document.getElementById('mobile-nav');
+      if(nav) nav.classList.toggle('active');
     }
 
-    function copyAccountNumber() {
-      const textToCopy = ACCOUNT_INFO.bank + " " + ACCOUNT_INFO.accountNumber + " (" + ACCOUNT_INFO.holder + ")";
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("📋 입금 계좌번호가 클립보드에 복사되었습니다!\n" + textToCopy);
-      }).catch(err => {
-        alert("복사에 실패했습니다.");
-      });
-    }
-
-    async function trackVisitor(userName = "비회원 (일반 방문)", userId = "-") {
+    async function logVisitorIP() {
       try {
-        let userIp = "121.160.XXX.XX";
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
-        userIp = data.ip;
-        
-        await fetch('/api/log', {
+        const ip = data.ip;
+        const ua = navigator.userAgent;
+        const name = currentUser ? currentUser.name + ' (' + currentUser.id + ')' : '비회원 방문자';
+        await fetch('/api/visitor-log', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ip: userIp, name: userName, id: userId, time: new Date().toLocaleString(), device: navigator.userAgent.includes('Mobile') ? '모바일' : 'PC 웹' })
+          body: JSON.stringify({ ip, name, ua, time: new Date().toLocaleString() })
         });
       } catch(e) {}
     }
 
-    window.onload = async function() {
-      const savedUser = localStorage.getItem('hunster_user');
-      const savedRole = localStorage.getItem('hunster_role');
-
-      if (savedRole === 'admin') {
-        switchView('view-admin');
-        loadAdminData();
-        switchAdminTab('coupang');
-      } else if (savedUser) {
-        try {
-          currentUser = JSON.parse(savedUser);
-          renderUserDashboard(currentUser);
-          switchView('view-user-dashboard');
-        } catch(e) {
-          localStorage.removeItem('hunster_user');
-          switchView('view-main');
-        }
-      } else {
-        switchView('view-main');
-        trackVisitor();
-      }
-      updateHeaderAuthUI();
-      updateRegisterFields();
-    };
+    function updateRegisterFields() {
+      const service = document.getElementById('service-select').value;
+      const cBox = document.getElementById('reg-fields-coupang');
+      const rBox = document.getElementById('reg-fields-reward');
+      const pBox = document.getElementById('reg-fields-place');
+      
+      if(cBox) cBox.style.display = service.includes('쿠팡') ? 'block' : 'none';
+      if(rBox) rBox.style.display = service.includes('리워드') ? 'block' : 'none';
+      if(pBox) pBox.style.display = service.includes('플레이스') ? 'block' : 'none';
+    }
 
     async function handleRegister(event) {
       event.preventDefault();
@@ -288,116 +184,90 @@
       const id = document.getElementById('reg-id').value.trim();
       const pw = document.getElementById('reg-pw').value.trim();
       const phone = document.getElementById('reg-phone').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
       const address = document.getElementById('reg-address').value.trim();
       const businessNumber = document.getElementById('reg-business-number').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
       const service = document.getElementById('service-select').value;
       const reason = document.getElementById('reg-reason').value.trim();
-      const slotCount = parseInt(document.getElementById('reg-slots').value) || 5;
-      
-      let storeName = '-';
-      let targetKeyword = '-';
-      let targetUrl = '-';
-      let actionType = '단순유입';
+      const slots = parseInt(document.getElementById('reg-slots').value) || 5;
 
-      if (service === '쿠팡 트래픽') {
-        targetKeyword = document.getElementById('reg-coupang-keyword').value.trim() || '-';
-        targetUrl = document.getElementById('reg-coupang-url').value.trim() || '-';
-        actionType = '쿠팡 트래픽 유입';
-      } else if (service === '네이버 리워드 트래픽') {
-        storeName = document.getElementById('reg-reward-store').value.trim() || '-';
-        targetKeyword = document.getElementById('reg-reward-keyword').value.trim() || '-';
-        targetUrl = document.getElementById('reg-reward-url').value.trim() || '-';
-        actionType = document.getElementById('reg-reward-action').value || '단순유입';
-      } else if (service === '네이버 플레이스 트래픽') {
-        storeName = document.getElementById('reg-place-store').value.trim() || '-';
-        targetKeyword = document.getElementById('reg-place-keyword').value.trim() || '-';
-        targetUrl = document.getElementById('reg-place-id').value.trim() || '-';
-        actionType = document.getElementById('reg-place-action').value || '저장+길찾기+알림받기';
+      let extraData = {};
+      if(service.includes('쿠팡')) {
+        extraData.keyword = document.getElementById('reg-coupang-keyword').value;
+        extraData.url = document.getElementById('reg-coupang-url').value;
+      } else if(service.includes('리워드')) {
+        extraData.store = document.getElementById('reg-reward-store').value;
+        extraData.keyword = document.getElementById('reg-reward-keyword').value;
+        extraData.url = document.getElementById('reg-reward-url').value;
+        extraData.action = document.getElementById('reg-reward-action').value;
+      } else if(service.includes('플레이스')) {
+        extraData.store = document.getElementById('reg-place-store').value;
+        extraData.placeId = document.getElementById('reg-place-id').value;
+        extraData.keyword = document.getElementById('reg-place-keyword').value;
+        extraData.action = document.getElementById('reg-place-action').value;
+        extraData.placeStatusMessage = '정상 가동 중 (실시간 활성)';
       }
-      
-      if (slotCount < 5) { alert('슬롯은 최소 5개 이상부터 신청 가능합니다.'); return; }
-      
-      const response = await fetch('/api/register', {
+
+      const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, id, pw, phone, address, businessNumber, email, service, reason, slots: slotCount, storeName, targetKeyword, targetUrl, actionType })
+        body: JSON.stringify({ name, id, pw, phone, email, address, businessNumber, service, reason, slots, extraData })
       });
-      
-      const result = await response.json();
-      if(result.success) {
-        alert('🎉 파트너 회원가입 및 슬롯 신청이 완료되었습니다!\n\n[입금 계좌]\n' + ACCOUNT_INFO.bank + ' ' + ACCOUNT_INFO.accountNumber + ' (' + ACCOUNT_INFO.holder + ')\n\n※ 입금자명과 성함이 다를 경우 1:1 문의로 꼭 남겨주세요!');
-        trackVisitor(name + ' (회원가입)', id);
+      const data = await res.json();
+      if(data.success) {
+        alert('🎉 HUNSTER 파트너 가입 및 슬롯 신청이 완료되었습니다!');
         switchView('view-login');
       } else {
-        alert(result.message);
+        alert('가입 실패: ' + (data.message || '다시 시도해주세요.'));
       }
     }
 
     async function handleLogin(event) {
       event.preventDefault();
-      const inputId = document.getElementById('login-id').value.trim();
-      const inputPw = document.getElementById('login-pw').value.trim();
-      
-      if (inputId === 'hun1' && inputPw === '1234') {
-        localStorage.setItem('hunster_role', 'admin');
-        localStorage.removeItem('hunster_user');
+      const id = document.getElementById('login-id').value.trim();
+      const pw = document.getElementById('login-pw').value.trim();
+
+      if(id === 'admin' && pw === 'admin123!') {
+        currentUser = { id: 'admin', name: '최고관리자' };
+        localStorage.setItem('hunster_user', JSON.stringify(currentUser));
+        checkAuthUI();
         switchView('view-admin');
-        loadAdminData();
-        switchAdminTab('coupang');
-        trackVisitor('최고관리자', 'hun1');
-        updateHeaderAuthUI();
         return;
       }
-      
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: inputId, pw: inputPw })
-        });
-        const data = await res.json();
-        
-        if (data.success) {
-          currentUser = data.user;
-          localStorage.setItem('hunster_user', JSON.stringify(currentUser));
-          localStorage.removeItem('hunster_role');
-          
-          trackVisitor(currentUser.name + ' (로그인)', currentUser.id);
-          renderUserDashboard(currentUser);
-          switchView('view-user-dashboard');
-          updateHeaderAuthUI();
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, pw })
+      });
+      const data = await res.json();
+      if(data.success) {
+        currentUser = data.user;
+        localStorage.setItem('hunster_user', JSON.stringify(currentUser));
+        checkAuthUI();
+        if(currentUser.id === 'admin') {
+          switchView('view-admin');
         } else {
-          alert(data.message || '아이디 또는 비밀번호가 일치하지 않습니다.');
+          switchView('view-user-dashboard');
         }
-      } catch (err) {
-        alert('서버 통신 중 오류가 발생했습니다.');
+      } else {
+        alert('로그인 실패: 아이디 또는 비밀번호를 확인해주세요.');
       }
     }
 
     function handleLogout() {
-      localStorage.removeItem('hunster_user');
-      localStorage.removeItem('hunster_role');
       currentUser = null;
-      alert('로그아웃 되었습니다.');
+      localStorage.removeItem('hunster_user');
+      checkAuthUI();
       switchView('view-main');
-      updateHeaderAuthUI();
+      alert('로그아웃 되었습니다.');
     }
 
-    function formatServiceBadge(serviceName) {
-      let badgeStyle = 'background: #f1f5f9; color: #64748b; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.73rem;';
-      let icon = '📦';
-      if (serviceName && serviceName.includes('쿠팡')) {
-        badgeStyle = 'background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.73rem;';
-        icon = '📦';
-      } else if (serviceName && serviceName.includes('네이버 리워드')) {
-        badgeStyle = 'background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.73rem;';
-        icon = '⭐';
-      } else if (serviceName && serviceName.includes('네이버 플레이스')) {
-        badgeStyle = 'background: #fffbeb; color: #d97706; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.73rem;';
-        icon = '📍';
-      }
-      return `<span style="${badgeStyle}">${icon} ${serviceName || '쿠팡 트래픽'}</span>`;
+    function copyAccountNumber() {
+      const text = `${ACCOUNT_INFO.bank} ${ACCOUNT_INFO.accountNumber} ${ACCOUNT_INFO.holder}`;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('입금 계좌번호가 복사되었습니다!');
+      });
     }
 
     async function loadAdminData() {
@@ -405,318 +275,313 @@
         const res = await fetch('/api/admin/data');
         const data = await res.json();
         
-        let userTbody = document.getElementById('admin-user-tbody');
-        let taxTbody = document.getElementById('admin-tax-tbody');
-        let rewardTbody = document.getElementById('admin-reward-tbody');
-        let placeTbody = document.getElementById('admin-place-tbody');
-        let depositTbody = document.getElementById('admin-deposit-tbody');
-
-        if(userTbody || taxTbody || rewardTbody || placeTbody || depositTbody) {
-          if(userTbody) userTbody.innerHTML = '';
-          if(taxTbody) taxTbody.innerHTML = '';
-          if(rewardTbody) rewardTbody.innerHTML = '';
-          if(placeTbody) placeTbody.innerHTML = '';
-          if(depositTbody) depositTbody.innerHTML = '';
-
-          if(data.users && data.users.length > 0) {
-            data.users.forEach((u) => {
-              let depositClass = u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending';
-              let taxClass = u.taxStatus === '발행완료' ? 'status-complete' : 'status-pending';
-              let serviceTag = formatServiceBadge(u.service);
-              
-              if(u.service && u.service.includes('쿠팡')) {
-                if(userTbody) {
-                  userTbody.innerHTML += `<tr>
-                    <td>
-                      <strong>${u.name}</strong> <span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span><br>
-                      <span style="font-size:0.73rem; color:var(--text-sub);">📧 ${u.email || '-'}</span>
-                    </td>
-                    <td>
-                      📞 ${u.phone || '-'}<br>
-                      🏢 <span style="font-size:0.73rem;">${u.address || '-'}</span><br>
-                      <span style="font-size:0.7rem; color:var(--primary); font-weight:700;">사업자번호: ${u.businessNumber || '-'}</span>
-                    </td>
-                    <td>
-                      ${serviceTag}<br>
-                      <span style="font-size:0.72rem; color:var(--text-sub);">💡 사유: ${u.reason || '-'}</span><br>
-                      <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
-                        <input type="number" id="slot-input-${u.id}" value="${u.slots || 5}" style="width:55px; padding:2px 4px; font-size:0.75rem;" class="form-input" min="1">
-                        <button class="btn btn-primary" style="padding:2px 5px; font-size:0.65rem;" onclick="updateUserSlots('${u.id}')">변경</button>
-                      </div>
-                    </td>
-                    <td><button class="badge-status ${depositClass}" onclick="toggleStatus('${u.id}', 'deposit')">${u.depositStatus || '입금대기'}</button></td>
-                    <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
-                  </tr>`;
-                }
-              }
-
-              if(taxTbody) {
-                taxTbody.innerHTML += `<tr>
-                  <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id} / ${u.email || '-'})</span></td>
-                  <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.7rem;">${u.address || '-'} (사업자:${u.businessNumber || '-'})</span></td>
-                  <td>${serviceTag}<br><strong>${u.slots || 5} 슬롯</strong></td>
-                  <td><button class="badge-status ${taxClass}" onclick="toggleStatus('${u.id}', 'tax')">${u.taxStatus || '발행대기'}</button></td>
-                  <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
-                </tr>`;
-              }
-
-              if(u.service && u.service.includes('네이버 리워드')) {
-                if(rewardTbody) {
-                  rewardTbody.innerHTML += `<tr>
-                    <td><strong>${u.name}</strong><br><span style="color:var(--primary); font-weight:700; font-size:0.8rem;">🏢 ${u.storeName || '스마트스토어 미등록'}</span></td>
-                    <td>🔗 <a href="${u.targetUrl !== '-' ? u.targetUrl : '#'}" target="_blank" style="color:var(--primary); font-size:0.78rem;">상품 링크 바로가기</a><br><strong>🔍 키워드:</strong> ${u.targetKeyword || '-'}</td>
-                    <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:700; font-size:0.73rem;">⚡ ${u.actionType || '단순유입'}</span></td>
-                    <td><span style="font-size:0.75rem; color:var(--success); font-weight:700;">🕒 09시~23시 황금시간대 분산 패턴 적용 완료</span></td>
-                    <td><span style="color:var(--success); font-weight:700; font-size:0.75rem;">🟢 정상 (Clean / 페널티 없음)</span></td>
-                    <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
-                  </tr>`;
-                }
-              }
-
-              if(u.service && u.service.includes('네이버 플레이스')) {
-                if(placeTbody) {
-                  placeTbody.innerHTML += `<tr>
-                    <td><strong>${u.name}</strong><br><span style="color:#d97706; font-weight:700; font-size:0.8rem;">📍 ${u.storeName || '오프라인 상호명'}</span></td>
-                    <td><strong>ID:</strong> ${u.targetUrl || '12345678'}<br><strong>키워드:</strong> ${u.targetKeyword || '-'}</td>
-                    <td><span style="background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-weight:700; font-size:0.73rem;">⭐ 저장 40% / 길찾기 40% / 알림 20%</span></td>
-                    <td><span style="font-size:0.75rem; font-weight:700; color:var(--primary);">🛡️ GPS 프록시 지역 매칭</span></td>
-                    <td>
-                      <textarea id="place-status-${u.id}" class="form-input" style="font-size:0.75rem; margin-bottom:4px; min-height:45px;" placeholder="순위 및 상태 입력...">${u.placeStatusMessage || ''}</textarea>
-                      <button class="btn btn-primary" style="padding:2px 6px; font-size:0.68rem;" onclick="updatePlaceStatus('${u.id}')">상태 저장</button>
-                    </td>
-                    <td><button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteUser('${u.id}', '${u.name}')">삭제</button></td>
-                  </tr>`;
-                }
-              }
-            });
-
-            if(rewardTbody && rewardTbody.innerHTML === '') {
-              rewardTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 네이버 리워드 파트너가 없습니다.</td></tr>`;
-            }
-            if(placeTbody && placeTbody.innerHTML === '') {
-              placeTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 네이버 플레이스 파트너가 없습니다.</td></tr>`;
-            }
-          }
+        if(data.users) {
+          renderAdminCoupang(data.users);
+          renderAdminReward(data.users);
+          renderAdminPlace(data.users);
+          renderAdminTax(data.users);
+          renderAdminSlotsSummary(data.users);
         }
-
-        if (depositTbody && data.deposits) {
-          depositTbody.innerHTML = '';
-          if (data.deposits.length > 0) {
-            data.deposits.forEach(d => {
-              let isDeleted = d.status === '삭제됨';
-              let rowStyle = isDeleted ? 'background:#f1f5f9; color:#94a3b8; text-decoration:line-through;' : '';
-              let sBadge = formatServiceBadge(d.service || '쿠팡 트래픽');
-              depositTbody.innerHTML += `<tr style="${rowStyle}">
-                <td><strong>${d.name}</strong><br><span style="font-size:0.7rem;">등록일: ${d.date}</span></td>
-                <td>${sBadge}</td>
-                <td>📞 ${d.phone}<br>🏢 ${d.businessNumber}</td>
-                <td>📧 ${d.email}</td>
-                <td><strong style="color:${isDeleted ? '#94a3b8' : 'var(--success)'};">${Number(d.amount).toLocaleString()}원</strong></td>
-                <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:700;">${d.taxIncluded}</span></td>
-                <td><span style="font-weight:700; color:${isDeleted ? 'var(--danger)' : 'var(--success)'};">${d.status}</span></td>
-                <td>
-                  <div style="display:flex; gap:4px;">
-                    <button class="btn ${isDeleted ? 'btn-primary' : 'btn-danger'}" style="padding:2px 6px; font-size:0.68rem;" onclick="toggleDepositStatus(${d.id})">${isDeleted ? '복구' : '삭제'}</button>
-                  </div>
-                </td>
-              </tr>`;
-            });
-          } else {
-            depositTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 입금 장부 내역이 없습니다.</td></tr>`;
-          }
-        }
-
-        let adminNoticeTbody = document.getElementById('admin-notice-tbody');
-        if (adminNoticeTbody && data.notices) {
-          adminNoticeTbody.innerHTML = '';
-          if (data.notices.length > 0) {
-            data.notices.forEach(n => {
-              adminNoticeTbody.innerHTML += `<tr>
-                <td>${n.date}</td>
-                <td><strong>${n.title}</strong><br><span style="font-size:0.78rem; color:var(--text-sub);">${n.content}</span></td>
-                <td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.68rem;" onclick="deleteNotice(${n.id})">삭제</button></td>
-              </tr>`;
-            });
-          } else {
-            adminNoticeTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 공지사항이 없습니다.</td></tr>`;
-          }
-        }
-
-        let partnerNoticeContainer = document.getElementById('partner-notice-container');
-        if (partnerNoticeContainer && data.notices) {
-          partnerNoticeContainer.innerHTML = '';
-          if (data.notices.length > 0) {
-            data.notices.forEach(n => {
-              partnerNoticeContainer.innerHTML += `<div style="background:var(--primary-light); border:1px solid #bfdbfe; padding:12px; border-radius:8px; margin-bottom:8px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.73rem; color:var(--primary); font-weight:700; margin-bottom:4px;">
-                  <span>📢 최고관리자 공지</span>
-                  <span>${n.date}</span>
-                </div>
-                <div style="font-weight:800; font-size:0.88rem; color:#1e3a8a; margin-bottom:4px;">${n.title}</div>
-                <div style="font-size:0.82rem; color:#334155; line-height:1.5;">${n.content}</div>
-              </div>`;
-            });
-          } else {
-            partnerNoticeContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-sub);">등록된 공지사항이 없습니다.</p>`;
-          }
-        }
-
-        let slotTbody = document.getElementById('admin-slot-tbody');
-        if(slotTbody) {
-          slotTbody.innerHTML = '';
-          let totalActiveSlots = 0;
-          if(data.users && data.users.length > 0) {
-            data.users.forEach((u) => {
-              let sCount = u.slots || 5;
-              totalActiveSlots += sCount;
-              let serviceTag = formatServiceBadge(u.service);
-              slotTbody.innerHTML += `<tr>
-                <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">(${u.id})</span></td>
-                <td>${serviceTag}</td>
-                <td><strong style="font-size:0.9rem; color:var(--success);">${sCount} 슬롯 가동 중</strong></td>
-                <td><span class="badge-status ${u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending'}">${u.depositStatus || '입금대기'}</span></td>
-              </tr>`;
-            });
-            let summaryBox = document.getElementById('admin-total-slot-summary');
-            if(summaryBox) {
-              summaryBox.innerHTML = `🔥 전체 플랫폼 가동 중인 총 슬롯량: <strong style="color:var(--primary);">${totalActiveSlots} 슬롯</strong> (총 ${data.users.length}개 파트너사)`;
-            }
-          } else {
-            slotTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">가동 중인 파트너 슬롯이 없습니다.</td></tr>`;
-          }
-        }
-
-        let inqTbody = document.getElementById('admin-inquiry-tbody');
-        if(inqTbody) {
-          inqTbody.innerHTML = '';
-          if(data.inquiries && data.inquiries.length > 0) {
-            data.inquiries.forEach((inq) => {
-              inqTbody.innerHTML += `<tr>
-                <td>${inq.author}</td>
-                <td><strong>${inq.title}</strong><br><span style="color:var(--text-sub);">${inq.content}</span></td>
-                <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
-                <td>
-                  <textarea id="reply-${inq.id}" class="form-input" placeholder="답변 입력..." style="font-size:0.75rem; margin-bottom:3px;">${inq.reply || ''}</textarea>
-                  <div style="display:flex; gap:3px;">
-                    <button class="btn btn-primary" style="padding:2px 5px; font-size:0.68rem;" onclick="submitReply(${inq.id})">등록</button>
-                    <button class="btn btn-danger" style="padding:2px 5px; font-size:0.68rem;" onclick="deleteInquiry(${inq.id})">삭제</button>
-                  </div>
-                </td>
-              </tr>`;
-            });
-          } else {
-            inqTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>`;
-          }
-        }
-
-        let ipTbody = document.getElementById('admin-ip-tbody');
-        if(ipTbody && data.ipLogs) {
-          ipTbody.innerHTML = '';
-          if(data.ipLogs.length > 0) {
-            data.ipLogs.forEach(log => {
-              ipTbody.innerHTML += `<tr>
-                <td><strong style="color:var(--primary);">${log.ip}</strong></td>
-                <td><span style="font-weight:700; color:var(--text-main);">${log.name}</span> <span style="font-size:0.7rem; color:var(--text-sub);">(${log.id})</span></td>
-                <td>${log.device}</td>
-                <td style="color:var(--text-sub);">${log.time}</td>
-              </tr>`;
-            });
-          } else {
-            ipTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">기록된 접속 로그가 없습니다.</td></tr>`;
-          }
-        }
-
-        let statusLogTbody = document.getElementById('admin-status-log-tbody');
-        if(statusLogTbody && data.statusLogs) {
-          statusLogTbody.innerHTML = '';
-          if(data.statusLogs.length > 0) {
-            data.statusLogs.forEach(sLog => {
-              statusLogTbody.innerHTML += `<tr>
-                <td><strong>${sLog.name}</strong> <span style="font-size:0.7rem; color:var(--text-sub);">(${sLog.userId})</span></td>
-                <td><span style="color:var(--primary); font-weight:700;">${sLog.type}</span></td>
-                <td>${sLog.status}</td>
-                <td style="color:var(--text-sub);">${sLog.time}</td>
-              </tr>`;
-            });
-          } else {
-            statusLogTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>`;
-          }
-        }
-
-      } catch(err) {}
+        if(data.deposits) renderAdminDeposits(data.deposits);
+        if(data.notices) renderAdminNotices(data.notices);
+        if(data.inquiries) renderAdminInquiries(data.inquiries);
+        if(data.visitors) renderAdminVisitors(data.visitors);
+        if(data.statusLogs) renderAdminStatusLogs(data.statusLogs);
+      } catch(e) {}
     }
 
-    async function updatePlaceStatus(userId) {
-      const msg = document.getElementById('place-status-' + userId).value;
-      const res = await fetch('/api/admin/update-place-status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, statusMessage: msg })
+    function switchAdminTab(tab) {
+      currentAdminTab = tab;
+      ['coupang', 'reward', 'place', 'deposit'].forEach(t => {
+        const content = document.getElementById('admin-tab-' + t);
+        const btn = document.getElementById('admin-btn-' + t);
+        if(content) content.style.display = t === tab ? 'block' : 'none';
+        if(btn) {
+          if(t === tab) {
+            btn.style.background = t === 'deposit' ? '#ecfdf5' : 'var(--primary)';
+            btn.style.color = t === 'deposit' ? 'var(--success)' : 'white';
+            btn.style.borderColor = t === 'deposit' ? 'var(--success)' : 'var(--primary)';
+          } else {
+            btn.style.background = 'white';
+            btn.style.color = 'var(--text-main)';
+            btn.style.borderColor = 'var(--border)';
+          }
+        }
       });
-      const data = await res.json();
-      if (data.success) {
-        alert('📈 네이버 플레이스 실시간 상태 메시지가 성공적으로 저장되었습니다!');
-        loadAdminData();
-      } else {
-        alert('상태 저장에 실패했습니다.');
+    }
+
+    function toggleAdminSec(secId) {
+      const sec = document.getElementById(secId);
+      if(sec) {
+        sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
       }
     }
 
-    async function toggleStatus(userId, type) {
-      await fetch('/api/admin/status', {
+    function renderAdminCoupang(users) {
+      const coupangUsers = users.filter(u => !u.service || u.service.includes('쿠팡'));
+      const tbody = document.getElementById('admin-user-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(coupangUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 쿠팡 파트너가 없습니다.</td></tr>`;
+        return;
+      }
+      coupangUsers.forEach(u => {
+        tbody.innerHTML += `<tr>
+          <td><strong>${u.name}</strong> (${u.id})<br><span style="color:var(--text-sub); font-size:0.72rem;">${u.email || '-'}</span></td>
+          <td>${u.phone || '-'}<br><span style="color:var(--text-sub); font-size:0.72rem;">${u.address || '-'}</span></td>
+          <td>
+            <span style="font-weight:700; color:var(--primary);">${u.service || '쿠팡 트래픽'}</span><br>
+            <input type="number" id="slots-input-${u.id}" value="${u.slots || 5}" style="width:60px; padding:2px; font-size:0.75rem;" min="1">
+            <button class="btn" style="padding:1px 6px; font-size:0.7rem;" onclick="updateUserSlots('${u.id}')">수정</button>
+          </td>
+          <td>
+            <select id="deposit-status-${u.id}" class="form-select" style="font-size:0.72rem; padding:2px;" onchange="updateUserStatus('${u.id}')">
+              <option value="입금대기" ${u.depositStatus === '입금대기' ? 'selected' : ''}>입금대기</option>
+              <option value="입금완료" ${u.depositStatus === '입금완료' ? 'selected' : ''}>입금완료</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="deleteUser('${u.id}')">삭제</button>
+          </td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminReward(users) {
+      const rewardUsers = users.filter(u => u.service && u.service.includes('리워드'));
+      const tbody = document.getElementById('admin-reward-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(rewardUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 리워드 파트너가 없습니다.</td></tr>`;
+        return;
+      }
+      rewardUsers.forEach(u => {
+        const extra = u.extraData || {};
+        tbody.innerHTML += `<tr>
+          <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">${extra.store || '-'}</span></td>
+          <td>키워드: <strong>${extra.keyword || '-'}</strong><br><a href="${extra.url || '#'}" target="_blank" style="font-size:0.7rem; color:var(--primary);">상품 링크 ↗</a></td>
+          <td><span style="background:var(--primary-light); color:var(--primary); padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:700;">${extra.action || '단순유입'}</span></td>
+          <td><span style="color:var(--success); font-weight:700; font-size:0.72rem;">09시~23시 황금시간 분산 가동</span></td>
+          <td><span style="font-weight:800; color:var(--primary);">${u.slots || 5} 슬롯</span></td>
+          <td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="deleteUser('${u.id}')">삭제</button></td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminPlace(users) {
+      const placeUsers = users.filter(u => u.service && u.service.includes('플레이스'));
+      const tbody = document.getElementById('admin-place-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(placeUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 플레이스 파트너가 없습니다.</td></tr>`;
+        return;
+      }
+      placeUsers.forEach(u => {
+        const extra = u.extraData || {};
+        tbody.innerHTML += `<tr>
+          <td><strong>${u.name}</strong><br><span style="color:var(--text-sub); font-size:0.7rem;">${extra.store || '-'}</span></td>
+          <td>ID: <strong>${extra.placeId || '-'}</strong><br>키워드: <strong>${extra.keyword || '-'}</strong></td>
+          <td><span style="background:#fffbeb; color:#d97706; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:700;">${extra.action || '저장+길찾기'}</span></td>
+          <td><span style="color:var(--success); font-weight:700; font-size:0.72rem;">GPS 프록시 지역 매칭 활성</span></td>
+          <td>
+            <input type="text" id="place-msg-${u.id}" value="${u.placeStatusMessage || '정상 가동 중 (실시간 활성)'}" style="width:180px; padding:3px; font-size:0.72rem;">
+            <button class="btn" style="padding:2px 6px; font-size:0.7rem;" onclick="updatePlaceStatus('${u.id}')">상태변경</button>
+          </td>
+          <td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="deleteUser('${u.id}')">삭제</button></td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminTax(users) {
+      const tbody = document.getElementById('admin-tax-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      users.forEach(u => {
+        tbody.innerHTML += `<tr>
+          <td><strong>${u.name}</strong> (${u.id})</td>
+          <td>${u.phone || '-'}<br><span style="font-size:0.7rem; color:var(--text-sub);">${u.address || '-'}</span></td>
+          <td>${u.service || '쿠팡 트래픽'} / <strong style="color:var(--primary);">${u.slots || 5}슬롯</strong></td>
+          <td>
+            <select id="tax-status-${u.id}" class="form-select" style="font-size:0.72rem; padding:2px;" onchange="updateTaxStatus('${u.id}')">
+              <option value="발행대기" ${u.taxStatus === '발행대기' ? 'selected' : ''}>발행대기</option>
+              <option value="발행완료" ${u.taxStatus === '발행완료' ? 'selected' : ''}>발행완료</option>
+            </select>
+          </td>
+          <td><span style="font-size:0.72rem; color:var(--success); font-weight:700;">동기화 완료</span></td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminSlotsSummary(users) {
+      const tbody = document.getElementById('admin-slot-tbody');
+      const summaryHeader = document.getElementById('admin-total-slot-summary');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      let totalSlots = 0;
+      users.forEach(u => {
+        totalSlots += parseInt(u.slots || 5);
+        tbody.innerHTML += `<tr>
+          <td><strong>${u.name}</strong> (${u.id})</td>
+          <td><span style="font-weight:700; color:var(--primary);">${u.service || '쿠팡 트래픽'}</span></td>
+          <td><strong style="color:var(--success);">${u.slots || 5} 슬롯</strong></td>
+          <td><span class="badge-status ${u.depositStatus === '입금완료' ? 'status-complete' : 'status-pending'}">${u.depositStatus || '입금대기'}</span></td>
+        </tr>`;
+      });
+      if(summaryHeader) {
+        summaryHeader.innerHTML = `🔥 전체 플랫폼 가동 중인 총 슬롯량: <strong style="color:var(--success); font-size:1.2rem;">${totalSlots} 슬롯</strong> (활성 파트너사: ${users.length}개사)`;
+      }
+    }
+
+    function renderAdminDeposits(deposits) {
+      const tbody = document.getElementById('admin-deposit-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(!deposits || deposits.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-sub);">입금 장부 내역이 없습니다.</td></tr>`;
+        return;
+      }
+      deposits.forEach(d => {
+        tbody.innerHTML += `<tr>
+          <td><strong>${d.name}</strong><br><span style="font-size:0.68rem; color:var(--text-sub);">${d.date}</span></td>
+          <td><span style="font-weight:700; color:var(--primary);">${d.service || '쿠팡 트래픽'}</span></td>
+          <td>${d.phone || '-'}<br><span style="font-size:0.68rem; color:var(--text-sub);">${d.business || '-'}</span></td>
+          <td>${d.email || '-'}</td>
+          <td><strong style="color:var(--success);">${Number(d.amount || 0).toLocaleString()}원</strong></td>
+          <td><span style="background:var(--primary-light); color:var(--primary); padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:700;">${d.tax || '포함'}</span></td>
+          <td><span class="badge-status status-complete">입금완료</span></td>
+          <td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="deleteDeposit('${d.id}')">삭제</button></td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminNotices(notices) {
+      const tbody = document.getElementById('admin-notice-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(!notices || notices.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 공지가 없습니다.</td></tr>`;
+        return;
+      }
+      notices.forEach(n => {
+        tbody.innerHTML += `<tr>
+          <td style="font-size:0.72rem; color:var(--text-sub);">${n.date}</td>
+          <td><strong>${n.title}</strong><br><span style="font-size:0.75rem; color:#334155;">${n.content}</span></td>
+          <td><button class="btn btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="deleteNotice('${n.id}')">삭제</button></td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminInquiries(inquiries) {
+      const tbody = document.getElementById('admin-inquiry-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(!inquiries || inquiries.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>`;
+        return;
+      }
+      inquiries.forEach(inq => {
+        tbody.innerHTML += `<tr>
+          <td><strong>${inq.author}</strong><br><span style="font-size:0.68rem; color:var(--text-sub);">${inq.date}</span></td>
+          <td><strong>${inq.title}</strong><br><span style="font-size:0.75rem; color:#334155;">${inq.content}</span></td>
+          <td><span class="badge-status ${inq.status === '답변완료' ? 'status-complete' : 'status-pending'}">${inq.status}</span></td>
+          <td>
+            <input type="text" id="reply-input-${inq.id}" placeholder="답변 입력..." value="${inq.reply || ''}" style="width:140px; padding:3px; font-size:0.72rem;">
+            <button class="btn btn-primary" style="padding:2px 6px; font-size:0.7rem;" onclick="sendInquiryReply('${inq.id}')">답변등록</button>
+          </td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminVisitors(visitors) {
+      const tbody = document.getElementById('admin-ip-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(!visitors || visitors.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">기록된 접속 로그가 없습니다.</td></tr>`;
+        return;
+      }
+      visitors.forEach(v => {
+        tbody.innerHTML += `<tr>
+          <td><code style="background:#f1f5f9; padding:2px 4px; border-radius:4px; font-weight:700;">${v.ip}</code></td>
+          <td><strong>${v.name}</strong></td>
+          <td style="font-size:0.7rem; color:var(--text-sub); max-width:200px; overflow:hidden; text-overflow:ellipsis;">${v.ua}</td>
+          <td style="font-size:0.72rem; color:var(--text-sub);">${v.time}</td>
+        </tr>`;
+      });
+    }
+
+    function renderAdminStatusLogs(logs) {
+      const tbody = document.getElementById('admin-status-log-tbody');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      if(!logs || logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>`;
+        return;
+      }
+      logs.forEach(l => {
+        tbody.innerHTML += `<tr>
+          <td><strong>${l.target}</strong></td>
+          <td><span style="font-weight:700; color:var(--primary);">${l.field}</span></td>
+          <td><span class="badge-status status-complete">${l.value}</span></td>
+          <td style="font-size:0.72rem; color:var(--text-sub);">${l.time}</td>
+        </tr>`;
+      });
+    }
+
+    async function updateUserSlots(id) {
+      const count = document.getElementById(`slots-input-${id}`).value;
+      await fetch('/api/admin/update-slots', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, type })
+        body: JSON.stringify({ id, slots: parseInt(count) })
       });
+      alert('슬롯 수량이 수정되었습니다.');
       loadAdminData();
     }
 
-    async function updateUserSlots(userId) {
-      const inputVal = document.getElementById('slot-input-' + userId).value;
-      const res = await fetch('/api/admin/update-slots', {
+    async function updateUserStatus(id) {
+      const depositStatus = document.getElementById(`deposit-status-${id}`).value;
+      await fetch('/api/admin/update-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, slots: inputVal })
+        body: JSON.stringify({ id, depositStatus })
       });
-      const data = await res.json();
-      if (data.success) {
-        alert('🚀 파트너의 슬롯 수량이 성공적으로 변경·승인되었습니다!');
-        loadAdminData();
-      } else {
-        alert('슬롯 변경에 실패했습니다.');
-      }
+      alert('입금 상태가 변경되었습니다.');
+      loadAdminData();
     }
 
-    async function deleteUser(userId, name) {
-      if(!confirm(`정말 "${name}" 파트너 계정을 삭제하시겠습니까?`)) return;
+    async function updateTaxStatus(id) {
+      const taxStatus = document.getElementById(`tax-status-${id}`).value;
+      await fetch('/api/admin/update-tax', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, taxStatus })
+      });
+      alert('세금계산서 상태가 변경되었습니다.');
+      loadAdminData();
+    }
+
+    async function updatePlaceStatus(id) {
+      const placeStatusMessage = document.getElementById(`place-msg-${id}`).value;
+      await fetch('/api/admin/update-place-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, placeStatusMessage })
+      });
+      alert('플레이스 상태 메시지가 업데이트되었습니다.');
+      loadAdminData();
+    }
+
+    async function deleteUser(id) {
+      if(!confirm('정말 해당 파트너사를 삭제하시겠습니까?')) return;
       await fetch('/api/admin/delete-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
-      });
-      alert(`"${name}" 파트너가 삭제되었습니다.`);
-      loadAdminData();
-    }
-
-    async function submitReply(id) {
-      let replyText = document.getElementById('reply-' + id).value;
-      await fetch('/api/admin/reply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, reply: replyText })
-      });
-      alert('답변이 등록되었습니다.');
-      loadAdminData();
-    }
-
-    async function deleteInquiry(id) {
-      if(!confirm('해당 1:1 문의를 삭제하시겠습니까?')) return;
-      await fetch('/api/admin/delete-inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
       });
-      alert('문의가 삭제되었습니다.');
       loadAdminData();
     }
 
@@ -724,29 +589,25 @@
       event.preventDefault();
       const name = document.getElementById('dep-name').value.trim();
       const phone = document.getElementById('dep-phone').value.trim();
-      const businessNumber = document.getElementById('dep-business').value.trim();
+      const business = document.getElementById('dep-business').value.trim();
       const email = document.getElementById('dep-email').value.trim();
       const service = document.getElementById('dep-service').value;
-      const amount = document.getElementById('dep-amount').value.trim();
-      const taxIncluded = document.getElementById('dep-tax').value;
+      const amount = document.getElementById('dep-amount').value;
+      const tax = document.getElementById('dep-tax').value;
 
-      const res = await fetch('/api/admin/add-deposit', {
+      await fetch('/api/admin/add-deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, businessNumber, email, service, amount, taxIncluded })
+        body: JSON.stringify({ name, phone, business, email, service, amount, tax, date: new Date().toLocaleDateString() })
       });
-      const data = await res.json();
-      if (data.success) {
-        alert('💰 서비스별 구분과 함께 입금 장부 내역이 기록되었습니다.');
-        document.getElementById('deposit-form').reset();
-        loadAdminData();
-      } else {
-        alert('장부 기록에 실패했습니다.');
-      }
+      alert('입금 장부에 정상 기록되었습니다.');
+      document.getElementById('deposit-form').reset();
+      loadAdminData();
     }
 
-    async function toggleDepositStatus(id) {
-      await fetch('/api/admin/toggle-deposit-status', {
+    async function deleteDeposit(id) {
+      if(!confirm('해당 장부 기록을 삭제하시겠습니까?')) return;
+      await fetch('/api/admin/delete-deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -785,6 +646,17 @@
       loadAdminData();
     }
 
+    async function sendInquiryReply(id) {
+      const reply = document.getElementById(`reply-input-${id}`).value;
+      await fetch('/api/admin/reply-inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, reply })
+      });
+      alert('답변이 등록되었습니다.');
+      loadAdminData();
+    }
+
     async function renderUserDashboard(user) {
       try {
         const res = await fetch('/api/admin/data');
@@ -820,7 +692,7 @@
       document.getElementById('my-name').innerText = user.name + ' 파트너님';
       document.getElementById('my-phone').innerText = user.phone || '-';
       document.getElementById('my-address').innerText = user.address || '-';
-      document.getElementById('my-service').innerHTML = formatServiceBadge(user.service || '쿠팡 트래픽');
+      document.getElementById('my-service').innerHTML = user.service || '쿠팡 트래픽';
       document.getElementById('my-slots').innerText = (user.slots || 5) + ' 슬롯 활성 가동 중';
       
       const slotsNum = user.slots || 5;
@@ -897,7 +769,7 @@
     async function handleAddSlotRequest(event) {
       event.preventDefault();
       if(!currentUser) { alert('로그인 정보가 없습니다.'); return; }
-
+      
       const addCount = document.getElementById('add-slot-count').value;
       const title = `[슬롯 추가 신청] ${addCount}슬롯 추가 요청`;
       const content = `안녕하세요! 현재 가동 중인 상품에 **추가로 ${addCount}슬롯**을 더 연장·유치하고 싶습니다. 입금 안내 부탁드립니다!`;
@@ -1026,7 +898,7 @@
     </div>
   </div>
 
-  <!-- 쿠팡 가이드 뷰 (방대한 용어사전 및 장점/근거 포함) -->
+  <!-- 쿠팡 가이드 뷰 (쿠팡 3대 핵심 성공 요인 포함) -->
   <div id="view-coupang-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
@@ -1036,9 +908,41 @@
     <div class="card-box" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: var(--shadow-lg); margin-bottom: 20px; border-radius: 14px;">
       <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">HUNSTER ENTERPRISE INSIGHT</span>
       <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">쿠팡 트래픽 솔루션을 반드시 도입해야 하는 이유와 완벽 분석</h2>
-      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">아이템위너 방어부터 로켓검색 상위 노출까지, 쿠팡 이커머스 생태계에서 살아남기 위한 전략적 근거와 실전 용어 사전입니다.</p>
+      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">아이템위너 방어부터 로켓검색 상위 노출, 그리고 쿠팡 성공의 3대 핵심 요인까지 완벽 분석한 실전 가이드입니다.</p>
     </div>
 
+    <!-- 쿠팡 성공의 3대 핵심 요인 (상품성 / 최신성 / 쿠폰매김) 특별 설명 섹션 -->
+    <div class="card-box" style="border-top: 5px solid #2563eb; margin-bottom: 20px; background: #fdfdfd;">
+      <h3 style="color: #1e3a8a; font-size: 1.15rem; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <span>🔥</span> [핵심 필독] 쿠팡 성공을 결정짓는 3대 요소: 상품성·최신성·쿠폰 매김의 완벽한 이해
+      </h3>
+      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px; line-height: 1.5;">트래픽 솔루션이 만능이 되려면 기본 토대가 되는 쿠팡 알고리즘의 3대 축이 반드시 뒷받침되어야 합니다. 왜 이 3가지가 절대적으로 중요한지 그 이유를 공개합니다.</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+        <div style="background: white; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.92rem;">1. 상품성 (Product Quality & Market Fit) — "고객이 만족하는 본질적 가치"</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px; line-height: 1.6;">
+            <strong>[중요한 이유]</strong> 트래픽 솔루션은 유저를 상세페이지로 유인하는 '마중물' 역할을 합니다. 하지만 상품 자체의 퀄리티, 상세페이지 가독성, 리뷰 평점 등이 미흡하면 유입된 고객이 곧바로 이탈(Bounce)하게 됩니다. 쿠팡 알고리즘은 단기 체류 후 이탈하는 상품에 페널티를 부여하므로, 상품의 본질적인 경쟁력(상품성)이 갖춰진 상태에서 트래픽을 태워야만 구매 전환율(CVR)이 극대화되고 상위 랭크가 영구적으로 유지됩니다.
+          </p>
+        </div>
+
+        <div style="background: white; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.92rem;">2. 최신성 (Recency & New Item Indexing) — "알고리즘이 주목하는 신규 가중치"</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px; line-height: 1.6;">
+            <strong>[중요한 이유]</strong> 쿠팡 검색 엔진은 신상품이나 최근에 활발히 업데이트된 SKU에 대해 초기 인덱싱 가중치를 부여합니다. 갓 등록된 신상품이 초기에 트래픽 부스팅을 받지 못하면 시장에 안착하지 못한 채 묻히게 됩니다(Cold Start 문제). '최신성' 지표가 살아있을 때 HUNSTER 트래픽 슬롯을 연동하면 알고리즘이 폭발적으로 반응하여 단숨에 메인 검색 결과 상단으로 치고 올라갈 수 있습니다.
+          </p>
+        </div>
+
+        <div style="background: white; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.92rem;">3. 쿠폰 매김 (Discount & Coupon Pricing Strategy) — "구매 장벽을 허무는 심리적 도화선"</strong>
+          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px; line-height: 1.6;">
+            <strong>[중요한 이유]</strong> 쿠팡 이용 고객들은 즉시 할인 쿠폰(다운로드 쿠폰, 즉시할인 등)이 적용된 상품에 압도적인 클릭률(CTR)과 구매 전환율(CVR)을 보입니다. 트래픽 유입이 들어오는 타이밍에 맞춰 전략적으로 '쿠폰 매김(할인 세팅)'을 적용해 두면, 유저가 페이지에 머물며 구매 버튼을 누를 확률이 수직 상승합니다. 쿠폰은 쿠팡 알고리즘에 '인기 상품'이라는 신호를 보내는 가장 강력한 심리적 촉매제입니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 기존 쿠팡 장점/단점 및 용어 사전 컨텐츠 -->
     <div class="card-box" style="border-top: 5px solid #2563eb; margin-bottom: 20px;">
       <h3 style="color: #1e3a8a; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
         <span>💡</span> 왜 쿠팡 트래픽 솔루션을 사용해야 하는가? (핵심 장점 및 알고리즘 근거)
@@ -1050,12 +954,14 @@
             <strong>[근거]</strong> 쿠팡은 가격, 배송뿐만 아니라 상품 페이지 방문자 수와 전환 추이를 종합적으로 평가합니다. 경쟁사가 진입했을 때 자체적인 유입량(Traffic)을 지속적으로 공급해 주면 알고리즘 상 점유율 방어에 유리하게 작용하여 마진을 지켜낼 수 있습니다.
           </p>
         </div>
+
         <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
           <strong style="color: #2563eb; font-size: 0.92rem;">2. 쿠팡 검색 알고리즘 상위 노출 (CTR 및 체류시간 극대화)</strong>
           <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
             <strong>[근거]</strong> 쿠팡 검색창에 특정 키워드를 검색한 뒤 타겟 상품으로 유입되어 일정 시간 머무는 행위는, 쿠팡 알고리즘에 "해당 키워드와 상품의 연관성이 매우 높다"는 강력한 시그널을 전달하여 자연 유입을 폭발적으로 견인합니다.
           </p>
         </div>
+
         <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
           <strong style="color: #2563eb; font-size: 0.92rem;">3. 신규 등록 상품의 초기 부스팅 (Cold Start 문제 해결)</strong>
           <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
@@ -1065,45 +971,65 @@
       </div>
     </div>
 
-    <div class="card-box" style="border-top: 5px solid #1e3a8a;">
-      <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-        <span>📚</span> 쿠팡 셀러 필수 전문 용어 사전 (A to Z)
+    <!-- 쿠팡 전문 용어 백과사전 및 장점/단점 비교 섹션 -->
+    <div class="card-box" style="background: white; border-radius: 14px; padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+      <h3 style="color: #1e3a8a; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>📚</span> 쿠팡 셀러 필수 전문 용어 백과사전 (CPC, ROAS, CVR 등)
       </h3>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">1. 아이템위너 (Item Winner)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">동일한 바코드(SKU)를 가진 상품을 판매하는 여러 판매자 중 가격, 배송 속도, 고객 응대율 등을 평가하여 가장 높은 점수를 받은 단 1명에게 대표 주문 버튼 권한을 부여하는 쿠팡 고유의 독점 판매 시스템입니다.</p>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.88rem;">CPC (Cost Per Click, 클릭당 과금)</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">광고를 클릭하여 상세페이지에 유입될 때마다 광고비를 지출하는 방식. 쿠팡 파워나우 등 기본 과금 체계입니다.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">2. 쿠팡 트래픽 슬롯 (Traffic Slot)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">특정 키워드 기반으로 쿠팡 앱/웹 환경에서 상품을 검색, 유입시킨 뒤 상세페이지 체류 및 스크롤 등의 사용자 행동 패턴을 수행하도록 배당된 가동 수량 단위입니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.88rem;">ROAS (Return On Ad Spend, 광고 수익률)</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">광고비 대비 매출액 비율(매출액 ÷ 광고비 × 100). 셀러의 마진 사수 여부를 결정하는 핵심 지표입니다.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">3. CTR (Click-Through Rate, 클릭률)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">상품이 검색 결과 화면에 노출된 횟수 대비 실제 유저가 클릭하여 상세페이지에 진입한 비율입니다. CTR이 높을수록 쿠팡 알고리즘은 매력적인 상품으로 판단하여 상위 노출 가중치를 부여합니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.88rem;">CVR (Conversion Rate, 구매 전환율)</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">방문 유저 중 실제 구매 완료 비율. 트래픽 유입과 결합될 때 검색 순위가 계단식으로 급상승합니다.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">4. CVR (Conversion Rate, 구매 전환율)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">상세페이지에 방문한 총 유저 수 대비 실제 구매로 이어진 건수의 비율입니다. 트래픽 유입과 함께 CVR이 안정적으로 유지될 때 검색 순위가 계단식으로 급상승하게 됩니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #2563eb; font-size: 0.88rem;">CTR (Click-Through Rate, 클릭률)</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">노출 횟수 대비 실제 클릭 비율. CTR이 높을수록 쿠팡 알고리즘이 매력적인 상품으로 평가합니다.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">5. 로켓그로스 (Rocket Growth) 및 CGF</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">판매자가 상품을 쿠팡 물류센터에 입고시키면 쿠팡이 보관, 포장, 로켓배송 및 CS까지 대행해 주는 풀필먼트 서비스입니다. 로켓배송 딱지가 붙기 때문에 트래픽 유입 시 시너지 효과가 극대화됩니다.</p>
+      </div>
+
+      <!-- 쿠팡 장점 vs 미도입 단점 비교 -->
+      <h3 style="color: #1e3a8a; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>⚖️</span> 쿠팡 트래픽 솔루션: 도입 장점 vs 미적용 시 치명적 단점
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: #eff6ff; padding: 14px; border-radius: 10px; border: 1px solid #bfdbfe;">
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #1e40af; margin-bottom: 6px;">🟢 트래픽 솔루션을 사용할 때의 장점</h4>
+          <ul style="font-size: 0.78rem; color: #334155; padding-left: 16px; line-height: 1.6; margin: 0;">
+            <li><strong>아이템위너 방어:</strong> 가격 경쟁 밀림 시 유입량으로 점유율을 방어하여 마진 사수</li>
+            <li><strong>로켓검색 상위 진입:</strong> 신상품의 Cold Start(초기 데이터 부재) 문제 완벽 해결</li>
+            <li><strong>CTR 및 CVR 동반 상승:</strong> 알고리즘 최우수 평가로 자연 유입 폭발적 견인</li>
+          </ul>
+        </div>
+        <div style="background: #fef2f2; padding: 14px; border-radius: 10px; border: 1px solid #fecaca;">
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #991b1b; margin-bottom: 6px;">🔴 트래픽 솔루션을 쓰지 않을 때의 단점</h4>
+          <ul style="font-size: 0.78rem; color: #334155; padding-left: 16px; line-height: 1.6; margin: 0;">
+            <li><strong>무한 도태 및 매출 0원:</strong> 검색 결과 수페이지 뒤로 밀려 고객 눈에 노출 불가</li>
+            <li><strong>위너 탈취 속수무책:</strong> 경쟁 셀러 진입 시 트래픽 열세로 하루 만에 권한 상실</li>
+            <li><strong>과도한 CPC 광고비 적자:</strong> 고효율 키워드 광고비만 소모되고 전환은 정체</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 네이버 리워드 가이드 뷰 (방대한 용어사전 및 장점/근거 포함) -->
+  <!-- 네이버 리워드 가이드 뷰 -->
   <div id="view-naver-reward-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
       <span style="font-size: 0.75rem; color: #059669; font-weight: 800; background: #ecfdf5; padding: 6px 12px; border-radius: 20px; border: 1px solid #a7f3d0;">⭐ NAVER REWARD ULTIMATE GUIDE & GLOSSARY</span>
     </div>
-
+    
     <div class="card-box" style="background: linear-gradient(135deg, #065f46 0%, #059669 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: var(--shadow-lg); margin-bottom: 20px; border-radius: 14px;">
-      <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">HUNSTER ENTERPRISE INSIGHT</span>
-      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">네이버 리워드 쇼핑 트래픽을 반드시 도입해야 하는 이유와 완벽 분석</h2>
+      <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">HUNSTER ENTERPRISE INSIGHT</span>
+      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white;">네이버 리워드 쇼핑 트래픽을 반드시 도입해야 하는 이유와 완벽 분석</h2>
       <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">다이아플러스(D.I.A.+) 알고리즘 대응, 스마트스토어 쇼핑랭킹 장악, 그리고 찜하기·장바구니 인터랙션의 전략적 가치입니다.</p>
     </div>
 
@@ -1118,352 +1044,426 @@
             <strong>[근거]</strong> 네이버는 문서의 신뢰도(C-Rank)뿐만 아니라 실제 사용자가 문서를 얼마나 깊이 있게 소비하는지(D.I.A.+)를 정밀하게 측정합니다. 리워드 트래픽은 단순 유입을 넘어 체류, 스크롤, 찜하기 등의 풍부한 사용자 피드백을 제공하여 알고리즘 평가 점수를 극대화합니다.
           </p>
         </div>
+
         <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
           <strong style="color: #059669; font-size: 0.92rem;">2. 09시~23시 황금시간대 분산 패턴을 통한 자연스러움 확보</strong>
           <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
             <strong>[근거]</strong> 비정상적인 시간대에 트래픽이 몰리면 포털의 어뷰징 필터에 걸릴 위험이 있습니다. HUNSTER는 24시간 중 쇼핑 활성도가 가장 높은 골든타임(09시~23시)에 트래픽을 지능적으로 분산시켜 인위적 느낌 없는 안전한 랭킹 상승을 유도합니다.
           </p>
         </div>
-        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-          <strong style="color: #059669; font-size: 0.92rem;">3. 찜하기·장바구니 액션을 통한 구매 의도(Intent) 신호 증폭</strong>
-          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
-            <strong>[근거]</strong> 네이버 쇼핑 스코어에는 단순 클릭 외에도 '스토어 찜', '상품 찜', '장바구니 담기' 등의 인터랙션 지표가 매우 높은 가중치로 반영됩니다. 리워드 옵션을 통해 이 지표들을 함께 끌어올려 쇼핑 판도를 바꿀 수 있습니다.
-          </p>
-        </div>
       </div>
     </div>
 
-    <div class="card-box" style="border-top: 5px solid #065f46;">
-      <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-        <span>📚</span> 네이버 쇼핑 셀러 필수 전문 용어 사전 (A to Z)
+    <!-- 네이버 리워드 전문 용어 백과사전 및 장점/단점 비교 섹션 -->
+    <div class="card-box" style="background: white; border-radius: 14px; padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+      <h3 style="color: #065f46; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>📚</span> 네이버 쇼핑 셀러 필수 전문 용어 백과사전 (D.I.A.+, C-Rank 등)
       </h3>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">1. D.I.A.+ 알고리즘 (Direct Intent Analysis Plus)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">사용자가 검색한 의도에 부합하는 문서인지 평가하기 위해 문서의 신뢰도, 인기도뿐만 아니라 체류 시간, 유입 경로, 쇼핑 피드백 등을 복합적으로 분석하여 랭킹에 반영하는 네이버의 핵심 검색 엔진입니다.</p>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #059669; font-size: 0.88rem;">D.I.A.+ 알고리즘</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">문서 신뢰도뿐만 아니라 체류시간, 스크롤 등 유저의 소비 양상을 분석해 순위를 매기는 네이버 엔진.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">2. C-Rank (Creator Rank)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">특정 출처(블로그, 스토어 등)가 얼마나 전문적이고 신뢰도 있는 정보를 지속적으로 생산해 왔는지를 평가하는 맥락 기반의 랭킹 지표입니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #059669; font-size: 0.88rem;">C-Rank (출처 신뢰도)</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">스토어나 블로그 등의 출처가 얼마나 전문적이고 신뢰도 있는 정보를 생산해 왔는지 평가하는 지표.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">3. 쇼핑랭킹 스코어 (Shopping Ranking Score)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">적합도, 인기도, 최신성 등 네이버가 산출하는 공식에 따라 상품별로 부여되는 점수 총합입니다. 리워드 트래픽과 인터랙션은 이 중 '인기도' 영역의 스코어를 급격히 끌어올리는 역할을 합니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #059669; font-size: 0.88rem;">쇼핑랭킹 스코어</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">적합도, 인기도, 최신성 공식에 따라 부여되는 점수. 리워드는 '인기도' 영역 점수를 급상승시킵니다.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">4. 찜하기 및 장바구니 전환율</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">고객이 상품에 보낸 적극적인 관심 표현으로, 네이버 검색 알고리즘에 '수요가 높은 인기 상품'이라는 명확한 긍정 신호를 주어 순위 방어와 상승에 결정적인 기여를 합니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #059669; font-size: 0.88rem;">찜하기 및 장바구니</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">고객의 적극적인 관심 표현으로, 알고리즘에 수요가 높은 인기 상품이라는 강력한 긍정 신호 부여.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">5. 황금시간대 분산 패턴 (Gold-Time Traffic Distribution)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">트래픽 유입 시 특정 순간에 몰리지 않고 쇼핑 이용객이 가장 많은 오전 9시부터 밤 11시 사이에 시간대별로 균등하게 분산되도록 프로그래밍된 HUNSTER만의 안전 운영 로직입니다.</p>
+      </div>
+
+      <!-- 리워드 장점 vs 미도입 단점 비교 -->
+      <h3 style="color: #065f46; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>⚖️</span> 네이버 리워드 트래픽: 도입 장점 vs 미적용 시 치명적 단점
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: #ecfdf5; padding: 14px; border-radius: 10px; border: 1px solid #a7f3d0;">
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #065f46; margin-bottom: 6px;">🟢 리워드 트래픽을 사용할 때의 장점</h4>
+          <ul style="font-size: 0.78rem; color: #334155; padding-left: 16px; line-height: 1.6; margin: 0;">
+            <li><strong>D.I.A.+ 알고리즘 최적화:</strong> 체류·스크롤 데이터로 쇼핑 랭킹 스코어 극대화</li>
+            <li><strong>인터랙션 지표 급상승:</strong> 찜하기·장바구니 담기 등 고가중치 지표로 지수 폭발</li>
+            <li><strong>안전한 황금시간 분산:</strong> 09시~23시 자연스러운 분산 패턴으로 어뷰징 완벽 회피</li>
+          </ul>
+        </div>
+        <div style="background: #fef2f2; padding: 14px; border-radius: 10px; border: 1px solid #fecaca;">
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #991b1b; margin-bottom: 6px;">🔴 리워드 트래픽을 쓰지 않을 때의 단점</h4>
+          <ul style="font-size: 0.78rem; color: #334155; padding-left: 16px; line-height: 1.6; margin: 0;">
+            <li><strong>낮은 C-Rank 및 노출 저하:</strong> 반응이 없으면 검색엔진이 유령 상품으로 판단해 강등</li>
+            <li><strong>상위권 진입 장벽:</strong> 경쟁 브랜드가 장악한 1페이지를 자연 유입만으로 뚫기 난망</li>
+            <li><strong>스토어 활성도 정체:</strong> 단골 고객 확보와 브랜드 인지도 상승 기회 원천 차단</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 네이버 플레이스 가이드 뷰 (방대한 용어사전 및 장점/근거 포함) -->
+  <!-- 네이버 플레이스 가이드 뷰 -->
   <div id="view-naver-place-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
       <span style="font-size: 0.75rem; color: #d97706; font-weight: 800; background: #fffbeb; padding: 6px 12px; border-radius: 20px; border: 1px solid #fde68a;">📍 NAVER PLACE ULTIMATE GUIDE & GLOSSARY</span>
     </div>
-
+    
     <div class="card-box" style="background: linear-gradient(135deg, #b45309 0%, #d97706 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: var(--shadow-lg); margin-bottom: 20px; border-radius: 14px;">
-      <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">HUNSTER ENTERPRISE INSIGHT</span>
-      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white; line-height: 1.4;">네이버 플레이스 트래픽을 반드시 도입해야 하는 이유와 완벽 분석</h2>
-      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">지역 소상공인과 오프라인 매장의 지도 상위 랭크 점령, 저장·길찾기 액션의 가치, 그리고 GPS 프록시 매칭의 원리입니다.</p>
+      <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">HUNSTER ENTERPRISE INSIGHT</span>
+      <h2 style="font-size: 1.6rem; font-weight: 900; margin-top: 10px; margin-bottom: 10px; color: white;">네이버 플레이스 트래픽 솔루션 도입 필요성과 지역 마케팅 분석</h2>
+      <p style="font-size: 0.88rem; opacity: 0.92; max-width: 680px; margin: 0 auto; line-height: 1.6;">지역 소상공인과 오프라인 매장을 위한 지도 상위 노출 전략, 저장 및 길찾기 액션의 중요성입니다.</p>
     </div>
 
     <div class="card-box" style="border-top: 5px solid #d97706; margin-bottom: 20px;">
       <h3 style="color: #b45309; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-        <span>💡</span> 왜 네이버 플레이스 트래픽을 사용해야 하는가? (핵심 장점 및 알고리즘 근거)
+        <span>💡</span> 네이버 플레이스 트래픽을 왜 써야 하는가? (핵심 장점 및 GPS 근거)
       </h3>
       <div style="display: grid; grid-template-columns: 1fr; gap: 12px; line-height: 1.6;">
         <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-          <strong style="color: #d97706; font-size: 0.92rem;">1. 지역 로컬 검색 1페이지 점령을 통한 오프라인 매출 극대화</strong>
+          <strong style="color: #d97706; font-size: 0.92rem;">1. 지역 기반(Geo-Targeting) 검색 순위 1페이지 진입</strong>
           <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
-            <strong>[근거]</strong> 모바일 지도 검색 특성상 상위 3개 업체(플레이스 뷰)에 노출되느냐 여부가 오프라인 매장의 생존을 결정합니다. 플레이스 트래픽은 지역 키워드 검색량과 인기도 지표를 끌어올려 상위 랭크 진입을 현실화합니다.
-          </p>
-        </div>
-        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-          <strong style="color: #d97706; font-size: 0.92rem;">2. '저장하기'와 '길찾기' 요청의 강력한 랭킹 가중치 확보</strong>
-          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
-            <strong>[근거]</strong> 네이버 플레이스 알고리즘은 단순 조회수보다 실제 유저가 해당 장소를 '즐겨찾기(저장)'하거나 찾아오기 위해 '길찾기'를 실행한 횟수에 매우 높은 점수를 부여합니다. 본 솔루션은 이 핵심 액션들을 정밀 조합하여 반영합니다.
-          </p>
-        </div>
-        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
-          <strong style="color: #d97706; font-size: 0.92rem;">3. GPS 프록시 지역 매칭 기술을 통한 허위 필터 회피</strong>
-          <p style="color: var(--text-sub); font-size: 0.82rem; margin-top: 4px;">
-            <strong>[근거]</strong> 플레이스는 지역성과 위치 기반 신호가 생명입니다. HUNSTER는 GPS 프록시 지역 매칭 기술을 적용하여 실제 해당 상권 반경 내에서 검색하고 유입되는 것처럼 자연스러운 위치 신호를 만들어 안전합니다.
+            <strong>[근거]</strong> 플레이스 순위는 '저장하기', '길찾기 요청', '알림받기' 등의 실제 유저 행동 점수(Engagement)에 크게 좌우됩니다. HUNSTER는 실제 GPS 프록시를 통해 지역 맞춤형 인터랙션을 제공합니다.
           </p>
         </div>
       </div>
     </div>
 
-    <div class="card-box" style="border-top: 5px solid #d97706;">
-      <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-        <span>📚</span> 네이버 플레이스 셀러 필수 전문 용어 사전 (A to Z)
+    <!-- 네이버 플레이스 전문 용어 백과사전 및 장점/단점 비교 섹션 -->
+    <div class="card-box" style="background: white; border-radius: 14px; padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+      <h3 style="color: #b45309; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>📚</span> 네이버 플레이스 셀러 필수 전문 용어 백과사전 (플레이스 ID, GPS 프록시 등)
       </h3>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">1. 플레이스 ID (Place ID)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">네이버 지도 및 스마트어라운드 시스템 상에서 개별 오프라인 사업장, 식당, 병원, 뷰티숍 등을 유일하게 식별하는 고유의 시스템 데이터 번호입니다.</p>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #d97706; font-size: 0.88rem;">플레이스 랭킹 (Place Ranking)</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">지도 검색 시 지도 영역 노출 순위. 예약, 리뷰, 저장 및 길찾기 횟수가 복합적으로 작용해 결정됩니다.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">2. 저장하기 (즐겨찾기) & 길찾기 액션 비율</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">네이버 플레이스 랭킹 알고리즘에서 가장 높은 가중치를 가진 인기도 지표입니다. 기계적인 유입으로 보이지 않도록 저장(40%), 길찾기(40%), 알림받기(20%) 등의 황금 비율로 배분되어 실행됩니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #d97706; font-size: 0.88rem;">GPS 프록시 지역 매칭</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">매장 반경 내 GPS 좌표와 로컬 통신 환경을 시뮬레이션해 신뢰도 높은 지역 신호를 전달하는 기술.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">3. GPS 프록시 지역 매칭 (GPS Proxy Regional Matching)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">오프라인 매장이 위치한 해당 상권 지역의 GPS 좌표와 통신망 환경을 시뮬레이션하여, 포털 서버가 해당 사용자를 진정한 지역 방문 수요자로 인식하게 만드는 위치 인증 최적화 기술입니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #d97706; font-size: 0.88rem;">저장하기 (즐겨찾기) 액션</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">방문하고 싶은 장소로 마크하는 행위로, 플레이스 알고리즘에서 가장 강력한 인기도 지표.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">4. 스마트어라운드 (Smart Around)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">네이버가 사용자의 현재 위치, 시간대, 성별, 연령대 등을 기반으로 주변의 맛집, 카페, 놀거리 등을 맞춤 추천해 주는 AI 기반 로컬 추천 서비스입니다.</p>
+        <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: #d97706; font-size: 0.88rem;">길찾기 요청 액션</strong>
+          <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">매장 방문을 전제로 실질적인 길안내를 실행한 이력으로, 실제 내방 수요를 증명하는 핵심 항목.</p>
         </div>
-        <div style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-          <strong style="color: var(--text-main);">5. 리뷰 퀄리티 및 피드백 지표 (Review Engagement)</strong>
-          <p style="font-size: 0.81rem; color: var(--text-sub); margin-top: 3px; line-height: 1.5;">방문자 영수증 리뷰 및 블로그 리뷰에 포함된 키워드와 사진 장수, 그리고 고객 답글 소통 여부 등 플레이스 활성도를 증명하는 복합적인 지표입니다.</p>
+      </div>
+
+      <!-- 플레이스 장점 vs 미도입 단점 비교 -->
+      <h3 style="color: #b45309; font-size: 1.15rem; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+        <span>⚖️</span> 네이버 플레이스 트래픽: 도입 장점 vs 미적용 시 치명적 단점
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: #fffbeb; padding: 14px; border-radius: 10px; border: 1px solid #fde68a;">
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #92400e; margin-bottom: 6px;">🟢 플레이스 트래픽을 사용할 때의 장점</h4>
+          <ul style="font-size: 0.78rem; color: #334155; padding-left: 16px; line-height: 1.6; margin: 0;">
+            <li><strong>지역 1페이지 점령:</strong> 지도 검색 상위 노출을 통해 오프라인 실제 방문 고객 급증</li>
+            <li><strong>핵심 액션 집중 반영:</strong> 저장하기와 길찾기 요청으로 최고 알고리즘 점수 획득</li>
+            <li><strong>GPS 프록시 완벽 매칭:</strong> 실제 매장 반경 내 유저 환경 재현으로 안전한 순위 상승</li>
+          </ul>
+        </div>
+        <div style="background: #fef2f2; padding: 14px; border-radius: 10px; border: 1px solid #fecaca;">
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #991b1b; margin-bottom: 6px;">🔴 플레이스 트래픽을 쓰지 않을 때의 단점</h4>
+          <ul style="font-size: 0.78rem; color: #334155; padding-left: 16px; line-height: 1.6; margin: 0;">
+            <li><strong>오프라인 매장 매출 타격:</strong> 지도 검색에서 밀려 주변 경쟁업체에 고객 전량 유출</li>
+            <li><strong>방문 및 예약 저조:</strong> 저장·길찾기 이력이 없어 스마트어라운드 추천 영역 원천 차단</li>
+            <li><strong>상권 내 고립:</strong> 신규 오픈 매장의 경우 존재조차 알리지 못한 채 폐업 위기 직면</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 로그인 뷰 -->
-  <div id="view-login" class="page-view wrapper">
-    <div class="auth-container">
-      <h2>파트너 로그인</h2>
-      <form onsubmit="handleLogin(event)" class="form-grid">
-        <div class="form-group">
-          <label class="form-label">아이디</label>
-          <input type="text" id="login-id" class="form-input" placeholder="아이디" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">비밀번호</label>
-          <input type="password" id="login-pw" class="form-input" placeholder="비밀번호" required>
-        </div>
-        <button type="submit" class="btn btn-primary" style="margin-top:6px; padding: 10px;">로그인</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- 회원가입 뷰 -->
+  <!-- 파트너 회원가입 뷰 -->
   <div id="view-register" class="page-view wrapper">
-    <div class="auth-container" style="max-width: 520px;">
+    <div class="auth-container" style="max-width: 600px;">
       <h2>파트너 회원가입 및 슬롯 신청</h2>
-      <form onsubmit="handleRegister(event)" class="form-grid">
-        <div class="form-group">
-          <label class="form-label">성함 (대표자명) *</label>
-          <input type="text" id="reg-name" class="form-input" placeholder="성함" required>
+      <p style="font-size: 0.78rem; color: var(--text-sub); text-align: center; margin-bottom: 20px;">HUNSTER 엔터프라이즈 솔루션 이용을 위한 파트너 계정 생성 및 서비스 신청서입니다.</p>
+      
+      <form class="form-grid" onsubmit="handleRegister(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label class="form-label">이름 (성함/담당자) *</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="성함을 입력하세요" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">연락처 (휴대폰 번호) *</label>
+            <input type="text" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
+          </div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="form-group">
             <label class="form-label">아이디 *</label>
-            <input type="text" id="reg-id" class="form-input" placeholder="아이디" required>
+            <input type="text" id="reg-id" class="form-input" placeholder="사용할 아이디" required>
           </div>
           <div class="form-group">
             <label class="form-label">비밀번호 *</label>
             <input type="password" id="reg-pw" class="form-input" placeholder="비밀번호" required>
           </div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+
+        <div class="form-group">
+          <label class="form-label">이메일 주소 (세금계산서 발행용)</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="partner@example.com">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="form-group">
-            <label class="form-label">전화번호 *</label>
-            <input type="text" id="reg-phone" class="form-input" placeholder="010-0000-0000" required>
+            <label class="form-label">사업자등록번호</label>
+            <input type="text" id="reg-business-number" class="form-input" placeholder="000-00-00000 (선택)">
           </div>
           <div class="form-group">
-            <label class="form-label">이메일 *</label>
-            <input type="email" id="reg-email" class="form-input" placeholder="email@com" required>
+            <label class="form-label">소속 상호명 / 주소</label>
+            <input type="text" id="reg-address" class="form-input" placeholder="회사명 또는 주소지">
           </div>
         </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 6px 0;">
+
         <div class="form-group">
-          <label class="form-label">사업장 주소 *</label>
-          <input type="text" id="reg-address" class="form-input" placeholder="주소" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">사업자번호 *</label>
-          <input type="text" id="reg-business-number" class="form-input" placeholder="000-00-00000" required>
-        </div>
-        <div class="form-group" style="background: var(--primary-light); padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe;">
-          <label class="form-label" style="color: var(--primary);">이용 서비스 선택 *</label>
-          <select id="service-select" class="form-select" onchange="updateRegisterFields()" required>
-            <option value="쿠팡 트래픽">📦 쿠팡 트래픽</option>
-            <option value="네이버 리워드 트래픽">⭐ 네이버 리워드 트래픽</option>
-            <option value="네이버 플레이스 트래픽">📍 네이버 플레이스 트래픽</option>
+          <label class="form-label" style="color: var(--primary); font-size: 0.85rem;">📦 이용할 서비스 선택 *</label>
+          <select id="service-select" class="form-select" onchange="updateRegisterFields()" style="font-weight: 700; color: var(--primary);">
+            <option value="쿠팡 트래픽">쿠팡 트래픽 (아이템위너 및 로켓검색)</option>
+            <option value="네이버 리워드 트래픽">네이버 리워드 트래픽 (스마트스토어 랭킹)</option>
+            <option value="네이버 플레이스 트래픽">네이버 플레이스 트래픽 (지도 순위 & 저장/길찾기)</option>
           </select>
         </div>
 
-        <div id="reg-fields-coupang" style="display:block; background:#fafafa; padding:10px; border-radius:8px; border:1px solid var(--border);">
-          <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label">쿠팡 상품 검색 키워드 *</label>
-            <input type="text" id="reg-coupang-keyword" class="form-input" placeholder="키워드">
+        <!-- 쿠팡 전용 필드 -->
+        <div id="reg-fields-coupang" style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
+          <div class="form-group">
+            <label class="form-label">쿠팡 타겟 검색 키워드</label>
+            <input type="text" id="reg-coupang-keyword" class="form-input" placeholder="예: 무선 선풍기">
           </div>
           <div class="form-group">
-            <label class="form-label">쿠팡 상품 링크 (URL) *</label>
-            <input type="text" id="reg-coupang-url" class="form-input" placeholder="https://...">
+            <label class="form-label">쿠팡 상품 URL 또는 상품코드</label>
+            <input type="text" id="reg-coupang-url" class="form-input" placeholder="https://www.coupang.com/vp/products/...">
           </div>
         </div>
 
-        <div id="reg-fields-reward" style="display:none; background:#ecfdf5; padding:10px; border-radius:8px; border:1px solid #a7f3d0;">
-          <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label" style="color:#065f46;">스마트스토어 명 *</label>
-            <input type="text" id="reg-reward-store" class="form-input" placeholder="스토어명">
-          </div>
-          <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label" style="color:#065f46;">네이버 쇼핑 검색 키워드 *</label>
-            <input type="text" id="reg-reward-keyword" class="form-input" placeholder="키워드">
-          </div>
-          <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label" style="color:#065f46;">상품 링크 (URL) *</label>
-            <input type="text" id="reg-reward-url" class="form-input" placeholder="URL">
+        <!-- 네이버 리워드 전용 필드 -->
+        <div id="reg-fields-reward" style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: none; flex-direction: column; gap: 8px;">
+          <div class="form-group">
+            <label class="form-label">스마트스토어 상호명</label>
+            <input type="text" id="reg-reward-store" class="form-input" placeholder="예: 헌스터스토어">
           </div>
           <div class="form-group">
-            <label class="form-label" style="color:#065f46;">리워드 액션 옵션 *</label>
+            <label class="form-label">네이버 쇼핑 검색 키워드</label>
+            <input type="text" id="reg-reward-keyword" class="form-input" placeholder="예: 원목 거실 테이블">
+          </div>
+          <div class="form-group">
+            <label class="form-label">상품 상세 URL</label>
+            <input type="text" id="reg-reward-url" class="form-input" placeholder="https://smartstore.naver.com/...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">세부 행동 옵션</label>
             <select id="reg-reward-action" class="form-select">
-              <option value="단순유입">단순 유입 및 체류</option>
-              <option value="찜하기 + 장바구니">찜하기 + 장바구니 담기</option>
-              <option value="0원 결제 / 소액결제">0원 결제 / 소액결제 체험단</option>
+              <option value="단순유입">단순유입 + 체류</option>
+              <option value="찜하기+유입">찜하기 + 유입</option>
+              <option value="톡톡친구+유입">톡톡친구 + 유입</option>
             </select>
           </div>
         </div>
 
-        <div id="reg-fields-place" style="display:none; background:#fffbeb; padding:10px; border-radius:8px; border:1px solid #fde68a;">
-          <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label" style="color:#92400e;">오프라인 업체 상호명 *</label>
-            <input type="text" id="reg-place-store" class="form-input" placeholder="상호명">
-          </div>
-          <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label" style="color:#92400e;">플레이스 ID *</label>
-            <input type="text" id="reg-place-id" class="form-input" placeholder="ID">
-          </div>
-          <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label" style="color:#92400e;">지역 상권 타겟 키워드 *</label>
-            <input type="text" id="reg-place-keyword" class="form-input" placeholder="키워드">
+        <!-- 네이버 플레이스 전용 필드 -->
+        <div id="reg-fields-place" style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: none; flex-direction: column; gap: 8px;">
+          <div class="form-group">
+            <label class="form-label">오프라인 매장 상호명</label>
+            <input type="text" id="reg-place-store" class="form-input" placeholder="예: 강남역 맛집 헌스터">
           </div>
           <div class="form-group">
-            <label class="form-label" style="color:#92400e;">플레이스 액션 옵션 *</label>
+            <label class="form-label">플레이스 검색 키워드 (지역명+업종)</label>
+            <input type="text" id="reg-place-keyword" class="form-input" placeholder="예: 강남역 파스타">
+          </div>
+          <div class="form-group">
+            <label class="form-label">네이버 플레이스 ID (숫자)</label>
+            <input type="text" id="reg-place-id" class="form-input" placeholder="예: 12345678">
+          </div>
+          <div class="form-group">
+            <label class="form-label">플레이스 행동 옵션</label>
             <select id="reg-place-action" class="form-select">
-              <option value="저장+길찾기+알림받기">저장 + 길찾기 + 알림받기 비율 세팅</option>
+              <option value="저장+길찾기+알림받기">저장 40% + 길찾기 40% + 알림받기 20%</option>
+              <option value="저장+길찾기중심">저장 및 길찾기 집중형</option>
             </select>
           </div>
         </div>
 
-        <div class="form-group" style="margin-top:6px;">
-          <label class="form-label">가입 사유 및 목표 *</label>
-          <textarea id="reg-reason" class="form-textarea" placeholder="사유" required></textarea>
-        </div>
         <div class="form-group">
-          <label class="form-label">신청 슬롯 수 (최소 5슬롯 이상) *</label>
-          <input type="number" id="reg-slots" class="form-input" value="5" min="5" required>
+          <label class="form-label">신청 슬롯 수 (최소 5개 이상) *</label>
+          <input type="number" id="reg-slots" class="form-input" value="5" min="5" style="font-weight: 800; color: var(--primary);" required>
         </div>
-        <button type="submit" class="btn btn-primary" style="margin-top:8px; padding: 11px; font-weight: 700;">회원가입 및 슬롯 신청 완료</button>
+
+        <div class="form-group">
+          <label class="form-label">기타 전달사항 / 요청 사유</label>
+          <textarea id="reg-reason" class="form-textarea" placeholder="특별히 요청하실 내용이나 문의사항을 적어주세요."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="padding: 12px; margin-top: 10px; font-weight: 800; font-size: 0.95rem;">파트너 가입 및 슬롯 신청 완료</button>
       </form>
+
+      <div style="text-align: center; margin-top: 14px; font-size: 0.78rem; color: var(--text-sub);">
+        이미 계정이 있으신가요? <a href="#" onclick="switchView('view-login'); return false;" style="color: var(--primary); font-weight: 700; text-decoration: none;">로그인하기</a>
+      </div>
     </div>
   </div>
 
-  <!-- 사용자 대시보드 뷰 -->
-  <div id="view-user-dashboard" class="page-view dashboard-container">
-    <div class="card-box" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
-      <h3 id="my-name" style="color: white; font-size: 1.2rem; margin-bottom: 4px;">파트너님</h3>
-      <p id="my-traffic-count" style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 10px; font-weight:700;">현재 5슬롯 정상 가동 중 (실시간 활성)</p>
-      <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.8rem;">
-        <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">연락처: <span id="my-phone">-</span></span>
-        <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px;">주소: <span id="my-address">-</span></span>
-      </div>
-    </div>
-
-    <div class="card-box" style="border-top: 4px solid var(--primary);">
-      <h3 style="display:flex; align-items:center; gap:6px; margin-bottom:10px;"><span>📢</span> 최고관리자 공지사항</h3>
-      <div id="partner-notice-container">
-        <p style="font-size: 0.8rem; color: var(--text-sub);">등록된 공지사항이 없습니다.</p>
-      </div>
-    </div>
-
-    <div class="status-section-grid">
-      <div class="card-box">
-        <h3>📊 내 서비스 현황</h3>
-        <div class="server-status-item">
-          <span>이용 서비스</span>
-          <span id="my-service" style="font-weight: 700;">쿠팡 트래픽</span>
+  <!-- 파트너 대시보드 뷰 -->
+  <div id="view-user-dashboard" class="page-view wrapper">
+    <div class="dashboard-container">
+      
+      <!-- 상단 파트너 정보 카드 -->
+      <div class="card-box" style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 3px 8px; border-radius: 10px; border: 1px solid #bfdbfe;">HUNSTER PARTNER PORTAL</span>
+          <h2 id="my-name" style="font-size: 1.35rem; font-weight: 900; margin-top: 6px; margin-bottom: 2px;">파트너님</h2>
+          <p style="font-size: 0.78rem; color: var(--text-sub);">연락처: <span id="my-phone">-</span> | 주소/상호: <span id="my-address">-</span></p>
         </div>
-        <div class="server-status-item">
-          <span>가동 슬롯</span>
-          <strong id="my-slots" style="color:var(--success);">5 슬롯 활성 가동 중</strong>
-        </div>
-        <div class="server-status-item">
-          <span>입금 상태</span>
-          <span id="my-deposit-status" class="badge-status status-pending">입금대기</span>
-        </div>
-        <div class="server-status-item">
-          <span>세금계산서</span>
-          <span id="my-tax-status" class="badge-status status-pending">발행대기</span>
+        <div>
+          <button class="btn btn-danger" onclick="handleLogout()" style="padding: 6px 14px; font-size: 0.78rem;">로그아웃</button>
         </div>
       </div>
 
-      <div class="card-box">
-        <h3>💳 입금 안내 계좌</h3>
-        <p id="account-info-box" style="font-size: 0.8rem; line-height: 1.6; color: var(--text-main); margin-bottom: 10px;"></p>
-        <form id="add-slot-form" onsubmit="handleAddSlotRequest(event)" style="border-top: 1px solid var(--border); padding-top: 10px;">
-          <h4 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 6px;">🚀 슬롯 추가 연장 신청</h4>
-          <div style="display:flex; gap:6px;">
-            <input type="number" id="add-slot-count" class="form-input" value="5" min="1" placeholder="추가 슬롯수" style="font-size: 0.8rem;">
-            <button type="submit" class="btn btn-primary" style="font-size: 0.78rem; white-space: nowrap;">추가 신청</button>
+      <!-- 서비스 현황 및 계좌 안내 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        
+        <div class="card-box" style="margin-bottom: 0;">
+          <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+            <span>📊</span> 가동 중인 서비스 및 슬롯 현황
+          </h3>
+          <div class="server-status-item">
+            <span>이용 중인 솔루션</span>
+            <span id="my-service">쿠팡 트래픽</span>
           </div>
-        </form>
-      </div>
-    </div>
+          <div class="server-status-item">
+            <span>활성 슬롯 수량</span>
+            <strong id="my-slots" style="color: var(--primary);">5 슬롯 가동 중</strong>
+          </div>
+          <div class="server-status-item">
+            <span>실시간 관제 상태</span>
+            <strong id="my-traffic-count" style="color: var(--success); font-size: 0.78rem;">정상 가동 중 (실시간 활성)</strong>
+          </div>
+          <div class="server-status-item">
+            <span>입금 확인 상태</span>
+            <span id="my-deposit-status" class="badge-status status-pending">입금대기</span>
+          </div>
+          <div class="server-status-item">
+            <span>세금계산서 상태</span>
+            <span id="my-tax-status" class="badge-status status-pending">발행대기</span>
+          </div>
+        </div>
 
-    <div class="card-box">
-      <h3>💬 1:1 고객 문의 및 관리자 소통</h3>
-      <form id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-bottom: 14px;">
-        <div class="form-group" style="margin-bottom: 6px;">
-          <input type="text" id="inq-title" class="form-input" placeholder="제목" required style="font-size: 0.8rem;">
+        <div class="card-box" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+              <span>💰</span> 입금 계좌 안내
+            </h3>
+            <div style="background: var(--bg-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.82rem; line-height: 1.6;" id="account-info-box">
+              입금 계좌: <strong>우리은행 1002-862-588371</strong> (김종훈) 
+              <button class="btn" style="padding: 2px 6px; font-size: 0.7rem; margin-left: 4px;" onclick="copyAccountNumber()">복사</button><br>
+              <span style="color: var(--danger); font-size: 0.72rem; margin-top: 4px; display: inline-block;">※ 입금자명이 성함과 다를 경우 1:1 문의로 남겨주세요.</span>
+            </div>
+          </div>
+
+          <!-- 슬롯 추가 신청 폼 -->
+          <div style="margin-top: 14px; background: var(--primary-light); padding: 12px; border-radius: 8px; border: 1px solid #bfdbfe;">
+            <h4 style="font-size: 0.85rem; font-weight: 800; color: var(--primary); margin-bottom: 6px;">⚡ 슬롯 즉시 추가 신청</h4>
+            <form class="form-grid" id="add-slot-form" onsubmit="handleAddSlotRequest(event)">
+              <div style="display: flex; gap: 6px;">
+                <input type="number" id="add-slot-count" class="form-input" value="5" min="1" style="width: 80px;" required>
+                <button type="submit" class="btn btn-primary" style="flex: 1; font-size: 0.78rem; font-weight: 700;">추가 슬롯 요청하기</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="form-group" style="margin-bottom: 6px;">
-          <textarea id="inq-content" class="form-textarea" placeholder="내용" required style="font-size: 0.8rem;"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">문의 등록하기</button>
-      </form>
-      <h4 style="font-size: 0.9rem; font-weight: 800; margin-bottom: 8px;">내 문의 및 답변 내역</h4>
-      <div id="my-inquiry-list">
-        <p style="font-size: 0.8rem; color: var(--text-sub);">작성한 문의 내역이 없습니다.</p>
+
       </div>
+
+      <!-- 최고관리자 공지사항 확인 영역 -->
+      <div class="card-box" style="margin-bottom: 0;">
+        <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <span>📢</span> 최고관리자 공지사항 및 업데이트 안내
+        </h3>
+        <div id="partner-notice-container" style="max-height: 200px; overflow-y: auto;">
+          <p style="font-size: 0.8rem; color: var(--text-sub);">등록된 공지사항이 없습니다.</p>
+        </div>
+      </div>
+
+      <!-- 1:1 문의 게시판 영역 -->
+      <div class="card-box" style="margin-bottom: 0;">
+        <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <span>💬</span> 1:1 관리자 문의 및 소통 센터
+        </h3>
+        
+        <form class="form-grid" id="inquiry-form" onsubmit="handleNewInquiry(event)" style="margin-bottom: 14px;">
+          <div class="form-group">
+            <input type="text" id="inq-title" class="form-input" placeholder="문의 제목을 입력하세요" required>
+          </div>
+          <div class="form-group">
+            <textarea id="inq-content" class="form-textarea" placeholder="문의하실 내용을 자세히 적어주세요..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="font-size: 0.78rem; padding: 6px 12px; align-self: flex-end;">문의 등록하기</button>
+        </form>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px;">나의 문의 및 답변 내역</h4>
+          <div id="my-inquiry-list" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+            <p style="font-size: 0.8rem; color: var(--text-sub);">작성한 문의 내역이 없습니다.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- 관리자 대시보드 뷰 -->
-  <div id="view-admin" class="page-view dashboard-container">
-    <div class="card-box" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: 1px solid #334155;">
-      <h3 style="color: white; font-size: 1.15rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-        <span>👑</span> 최고관리자 통합 관제센터 (플랫폼별 독립 관리 탭)
-      </h3>
-      <p id="admin-total-slot-summary" style="font-size: 0.85rem; color: #94a3b8;">전체 플랫폼 파트너 슬롯 현황을 실시간 집계 중입니다...</p>
-    </div>
-
-    <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm);">
-      <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
-        <span>🗂️</span> 플랫폼별 및 장부 상세 관리 탭 (클릭하여 전환)
-      </h4>
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
-        <button type="button" id="admin-btn-coupang" class="btn admin-tab-btn" onclick="switchAdminTab('coupang')" style="font-weight: 800; padding: 10px; font-size: 0.8rem; background: var(--primary); color: white; border-color: var(--primary);">📦 쿠팡 관리</button>
-        <button type="button" id="admin-btn-reward" class="btn admin-tab-btn" onclick="switchAdminTab('reward')" style="font-weight: 800; padding: 10px; font-size: 0.8rem;">⭐ 리워드 관리</button>
-        <button type="button" id="admin-btn-place" class="btn admin-tab-btn" onclick="switchAdminTab('place')" style="font-weight: 800; padding: 10px; font-size: 0.8rem;">📍 플레이스 관리</button>
-        <button type="button" id="admin-btn-deposit" class="btn admin-tab-btn" onclick="switchAdminTab('deposit')" style="font-weight: 800; padding: 10px; font-size: 0.8rem; background: #ecfdf5; color: var(--success); border-color: var(--success);">💰 입금장부 관리</button>
+  <!-- 최고관리자 대시보드 뷰 -->
+  <div id="view-admin" class="page-view wrapper">
+    <div class="dashboard-container" style="max-width: 1100px;">
+      
+      <!-- 관리자 헤더 카드 -->
+      <div class="card-box" style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white;">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 800; color: #34d399; background: rgba(16,185,129,0.2); padding: 3px 8px; border-radius: 10px; border: 1px solid rgba(16,185,129,0.4);">👑 ENTERPRISE ADMIN CONTROL TOWER</span>
+          <h2 style="font-size: 1.35rem; font-weight: 900; margin-top: 6px; margin-bottom: 2px; color: white;">HUNSTER 최고관리자 관제 시스템</h2>
+          <p style="font-size: 0.78rem; color: #94a3b8;">전체 파트너사 슬롯 운영 관리 및 입금 장부, 세금계산서, 접속 로그 통합 제어</p>
+        </div>
+        <div>
+          <button class="btn btn-danger" onclick="handleLogout()" style="padding: 6px 14px; font-size: 0.78rem;">로그아웃</button>
+        </div>
       </div>
-    </div>
 
-    <!-- [탭 1] 쿠팡 관리 탭 -->
-    <div id="admin-tab-coupang" class="admin-platform-tab-content">
-      <div class="card-box" style="border-top: 4px solid var(--primary);">
-        <h3 style="margin-bottom: 10px;">📦 쿠팡 파트너 회원 목록 및 입금 관리</h3>
+      <!-- 플랫폼별 서비스 탭 메뉴 버튼 -->
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;" id="admin-platform-tabs">
+        <button id="admin-btn-coupang" class="btn admin-tab-btn" style="font-weight: 800; font-size: 0.78rem; padding: 8px;" onclick="switchAdminTab('coupang')">📦 쿠팡 파트너</button>
+        <button id="admin-btn-reward" class="btn admin-tab-btn" style="font-weight: 800; font-size: 0.78rem; padding: 8px;" onclick="switchAdminTab('reward')">⭐ 네이버 리워드</button>
+        <button id="admin-btn-place" class="btn admin-tab-btn" style="font-weight: 800; font-size: 0.78rem; padding: 8px;" onclick="switchAdminTab('place')">📍 네이버 플레이스</button>
+        <button id="admin-btn-tax" class="btn admin-tab-btn" style="font-weight: 800; font-size: 0.78rem; padding: 8px;" onclick="switchAdminTab('tax')">🧾 세금계산서 장부</button>
+        <button id="admin-btn-deposit" class="btn admin-tab-btn" style="font-weight: 800; font-size: 0.78rem; padding: 8px;" onclick="switchAdminTab('deposit')">💰 입금 장부 관리</button>
+      </div>
+
+      <!-- 추가 관리 메뉴 토글 버튼 바 -->
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <button class="btn" style="font-size: 0.75rem; font-weight: 700;" onclick="toggleAdminSec('admin-sec-notice')">📢 공지사항 관리</button>
+        <button class="btn" style="font-size: 0.75rem; font-weight: 700;" onclick="toggleAdminSec('admin-sec-slot')">🔥 전체 슬롯 현황 요약</button>
+        <button class="btn" style="font-size: 0.75rem; font-weight: 700;" onclick="toggleAdminSec('admin-sec-inquiry')">💬 1:1 문의 제어</button>
+        <button class="btn" style="font-size: 0.75rem; font-weight: 700;" onclick="toggleAdminSec('admin-sec-visitor')">📊 방문자 및 IP 로그</button>
+      </div>
+
+      <!-- 1. 쿠팡 파트너 관리 탭 -->
+      <div id="admin-tab-coupang" class="admin-platform-tab-content card-box">
+        <h3 style="font-size: 1.05rem; font-weight: 900; margin-bottom: 10px; color: var(--primary);">📦 쿠팡 트래픽 파트너 운영 현황</h3>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
               <tr>
-                <th>파트너 정보 (성함/ID/이메일)</th>
-                <th>연락처 / 주소 / 사업자번호</th>
-                <th>서비스 종류 / 가입사유 / 슬롯수정</th>
+                <th>파트너 정보</th>
+                <th>연락처 / 사업자</th>
+                <th>서비스 및 슬롯 관리</th>
                 <th>입금 상태</th>
                 <th>관리</th>
               </tr>
@@ -1474,82 +1474,98 @@
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- [탭 2] 네이버 리워드 관리 탭 -->
-    <div id="admin-tab-reward" class="admin-platform-tab-content" style="display: none;">
-      <div class="card-box" style="border-top: 4px solid var(--success);">
-        <h3 style="margin-bottom: 10px;">⭐ 네이버 리워드 쇼핑 관제 탭</h3>
+      <!-- 2. 네이버 리워드 관리 탭 -->
+      <div id="admin-tab-reward" class="admin-platform-tab-content card-box" style="display: none;">
+        <h3 style="font-size: 1.05rem; font-weight: 900; margin-bottom: 10px; color: var(--success);">⭐ 네이버 리워드 트래픽 파트너 현황</h3>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
               <tr>
-                <th>기본 정보 (파트너명 / 스마트스토어 명)</th>
-                <th>타겟 세팅 (상품 URL / 검색 키워드)</th>
-                <th>행동 옵션 (액션 타입)</th>
-                <th>운영 설정 (시간대별 유입 분산)</th>
-                <th>상태 모니터링</th>
+                <th>파트너 정보</th>
+                <th>상호명</th>
+                <th>검색 키워드</th>
+                <th>상품 링크</th>
+                <th>행동 옵션</th>
+                <th>슬롯</th>
+                <th>입금 상태</th>
                 <th>관리</th>
               </tr>
             </thead>
             <tbody id="admin-reward-tbody">
-              <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+              <tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 리워드 파트너가 없습니다.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- [탭 3] 네이버 플레이스 관제 탭 -->
-    <div id="admin-tab-place" class="admin-platform-tab-content" style="display: none;">
-      <div class="card-box" style="border-top: 4px solid #d97706;">
-        <h3 style="margin-bottom: 10px;">📍 네이버 플레이스 관제 탭 (실시간 순위 및 상태 직접 입력)</h3>
+      <!-- 3. 네이버 플레이스 관리 탭 -->
+      <div id="admin-tab-place" class="admin-platform-tab-content card-box" style="display: none;">
+        <h3 style="font-size: 1.05rem; font-weight: 900; margin-bottom: 10px; color: #d97706;">📍 네이버 플레이스 트래픽 파트너 현황</h3>
         <div class="data-table-wrapper">
           <table class="data-table">
             <thead>
               <tr>
-                <th>기본 정보 (파트너명 / 업체 상호명)</th>
-                <th>타겟 세팅 (플레이스 ID / 타겟 키워드)</th>
-                <th>행동 옵션</th>
-                <th>운영 설정</th>
-                <th>상태 모니터링 📈 (직접 수정 가능)</th>
+                <th>파트너 정보</th>
+                <th>매장 / 키워드</th>
+                <th>행동 비중</th>
+                <th>GPS 매칭</th>
+                <th>실시간 순위/상태 메시지 제어</th>
                 <th>관리</th>
               </tr>
             </thead>
             <tbody id="admin-place-tbody">
-              <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+              <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 플레이스 파트너가 없습니다.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- [탭 4] 입금 장부 탭 -->
-    <div id="admin-tab-deposit" class="admin-platform-tab-content" style="display: none;">
-      <div class="card-box" style="border-top: 4px solid var(--success);">
-        <h3 style="margin-bottom: 4px;">💰 최고관리자 입금 관리 장부 (플랫폼별 구분 관리)</h3>
-        <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 14px;">고객 입금 내역을 서비스별로 구분하여 기록하고 관리·삭제·복구할 수 있는 장부 페이지입니다.</p>
+      <!-- 4. 세금계산서 장부 탭 -->
+      <div id="admin-tab-tax" class="admin-platform-tab-content card-box" style="display: none;">
+        <h3 style="font-size: 1.05rem; font-weight: 900; margin-bottom: 10px; color: var(--text-main);">🧾 세금계산서 발행 장부 관리</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너 성함</th>
+                <th>사업자번호</th>
+                <th>이메일</th>
+                <th>발행 상태 제어</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tax-tbody">
+              <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-        <form id="deposit-form" onsubmit="handleAddDeposit(event)" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:14px;">
-          <h4 style="font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--success);">➕ 새로운 입금 장부 기록 추가 (서비스 구분 선택)</h4>
-          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:8px;">
-            <input type="text" id="dep-name" class="form-input" placeholder="고객 성함" required style="font-size:0.8rem;">
-            <input type="text" id="dep-phone" class="form-input" placeholder="연락처" required style="font-size:0.8rem;">
-            <input type="text" id="dep-business" class="form-input" placeholder="사업자번호" required style="font-size:0.8rem;">
-            <select id="dep-service" class="form-select" style="font-size:0.8rem; font-weight:700; color:var(--primary);">
-              <option value="쿠팡 트래픽">📦 쿠팡 트래픽</option>
-              <option value="네이버 리워드 트래픽">⭐ 네이버 리워드 트래픽</option>
-              <option value="네이버 플레이스 트래픽">📍 네이버 플레이스 트래픽</option>
+      <!-- 5. 입금 장부 관리 탭 -->
+      <div id="admin-tab-deposit" class="admin-platform-tab-content card-box" style="display: none;">
+        <h3 style="font-size: 1.05rem; font-weight: 900; margin-bottom: 10px; color: var(--primary);">💰 입금 장부 수기 기록 및 내역 관리</h3>
+        
+        <!-- 입금 기록 입력 폼 -->
+        <form class="form-grid" id="deposit-form" onsubmit="handleAddDeposit(event)" style="background: var(--bg-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 14px;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <input type="text" id="dep-name" class="form-input" placeholder="파트너 성함" required>
+            <input type="text" id="dep-phone" class="form-input" placeholder="연락처" required>
+            <input type="text" id="dep-business" class="form-input" placeholder="사업자번호">
+            <input type="email" id="dep-email" class="form-input" placeholder="이메일">
+            <select id="dep-service" class="form-select">
+              <option value="쿠팡 트래픽">쿠팡 트래픽</option>
+              <option value="네이버 리워드 트래픽">네이버 리워드 트래픽</option>
+              <option value="네이버 플레이스 트래픽">네이버 플레이스 트래픽</option>
             </select>
+            <input type="number" id="dep-amount" class="form-input" placeholder="입금 금액 (원)" required>
           </div>
-          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:8px;">
-            <input type="email" id="dep-email" class="form-input" placeholder="이메일 주소" required style="font-size:0.8rem;">
-            <input type="number" id="dep-amount" class="form-input" placeholder="입금액 (원)" required style="font-size:0.8rem;">
-            <select id="dep-tax" class="form-select" style="font-size:0.8rem;">
-              <option value="포함">세금계산서 포함</option>
-              <option value="미포함">세금계산서 미포함</option>
+          <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;">
+            <select id="dep-tax" class="form-select" style="width: 150px;">
+              <option value="세금계산서 별도">세금계산서 별도</option>
+              <option value="세금계산서 포함">세금계산서 포함</option>
             </select>
-            <button type="submit" class="btn btn-primary" style="font-size:0.8rem; font-weight:700;">장부 기록</button>
+            <button type="submit" class="btn btn-primary" style="font-size: 0.78rem; font-weight: 700;">입금 장부 기록 추가</button>
           </div>
         </form>
 
@@ -1557,185 +1573,115 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>이름 / 등록일</th>
-                <th>이용 서비스 구분</th>
-                <th>연락처 / 사업자번호</th>
-                <th>이메일 주소</th>
+                <th>성함 / 등록일</th>
+                <th>서비스</th>
+                <th>연락처 / 사업자</th>
+                <th>이메일</th>
                 <th>입금액</th>
-                <th>세금계산서 여부</th>
+                <th>부가세</th>
                 <th>상태</th>
-                <th>관리 (삭제/복구)</th>
+                <th>관리</th>
               </tr>
             </thead>
             <tbody id="admin-deposit-tbody">
-              <tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-sub);">장부 데이터를 불러오는 중...</td></tr>
+              <tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-sub);">입금 장부 내역이 없습니다.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- 관리자 공통 퀵 메뉴 -->
-    <div class="card-box" style="background: white; border: 1px solid var(--border); padding: 12px; box-shadow: var(--shadow-sm); margin-top: 16px;">
-      <h4 style="font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 5px;">
-        <span>⚡</span> 전체 관리 섹션 퀵 메뉴 (클릭하여 펼치기·접기)
-      </h4>
-      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="admin-quick-nav">
-        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-notice')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer; background:var(--primary-light); color:var(--primary);">📢 공지작성</button>
-        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-tax')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🧾 세금계산서</button>
-        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-slots')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🔥 슬롯현황</button>
-        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-inquiry')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">💬 1:1문의</button>
-        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-iplog')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">🔒 접속IP로그</button>
-        <button type="button" class="btn" onclick="toggleAdminSec('admin-sec-statuslog')" style="text-align: center; font-size: 0.73rem; padding: 7px 4px; font-weight: 700; cursor: pointer;">📋 감사로그</button>
-      </div>
-    </div>
-
-    <!-- 공지사항 섹션 -->
-    <div id="admin-sec-notice" class="card-box" style="border-top: 4px solid var(--primary); display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin-bottom: 0;">📢 파트너 공지사항 발행 및 관리</h3>
-        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-notice')">닫기 ✕</button>
-      </div>
-      <form id="notice-form" onsubmit="handleAddNotice(event)" style="background:#fafafa; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
-        <div class="form-group" style="margin-bottom:6px;">
-          <input type="text" id="notice-title" class="form-input" placeholder="제목" required style="font-size:0.8rem;">
+      <!-- 토글 가능한 추가 관리 섹션들 -->
+      <!-- A. 공지사항 관리 섹션 -->
+      <div id="admin-sec-notice" class="card-box" style="display: none; border-left: 4px solid var(--primary);">
+        <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 10px;">📢 최고관리자 공지사항 등록 및 관리</h3>
+        <form class="form-grid" id="notice-form" onsubmit="handleAddNotice(event)" style="margin-bottom: 14px;">
+          <input type="text" id="notice-title" class="form-input" placeholder="공지사항 제목" required>
+          <textarea id="notice-content" class="form-textarea" placeholder="공지 내용 입력..." required></textarea>
+          <button type="submit" class="btn btn-primary" style="font-size: 0.78rem; width: 120px;">공지 등록</button>
+        </form>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>등록일</th>
+                <th>공지 내용</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-notice-tbody">
+              <tr><td colspan="3" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 공지가 없습니다.</td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="form-group" style="margin-bottom:6px;">
-          <textarea id="notice-content" class="form-textarea" placeholder="내용" required style="font-size:0.8rem;"></textarea>
+      </div>
+
+      <!-- B. 전체 슬롯 요약 섹션 -->
+      <div id="admin-sec-slot" class="card-box" style="display: none; border-left: 4px solid var(--success);">
+        <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 10px;" id="admin-total-slot-summary">🔥 전체 플랫폼 가동 중인 총 슬롯량 계산 중...</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>파트너사</th>
+                <th>서비스</th>
+                <th>가동 슬롯</th>
+                <th>입금 여부</th>
+              </tr>
+            </thead>
+            <tbody id="admin-slot-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
+            </tbody>
+          </table>
         </div>
-        <button type="submit" class="btn btn-primary" style="font-size:0.8rem; font-weight:700;">공지 등록하기</button>
-      </form>
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>등록일시</th>
-              <th>공지 제목 및 내용</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody id="admin-notice-tbody">
-            <tr><td colspan="3" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 공지사항이 없습니다.</td></tr>
-          </tbody>
-        </table>
       </div>
-    </div>
 
-    <div id="admin-sec-tax" class="card-box" style="border-top: 4px solid #059669; display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin-bottom: 0;">🧾 파트너 세금 계산서 관리</h3>
-        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-tax')">닫기 ✕</button>
+      <!-- C. 1:1 문의 제어 섹션 -->
+      <div id="admin-sec-inquiry" class="card-box" style="display: none; border-left: 4px solid var(--warning);">
+        <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 10px;">💬 파트너 1:1 문의 통합 답변 센터</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>작성자</th>
+                <th>문의 내용</th>
+                <th>상태</th>
+                <th>관리 / 답변</th>
+              </tr>
+            </thead>
+            <tbody id="admin-inquiry-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>파트너 정보</th>
-              <th>연락처 / 주소</th>
-              <th>서비스 종류 / 슬롯</th>
-              <th>세금계산서 발행 상태</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody id="admin-tax-tbody">
-            <tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <div id="admin-sec-slots" class="card-box" style="border-top: 4px solid #d97706; display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin-bottom: 0;">🔥 실시간 가동 중인 파트너별 슬롯 현황</h3>
-        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-slots')">닫기 ✕</button>
+      <!-- D. 방문자 및 IP 로그 섹션 -->
+      <div id="admin-sec-visitor" class="card-box" style="display: none; border-left: 4px solid #64748b;">
+        <h3 style="font-size: 0.98rem; font-weight: 900; margin-bottom: 10px;">📊 실시간 방문자 및 접속 IP 로그 관제</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>접속 시간</th>
+                <th>방문자 / 파트너 성함</th>
+                <th>IP 주소</th>
+                <th>기기 환경</th>
+              </tr>
+            </thead>
+            <tbody id="admin-visitor-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">로그 기록이 없습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>파트너명 (아이디)</th>
-              <th>서비스 종류</th>
-              <th>가동 슬롯량</th>
-              <th>상태</th>
-            </tr>
-          </thead>
-          <tbody id="admin-slot-tbody">
-            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">데이터 로딩 중...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <div id="admin-sec-inquiry" class="card-box" style="border-top: 4px solid #7c3aed; display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin-bottom: 0;">💬 파트너 1:1 문의 답변 관리</h3>
-        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-inquiry')">닫기 ✕</button>
-      </div>
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>작성자</th>
-              <th>문의 내용</th>
-              <th>처리 상태</th>
-              <th>관리 및 답변</th>
-            </tr>
-          </thead>
-          <tbody id="admin-inquiry-tbody">
-            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 문의가 없습니다.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="admin-sec-iplog" class="card-box" style="border-top: 4px solid #0284c7; display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin-bottom: 0;">🔒 방문자 접속 IP 로그 실시간 모니터링</h3>
-        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-iplog')">닫기 ✕</button>
-      </div>
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>접속 IP</th>
-              <th>방문자 / 회원명</th>
-              <th>기기 환경</th>
-              <th>접속 시간</th>
-            </tr>
-          </thead>
-          <tbody id="admin-ip-tbody">
-            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">기록된 접속 로그가 없습니다.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="admin-sec-statuslog" class="card-box" style="border-top: 4px solid #e11d48; display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin-bottom: 0;">📋 파트너 상태 변경 이력 감사 로그</h3>
-        <button class="btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="toggleAdminSec('admin-sec-statuslog')">닫기 ✕</button>
-      </div>
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>대상 파트너</th>
-              <th>변경 항목</th>
-              <th>변경 상태</th>
-              <th>처리 시간</th>
-            </tr>
-          </thead>
-          <tbody id="admin-status-log-tbody">
-            <tr><td colspan="4" style="text-align:center; padding:14px; color:var(--text-sub);">변경 이력이 없습니다.</td></tr>
-          </tbody>
-        </table>
-      </div>
     </div>
   </div>
 
+  <!-- 하단 푸터 -->
   <footer>
     <p style="font-weight: 600; color: #334155; margin-bottom: 4px;">HUNSTER 대표이사 김종훈 &nbsp;&nbsp;|&nbsp;&nbsp; 전화번호 010-3672-7807</p>
-    <p>© HUNSTER Enterprise Traffic & Slot Operations. All Rights Reserved.</p>
+    <p>&copy; HUNSTER Enterprise Traffic & Slots Operations. All rights reserved.</p>
   </footer>
 
 </body>
