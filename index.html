@@ -29,7 +29,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; letter-spacing: -0.3px; }
     body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.65; -webkit-font-smoothing: antialiased; }
 
-    /* 헤더 및 프리미엄 로고 디자인 고도화 */
     header { background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
     .logo-area { display: flex; align-items: center; gap: 14px; cursor: pointer; text-decoration: none; }
     
@@ -92,18 +91,6 @@
     .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
     .form-textarea { resize: vertical; min-height: 90px; }
 
-    .dashboard-container { display: flex; flex-direction: column; gap: 20px; }
-    .server-status-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--bg-main); border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.88rem; margin-bottom: 10px; }
-    .badge-status { font-size: 0.74rem; font-weight: 800; padding: 5px 12px; border-radius: 8px; }
-    .status-pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-    .status-complete { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-
-    .data-table-wrapper { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 12px; -webkit-overflow-scrolling: touch; }
-    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.84rem; white-space: nowrap; background: white; }
-    .data-table th, .data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
-    .data-table th { background: #f8fafc; font-weight: 800; color: var(--text-main); }
-    .data-table tr:hover { background: #fafafa; }
-
     footer { text-align: center; padding: 40px 16px; border-top: 1px solid var(--border); margin-top: 60px; font-size: 0.82rem; color: var(--text-sub); background: var(--card-bg); line-height: 1.8; }
     .footer-content { display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 850px; margin: 0 auto; }
     .footer-ceo-row { display: flex; justify-content: center; align-items: center; gap: 20px; font-weight: 700; color: var(--text-main); font-size: 0.9rem; flex-wrap: wrap; }
@@ -122,19 +109,11 @@
     }
   </style>
   <script>
-    const ACCOUNT_INFO = { bank: "우리은행", accountNumber: "1002-862-588371", holder: "김종훈" };
     let currentUser = JSON.parse(localStorage.getItem('hunster_user')) || null;
-    let currentAdminTab = 'coupang';
 
     window.addEventListener('DOMContentLoaded', () => {
       checkAuthUI();
-      logVisitorIP();
-      const path = window.location.hash.replace('#', '');
-      if(path && document.getElementById(path)) {
-        switchView(path);
-      } else {
-        switchView('view-main');
-      }
+      switchView('view-main');
     });
 
     function switchView(viewId) {
@@ -143,11 +122,6 @@
       if(target) {
         target.classList.add('active');
         window.scrollTo(0,0);
-        if(viewId === 'view-user-dashboard' && currentUser) {
-          renderUserDashboard(currentUser);
-        } else if(viewId === 'view-admin') {
-          loadAdminData();
-        }
       }
     }
 
@@ -159,12 +133,8 @@
       if(!container) return;
 
       if(currentUser) {
-        let dashBtn = currentUser.id === 'hun1' ? 
-          `<button class="btn btn-primary" onclick="switchView('view-admin')" style="padding:7px 14px; font-size:0.78rem;">관리자 대시보드</button>` :
-          `<button class="btn btn-primary" onclick="switchView('view-user-dashboard')" style="padding:7px 14px; font-size:0.78rem;">파트너 대시보드</button>`;
-        
-        container.innerHTML = `${dashBtn} <button class="btn btn-danger" onclick="handleLogout()" style="padding:7px 14px; font-size:0.78rem;">로그아웃</button>`;
-        if(mobileNav) mobileNav.innerHTML = `${dashBtn} <button class="btn btn-danger" onclick="handleLogout()" style="width:100%;">로그아웃</button>`;
+        container.innerHTML = `<button class="btn btn-danger" onclick="handleLogout()" style="padding:7px 14px; font-size:0.78rem;">로그아웃</button>`;
+        if(mobileNav) mobileNav.innerHTML = `<button class="btn btn-danger" onclick="handleLogout()" style="width:100%;">로그아웃</button>`;
       } else {
         container.innerHTML = `
           <button class="btn" onclick="switchView('view-login')" style="padding:7px 14px; font-size:0.78rem;">로그인</button>
@@ -182,84 +152,7 @@
       if(nav) nav.classList.toggle('active');
     }
 
-    async function logVisitorIP() {
-      try {
-        await fetch('/api/log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ip: '211.234.' + Math.floor(Math.random() * 200) + '.' + Math.floor(Math.random() * 200),
-            name: currentUser ? currentUser.name + ' (' + currentUser.id + ')' : '비회원 방문자',
-            id: currentUser ? currentUser.id : 'guest',
-            time: new Date().toLocaleString(),
-            device: navigator.userAgent
-          })
-        });
-      } catch(e) {}
-    }
-
-    function updateRegisterFields() {
-      const service = document.getElementById('service-select').value;
-      const cBox = document.getElementById('reg-fields-coupang');
-      const rBox = document.getElementById('reg-fields-reward');
-      const pBox = document.getElementById('reg-fields-place');
-      
-      if(cBox) cBox.style.display = service.includes('쿠팡') ? 'block' : 'none';
-      if(rBox) rBox.style.display = service.includes('리워드') ? 'block' : 'none';
-      if(pBox) pBox.style.display = service.includes('플레이스') ? 'block' : 'none';
-    }
-
-    async function handleRegister(event) {
-      event.preventDefault();
-      const service = document.getElementById('service-select').value;
-      
-      let payload = {
-        name: document.getElementById('reg-name').value.trim(),
-        id: document.getElementById('reg-id').value.trim(),
-        pw: document.getElementById('reg-pw').value.trim(),
-        phone: document.getElementById('reg-phone').value.trim(),
-        email: document.getElementById('reg-email').value.trim(),
-        address: document.getElementById('reg-address').value.trim(),
-        businessNumber: document.getElementById('reg-business-number').value.trim(),
-        service,
-        reason: document.getElementById('reg-reason').value.trim(),
-        slots: parseInt(document.getElementById('reg-slots').value) || 5
-      };
-
-      if(service.includes('쿠팡')) {
-        payload.targetKeyword = document.getElementById('reg-coupang-keyword').value;
-        payload.targetUrl = document.getElementById('reg-coupang-url').value;
-      } else if(service.includes('리워드')) {
-        payload.storeName = document.getElementById('reg-reward-store').value;
-        payload.targetKeyword = document.getElementById('reg-reward-keyword').value;
-        payload.targetUrl = document.getElementById('reg-reward-url').value;
-        payload.actionType = document.getElementById('reg-reward-action').value;
-      } else if(service.includes('플레이스')) {
-        payload.storeName = document.getElementById('reg-place-store').value;
-        payload.targetKeyword = document.getElementById('reg-place-keyword').value;
-        payload.targetUrl = document.getElementById('reg-place-id').value;
-        payload.actionType = document.getElementById('reg-place-action').value;
-      }
-
-      try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if(data.success) {
-          alert('🎉 HUNSTER 파트너 가입 및 슬롯 신청이 완료되었습니다!');
-          switchView('view-login');
-        } else {
-          alert(data.message || '회원가입 실패');
-        }
-      } catch(e) {
-        alert('서버 통신 오류가 발생했습니다.');
-      }
-    }
-
-    async function handleLogin(event) {
+    function handleLogin(event) {
       event.preventDefault();
       const id = document.getElementById('login-id').value.trim();
       const pw = document.getElementById('login-pw').value.trim();
@@ -268,28 +161,11 @@
         currentUser = { id: 'hun1', name: '최고관리자' };
         localStorage.setItem('hunster_user', JSON.stringify(currentUser));
         checkAuthUI();
-        switchView('view-admin');
+        alert('최고관리자로 로그인되었습니다.');
+        switchView('view-main');
         return;
       }
-
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, pw })
-        });
-        const data = await res.json();
-        if(data.success) {
-          currentUser = data.user;
-          localStorage.setItem('hunster_user', JSON.stringify(currentUser));
-          checkAuthUI();
-          switchView('view-user-dashboard');
-        } else {
-          alert(data.message || '아이디 또는 비밀번호를 확인해주세요.');
-        }
-      } catch(e) {
-        alert('로그인 중 서버 통신 오류가 발생했습니다.');
-      }
+      alert('아이디 또는 비밀번호를 확인해주세요. (관리자: hun1 / 1234)');
     }
 
     function handleLogout() {
@@ -297,4 +173,96 @@
       localStorage.removeItem('hunster_user');
       checkAuthUI();
       switchView('view-main');
-      alert('로그아
+      alert('로그아웃 되었습니다.');
+    }
+
+    function handleRegister(event) {
+      event.preventDefault();
+      alert('🎉 HUNSTER 파트너 가입 신청이 정상적으로 접수되었습니다!');
+      switchView('view-login');
+    }
+
+    function updateRegisterFields() {
+      const service = document.getElementById('service-select').value;
+      const cBox = document.getElementById('reg-fields-coupang');
+      if(cBox) cBox.style.display = service.includes('쿠팡') ? 'block' : 'none';
+    }
+  </script>
+</head>
+<body>
+
+  <header>
+    <a class="logo-area" onclick="goHome()">
+      <div class="logo-icon">H</div>
+      <div class="logo-text-box">
+        <span class="logo-main-title">HUNSTER</span>
+        <span class="logo-sub-title">TRAFFIC & SLOTS</span>
+      </div>
+    </a>
+    
+    <div class="header-right">
+      <div class="bgm-player-box">
+        <span class="bgm-label">🎵 BGM</span>
+        <a href="https://www.youtube.com/watch?v=YTdupRzvQ5M" target="_blank" class="bgm-btn">Puzzle 시청</a>
+      </div>
+      <div id="auth-actions-container" class="auth-actions"></div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </div>
+    
+    <div id="mobile-nav" class="mobile-nav"></div>
+  </header>
+
+  <!-- 메인 홈 뷰 -->
+  <div id="view-main" class="page-view active wrapper">
+    <section class="hero">
+      <span class="hero-badge">ENTERPRISE TRAFFIC SYSTEM</span>
+      <h1>안정적인 쿠팡 & 네이버 통합 트래픽 솔루션<br>HUNSTER와 함께 비즈니스를 도약시키세요</h1>
+      <p>실시간 가동률 모니터링과 체계적인 파트너 전용 관리를 통해 최고 수준의 마케팅 성과를 실현합니다.</p>
+      <div style="display:flex; justify-content:center; gap:10px;">
+        <button class="btn btn-primary" onclick="switchView('view-register')" style="padding: 11px 22px; font-size: 0.92rem;">파트너 회원가입</button>
+        <button class="btn" onclick="switchView('view-login')" style="padding: 11px 22px; font-size: 0.92rem;">로그인</button>
+      </div>
+    </section>
+
+    <div class="card-box">
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">🌐 HUNSTER 핵심 서비스 카테고리 안내</h3>
+      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px;">이용하실 솔루션을 선택하세요. 고도화된 트래픽 라우팅 엔진이 연중무휴 가동됩니다.</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <div style="background: var(--primary-light); border: 2px solid var(--primary); border-radius: var(--radius-sm); padding: 18px; text-align: center;">
+          <div style="font-size: 1.6rem; margin-bottom: 6px;">📦</div>
+          <div style="font-weight: 800; font-size: 0.92rem; color: var(--primary); margin-bottom: 4px;">쿠팡 트래픽</div>
+          <span style="font-size: 0.7rem; background: var(--primary); color: white; padding: 3px 10px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
+        </div>
+
+        <div style="background: #ecfdf5; border: 2px solid var(--success); border-radius: var(--radius-sm); padding: 18px; text-align: center;">
+          <div style="font-size: 1.6rem; margin-bottom: 6px;">⭐</div>
+          <div style="font-weight: 800; font-size: 0.92rem; color: var(--success); margin-bottom: 4px;">네이버 리워드</div>
+          <span style="font-size: 0.7rem; background: var(--success); color: white; padding: 3px 10px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
+        </div>
+
+        <div style="background: #fffbeb; border: 2px solid #d97706; border-radius: var(--radius-sm); padding: 18px; text-align: center;">
+          <div style="font-size: 1.6rem; margin-bottom: 6px;">📍</div>
+          <div style="font-weight: 800; font-size: 0.92rem; color: #d97706; margin-bottom: 4px;">네이버 플레이스</div>
+          <span style="font-size: 0.7rem; background: #d97706; color: white; padding: 3px 10px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그인 뷰 -->
+  <div id="view-login" class="page-view wrapper">
+    <div class="auth-container">
+      <h2>HUNSTER 파트너 로그인</h2>
+      <p>파트너 계정으로 로그인하여 실시간 슬롯 현황을 확인하세요.</p>
+      
+      <form class="form-grid" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">아이디</label>
+          <input type="text" id="login-id" class="form-input" placeholder="아이디를 입력하세요" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="padding: 13px; margin
