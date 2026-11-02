@@ -1,12 +1,12 @@
 {
-  "name": "hunster-traffic",
+  "name": "hunster-platform",
   "version": "1.0.0",
-  "description": "HUNSTER Enterprise Traffic & Slot Operations",
+  "description": "HUNSTER Partner & Management Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.19.2"
   }
 }
