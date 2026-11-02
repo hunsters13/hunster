@@ -32,19 +32,19 @@
     header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
     .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
     
-    /* 부드럽고 영롱하게 개선된 로고 반짝이 이펙트 */
+    /* 부드럽고 자연스럽게 개선된 로고 이펙트 */
     .logo-icon { 
       width: 42px; height: 42px; 
       background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #93c5fd 100%); 
       color: white; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; 
       font-weight: 900; font-size: 1.35rem; 
       border: 1.5px solid #bfdbfe;
-      animation: logoSparkle 3s infinite ease-in-out;
+      animation: logoGlow 3.5s infinite ease-in-out;
     }
-    @keyframes logoSparkle {
-      0% { box-shadow: 0 0 8px rgba(37,99,235,0.3), inset 0 1px 2px rgba(255,255,255,0.5); transform: scale(1); }
-      50% { box-shadow: 0 0 22px rgba(59,130,246,0.8), 0 0 10px rgba(147,197,253,0.7), inset 0 2px 6px rgba(255,255,255,0.9); transform: scale(1.03); }
-      100% { box-shadow: 0 0 8px rgba(37,99,235,0.3), inset 0 1px 2px rgba(255,255,255,0.5); transform: scale(1); }
+    @keyframes logoGlow {
+      0% { box-shadow: 0 0 6px rgba(37,99,235,0.25), inset 0 1px 2px rgba(255,255,255,0.4); transform: scale(1); }
+      50% { box-shadow: 0 0 20px rgba(59,130,246,0.7), 0 0 10px rgba(147,197,253,0.6), inset 0 2px 5px rgba(255,255,255,0.85); transform: scale(1.025); }
+      100% { box-shadow: 0 0 6px rgba(37,99,235,0.25), inset 0 1px 2px rgba(255,255,255,0.4); transform: scale(1); }
     }
 
     .logo-text-box { display: flex; flex-direction: column; }
@@ -145,7 +145,6 @@
 
     function goHome() { switchView('view-main'); }
 
-    /* 로그인 전에는 관리자/로그아웃 버튼이 절대 안 뜨도록 엄격히 분기 처리 */
     function checkAuthUI() {
       const container = document.getElementById('auth-actions-container');
       const mobileNav = document.getElementById('mobile-nav');
@@ -300,7 +299,6 @@
       });
     }
 
-    /* 최고관리자 관제센터 데이터 로딩 및 오류 원천 차단 */
     async function loadAdminData() {
       try {
         const res = await fetch('/api/admin/data');
@@ -320,7 +318,6 @@
       }
     }
 
-    /* 관리자 탭 전환 오류 해결 */
     function switchAdminTab(tab) {
       currentAdminTab = tab;
       ['coupang', 'reward', 'place', 'tax', 'deposit'].forEach(t => {
@@ -341,7 +338,6 @@
       });
     }
 
-    /* 관리자 퀵 메뉴 토글 오류 해결 (모든 섹션 정확히 제어) */
     function toggleAdminSec(secId) {
       const sections = ['admin-sec-notice', 'admin-sec-slot', 'admin-sec-inquiry', 'admin-sec-visitor', 'admin-sec-audit'];
       sections.forEach(id => {
@@ -433,6 +429,10 @@
       const tbody = document.getElementById('admin-tax-tbody');
       if(!tbody) return;
       tbody.innerHTML = '';
+      if(!users || users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:14px; color:var(--text-sub);">등록된 파트너가 없습니다.</td></tr>`;
+        return;
+      }
       users.forEach(u => {
         tbody.innerHTML += `<tr>
           <td><strong>${u.name}</strong> (${u.id})</td>
@@ -562,13 +562,23 @@
       });
     }
 
+    /* 세금계산서 및 입금 상태 토글 함수 정상 작동 보장 */
     async function toggleStatus(userId, type) {
-      await fetch('/api/admin/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, type })
-      });
-      loadAdminData();
+      try {
+        const res = await fetch('/api/admin/status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, type })
+        });
+        const data = await res.json();
+        if(data.success) {
+          loadAdminData();
+        } else {
+          alert('상태 변경에 실패했습니다.');
+        }
+      } catch(e) {
+        alert('서버 통신 오류가 발생했습니다.');
+      }
     }
 
     async function updateUserSlots(userId) {
@@ -928,7 +938,7 @@
     </div>
   </div>
 
-  <!-- 쿠팡 가이드 뷰 (내용 대폭 강화) -->
+  <!-- 쿠팡 가이드 뷰 -->
   <div id="view-coupang-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
       <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
@@ -986,7 +996,7 @@
     </div>
   </div>
 
-  <!-- 네이버 리워드 가이드 뷰 (내용 대폭 강화) -->
+  <!-- 네이버 리워드 가이드 뷰 -->
   <div id="view-naver-reward-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
       <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
@@ -1031,7 +1041,7 @@
     </div>
   </div>
 
-  <!-- 네이버 플레이스 가이드 뷰 (내용 대폭 강화) -->
+  <!-- 네이버 플레이스 가이드 뷰 -->
   <div id="view-naver-place-detail" class="page-view wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
       <button class="btn" onclick="switchView('view-main')" style="font-weight: 700;">← 메인으로 돌아가기</button>
@@ -1566,6 +1576,7 @@
 
   <footer>
     <p><strong>HUNSTER ENTERPRISE</strong> | Traffic & Slots Operations Control Center</p>
+    <p style="margin-top: 4px; color: var(--text-main); font-weight: 700;">대표이사: 김종훈 &nbsp;|&nbsp; 연락처: 010-3672-7807</p>
     <p style="margin-top: 4px; color: var(--text-sub);">Domain: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">hunster.onrender.com</code> | All rights reserved.</p>
   </footer>
 
