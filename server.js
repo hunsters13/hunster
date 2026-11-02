@@ -1,304 +1,150 @@
 const express = require('express');
-const fs = require('fs');
+const http = require('http');
 const path = require('path');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname)));
+// --- [메모리 데이터 베이스 및 로그 저장소] ---
+let db = {
+  users: [
+    { id: 'admin', pw: '1234', role: 'admin', name: '총관리자' },
+    { id: 'partner1', pw: '1234', role: 'partner', name: '쿠팡특공대(파트너)' },
+    { id: 'partner2', pw: '1234', role: 'partner', name: '네이버플레이스랩(파트너)' }
+  ],
+  ledger: [
+    { id: 1, date: '2026-06-07', partner: '쿠팡특공대(파트너)', type: '충전', amount: 500000, memo: '무통장 입금 확인 완료' },
+    { id: 2, date: '2026-06-07', partner: '네이버플레이스랩(파트너)', type: '충전', amount: 1000000, memo: '세금계산서 발행 조건 입금' }
+  ],
+  deposits: [
+    { id: 1, partner: '쿠팡특공대(파트너)', amount: 500000, depositor: '김쿠팡', status: '승인완료', date: '2026-06-07 10:12' },
+    { id: 2, partner: '네이버플레이스랩(파트너)', amount: 300000, depositor: '이네이버', status: '대기중', date: '2026-06-07 11:45' }
+  ],
+  taxInvoices: [
+    { partner: '쿠팡특공대(파트너)', month: '2026-05', issued: true },
+    { partner: '네이버플레이ส랩(파트너)', month: '2026-05', issued: false }
+  ],
+  notices: [
+    { id: 1, title: '[공지] 6월 쿠팡/네이버 트래픽 단가 변동 안내', date: '2026-06-01', content: '항상 협조해 주셔서 감사합니다. 6월부터 적용되는 신규 단가표를 확인해 주세요.' },
+    { id: 2, title: '[필독] 입금 및 세금계산서 발행 마감 일정', date: '2026-06-05', content: '매월 말일 기준으로 세금계산서 발행이 마감되오니 누락 없으시길 바랍니다.' }
+  ],
+  ipLogs: []
+};
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-const DATA_FILE = path.join(__dirname, 'database.json');
-
-function initDatabase() {
-    if (!fs.existsSync(DATA_FILE)) {
-        const initialData = {
-            users: [],
-            inquiries: [],
-            ipLogs: [],
-            statusLogs: [],
-            deposits: [],
-            notices: []
-        };
-        fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf8');
-    }
-}
-
-function readData() {
-    initDatabase();
-    try {
-        const data = fs.readFileSync(DATA_FILE, 'utf8');
-        const parsed = JSON.parse(data);
-        if (!parsed.deposits) parsed.deposits = [];
-        if (!parsed.notices) parsed.notices = [];
-        return parsed;
-    } catch (e) {
-        return { users: [], inquiries: [], ipLogs: [], statusLogs: [], deposits: [], notices: [] };
-    }
-}
-
-function writeData(data) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
-}
-
-initDatabase();
-
-// 1. 회원가입 API
-app.post('/api/register', (req, res) => {
-    const db = readData();
-    const { name, id, pw, phone, address, businessNumber, email, service, reason, slots, storeName, targetKeyword, targetUrl, actionType } = req.body;
-    
-    if (db.users.some(u => u.id === id)) {
-        return res.json({ success: false, message: '이미 사용 중인 아이디입니다.' });
-    }
-
-    const newUser = {
-        name, id, pw, phone, address, businessNumber, email, service, reason,
-        slots: parseInt(slots) || 5,
-        storeName: storeName || '-',
-        targetKeyword: targetKeyword || '-',
-        targetUrl: targetUrl || '-',
-        actionType: actionType || '단순유입',
-        placeStatusMessage: '🛡️ 프록시 IP 매칭 및 실시간 순위 변동 대기 중',
-        depositStatus: '입금대기',
-        taxStatus: '발행대기',
-        createdAt: new Date().toLocaleString()
-    };
-
-    db.users.push(newUser);
-    
-    db.deposits.unshift({
-        id: Date.now(),
-        name,
-        phone,
-        businessNumber: businessNumber || '-',
-        email: email || '-',
-        service: service || '쿠팡 트래픽',
-        amount: (parseInt(slots) || 5) * 10000,
-        taxIncluded: '포함',
-        status: '활성',
-        date: new Date().toLocaleDateString()
+// --- [IP 로깅 및 보안 미들웨어] ---
+app.use((req, res, next) => {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  if (!req.path.includes('/api/logs')) {
+    db.ipLogs.unshift({
+      ip: clientIp,
+      path: req.path,
+      time: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
     });
-
-    writeData(db);
-    res.json({ success: true, message: '회원가입 완료' });
+    if (db.ipLogs.length > 100) db.ipLogs.pop(); // 최대 100개 유지
+  }
+  next();
 });
 
-// 2. 로그인 API
+// --- [API 엔드포인트] ---
+// 로그인
 app.post('/api/login', (req, res) => {
-    const db = readData();
-    const { id, pw } = req.body;
-    const user = db.users.find(u => u.id === id && u.pw === pw);
-    if (user) {
-        res.json({ success: true, user });
-    } else {
-        res.json({ success: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' });
-    }
+  const { id, pw } = req.body;
+  const user = db.users.find(u => u.id === id && u.pw === pw);
+  if (user) {
+    res.json({ success: true, user });
+  } else {
+    res.json({ success: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' });
+  }
 });
 
-// 3. 접속 IP 로그 기록 API
-app.post('/api/log', (req, res) => {
-    const db = readData();
-    const { ip, name, id, time, device } = req.body;
-    db.ipLogs.unshift({ ip, name, id, time, device });
-    if (db.ipLogs.length > 100) db.ipLogs.pop();
-    writeData(db);
-    res.json({ success: true });
+// 데이터 조회
+app.get('/api/data', (req, res) => {
+  res.json(db);
 });
 
-// 4. 관리자 데이터 조회 API
-app.get('/api/admin/data', (req, res) => {
-    const db = readData();
-    res.json(db);
+// 관리자: 장부 입력
+app.post('/api/ledger/add', (req, res) => {
+  const { date, partner, type, amount, memo } = req.body;
+  db.ledger.unshift({ id: Date.now(), date, partner, type, amount: Number(amount), memo });
+  res.json({ success: true });
 });
 
-// 5. 입금 / 세금계산서 상태 토글 API
-app.post('/api/admin/status', (req, res) => {
-    const db = readData();
-    const { userId, type } = req.body;
-    const user = db.users.find(u => u.id === userId);
-    if (user) {
-        if (type === 'deposit') {
-            user.depositStatus = user.depositStatus === '입금완료' ? '입금대기' : '입금완료';
-        } else if (type === 'tax') {
-            user.taxStatus = user.taxStatus === '발행완료' ? '발행대기' : '발행완료';
-        }
-        db.statusLogs.unshift({
-            name: user.name,
-            userId: user.id,
-            type: type === 'deposit' ? '입금 상태' : '세금계산서 상태',
-            status: type === 'deposit' ? user.depositStatus : user.taxStatus,
-            time: new Date().toLocaleString()
-        });
-        writeData(db);
-        res.json({ success: true });
-    } else {
-        res.status(404).json({ success: false, message: '유저를 찾을 수 없습니다.' });
-    }
+// 파트너: 입금 신청
+app.post('/api/deposit/request', (req, res) => {
+  const { partner, amount, depositor } = req.body;
+  db.deposits.unshift({
+    id: Date.now(),
+    partner,
+    amount: Number(amount),
+    depositor,
+    status: '대기중',
+    date: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+  });
+  res.json({ success: true });
 });
 
-// 6. 슬롯 수량 변경 API
-app.post('/api/admin/update-slots', (req, res) => {
-    const db = readData();
-    const { userId, slots } = req.body;
-    const user = db.users.find(u => u.id === userId);
-    if (user) {
-        user.slots = parseInt(slots) || 5;
-        writeData(db);
-        res.json({ success: true });
-    } else {
-        res.status(404).json({ success: false });
-    }
-});
-
-// 7. 네이버 플레이스 관리자 커스텀 상태 메시지 업데이트 API
-app.post('/api/admin/update-place-status', (req, res) => {
-    const db = readData();
-    const { userId, statusMessage } = req.body;
-    const user = db.users.find(u => u.id === userId);
-    if (user) {
-        user.placeStatusMessage = statusMessage || '정보 없음';
-        writeData(db);
-        res.json({ success: true });
-    } else {
-        res.status(404).json({ success: false });
-    }
-});
-
-// 8. 파트너 삭제 API
-app.post('/api/admin/delete-user', (req, res) => {
-    const db = readData();
-    const { userId } = req.body;
-    db.users = db.users.filter(u => u.id !== userId);
-    writeData(db);
-    res.json({ success: true });
-});
-
-// 9. 1:1 문의 등록 API
-app.post('/api/inquiry', (req, res) => {
-    const db = readData();
-    const { author, userId, title, content } = req.body;
-    db.inquiries.unshift({
-        id: Date.now(),
-        author,
-        userId,
-        title,
-        content,
-        reply: '',
-        status: '답변대기',
-        date: new Date().toLocaleString()
+// 관리자: 입금 승인
+app.post('/api/deposit/approve', (req, res) => {
+  const { id } = req.body;
+  const deposit = db.deposits.find(d => d.id === Number(id));
+  if (deposit) {
+    deposit.status = '승인완료';
+    // 장부에도 자동 반영
+    db.ledger.unshift({
+      id: Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      partner: deposit.partner,
+      type: '충전(승인)',
+      amount: deposit.amount,
+      memo: `입금자: ${deposit.depositor}`
     });
-    writeData(db);
-    res.json({ success: true });
+  }
+  res.json({ success: true });
 });
 
-// 10. 파트너별 문의 조회 API
-app.get('/api/inquiries', (req, res) => {
-    const db = readData();
-    const { id } = req.query;
-    const list = db.inquiries.filter(inq => inq.userId === id);
-    res.json(list);
+// 관리자: 세금계산서 상태 토글
+app.post('/api/tax/toggle', (req, res) => {
+  const { partner, month } = req.body;
+  let tax = db.taxInvoices.find(t => t.partner === partner && t.month === month);
+  if (tax) {
+    tax.issued = !tax.issued;
+  } else {
+    db.taxInvoices.push({ partner, month, issued: true });
+  }
+  res.json({ success: true });
 });
 
-// 11. 관리자 문의 답변 등록 API
-app.post('/api/admin/reply', (req, res) => {
-    const db = readData();
-    const { id, reply } = req.body;
-    const inq = db.inquiries.find(item => item.id == id);
-    if (inq) {
-        inq.reply = reply;
-        inq.status = reply ? '답변완료' : '답변대기';
-        writeData(db);
-        res.json({ success: true });
-    } else {
-        res.status(404).json({ success: false });
-    }
+// 관리자: 공지사항 등록
+app.post('/api/notice/add', (req, res) => {
+  const { title, content } = req.body;
+  db.notices.unshift({
+    id: Date.now(),
+    title,
+    content,
+    date: new Date().toISOString().split('T')[0]
+  });
+  res.json({ success: true });
 });
 
-// 12. 관리자 문의 삭제 API
-app.post('/api/admin/delete-inquiry', (req, res) => {
-    const db = readData();
-    const { id } = req.body;
-    db.inquiries = db.inquiries.filter(item => item.id != id);
-    writeData(db);
-    res.json({ success: true });
+// 정적 파일 서빙
+app.use(express.static(path.join(__dirname)));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 13. 관리자 입금 장부 직접 추가 API
-app.post('/api/admin/add-deposit', (req, res) => {
-    const db = readData();
-    const { name, phone, businessNumber, email, service, amount, taxIncluded } = req.body;
-    db.deposits.unshift({
-        id: Date.now(),
-        name,
-        phone,
-        businessNumber: businessNumber || '-',
-        email: email || '-',
-        service: service || '쿠팡 트래픽',
-        amount: parseInt(amount) || 0,
-        taxIncluded: taxIncluded || '포함',
-        status: '활성',
-        date: new Date().toLocaleDateString()
-    });
-    writeData(db);
-    res.json({ success: true });
-});
-
-// 14. 입금 장부 삭제 / 복구 토글 API
-app.post('/api/admin/toggle-deposit-status', (req, res) => {
-    const db = readData();
-    const { id } = req.body;
-    const item = db.deposits.find(d => d.id == id);
-    if (item) {
-        item.status = item.status === '활성' ? '삭제됨' : '활성';
-        writeData(db);
-        res.json({ success: true });
-    } else {
-        res.status(404).json({ success: false });
-    }
-});
-
-// 15. 관리자 공지사항 등록 API
-app.post('/api/admin/add-notice', (req, res) => {
-    const db = readData();
-    const { title, content } = req.body;
-    db.notices.unshift({
-        id: Date.now(),
-        title,
-        content,
-        date: new Date().toLocaleString()
-    });
-    writeData(db);
-    res.json({ success: true });
-});
-
-// 16. 공지사항 삭제 API
-app.post('/api/admin/delete-notice', (req, res) => {
-    const db = readData();
-    const { id } = req.body;
-    db.notices = db.notices.filter(n => n.id != id);
-    writeData(db);
-    res.json({ success: true });
-});
-
-// Render 슬립 방지용 Self-Ping 메커니즘
+// --- [14분 Keep-Alive 자동 핑 시스템] ---
+const KEEP_ALIVE_INTERVAL = 14 * 60 * 1000; // 14분 (밀리초)
 setInterval(() => {
-    const renderUrl = process.env.RENDER_EXTERNAL_URL;
-    if (renderUrl) {
-        const http = renderUrl.startsWith('https') ? require('https') : require('http');
-        http.get(renderUrl, (res) => {
-            console.log(`[Self-Ping] 서버 유지 신호 전송 완료 (상태코드: ${res.statusCode})`);
-        }).on('error', (err) => {
-            console.error('[Self-Ping 오류 발생]:', err.message);
-        });
-    }
-}, 14 * 60 * 1000);
+  http.get(`http://localhost:${PORT}/api/data`, (res) => {
+    console.log(`[Keep-Alive] 서버 자동 핑 전송 성공 (상태코드: ${res.statusCode}) - 슬립 방지 작동 중`);
+  }).on('error', (err) => {
+    console.error(`[Keep-Alive] 핑 전송 에러: ${err.message}`);
+  });
+}, KEEP_ALIVE_INTERVAL);
 
 app.listen(PORT, () => {
-    console.log(`HUNSTER Server running on port ${PORT}`);
+  console.log(`🚀 HUNSTER 서버가 포트 ${PORT}번에서 완벽하게 실행 중입니다.`);
 });
