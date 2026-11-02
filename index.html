@@ -1,268 +1,437 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HUNSTER - Enterprise Traffic & Slots Operations</title>
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --bg-main: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-sub: #64748b;
-      --border: #e2e8f0;
-      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 12px 30px -10px rgba(37, 99, 235, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-      --radius-sm: 10px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; letter-spacing: -0.3px; }
-    body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.65; -webkit-font-smoothing: antialiased; }
-
-    header { background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
-    .logo-area { display: flex; align-items: center; gap: 14px; cursor: pointer; text-decoration: none; }
-    
-    .logo-icon { 
-      width: 46px; height: 46px; 
-      background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); 
-      color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; 
-      font-weight: 900; font-size: 1.4rem; 
-      border: 1.5px solid #bfdbfe;
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-      animation: premiumLogoGlow 3.5s infinite ease-in-out;
-    }
-    @keyframes premiumLogoGlow {
-      0% { box-shadow: 0 0 10px rgba(37,99,235,0.3), inset 0 2px 4px rgba(255,255,255,0.4); transform: scale(1); }
-      50% { box-shadow: 0 0 26px rgba(59,130,246,0.7), 0 0 12px rgba(147,197,253,0.5), inset 0 2px 6px rgba(255,255,255,0.8); transform: scale(1.03); }
-      100% { box-shadow: 0 0 10px rgba(37,99,235,0.3), inset 0 2px 4px rgba(255,255,255,0.4); transform: scale(1); }
-    }
-
-    .logo-text-box { display: flex; flex-direction: column; }
-    .logo-main-title { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; }
-    .logo-sub-title { font-size: 0.68rem; font-weight: 800; color: var(--text-sub); letter-spacing: 1.2px; text-transform: uppercase; }
-
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    .bgm-player-box { display: flex; align-items: center; gap: 6px; background: var(--primary-light); padding: 6px 14px; border-radius: 20px; border: 1px solid #bfdbfe; font-size: 0.78rem; }
-    .bgm-label { font-weight: 700; color: var(--primary); }
-    .bgm-btn { color: #1d4ed8; text-decoration: none; font-weight: 800; }
-    .bgm-btn:hover { text-decoration: underline; }
-
-    .auth-actions { display: flex; gap: 8px; }
-    .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); padding: 4px; }
-    .mobile-nav { display: none; position: absolute; top: 72px; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow-md); flex-direction: column; gap: 10px; }
-
-    .wrapper { max-width: 1080px; margin: 0 auto; padding: 28px 16px; }
-    .page-view { display: none; animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-    .page-view.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-    .hero { text-align: center; padding: 52px 20px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 24px; box-shadow: var(--shadow-sm); }
-    .hero-badge { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 0.74rem; font-weight: 800; padding: 6px 16px; border-radius: 20px; margin-bottom: 14px; border: 1px solid #bfdbfe; letter-spacing: 0.5px; }
-    .hero h1 { font-size: 1.85rem; font-weight: 900; letter-spacing: -0.6px; margin-bottom: 14px; color: var(--text-main); line-height: 1.35; }
-    .hero p { font-size: 0.95rem; color: var(--text-sub); max-width: 660px; margin: 0 auto 20px auto; line-height: 1.6; }
-
-    .card-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 18px; box-shadow: var(--shadow-sm); }
-    
-    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.84rem; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-main); text-decoration: none; transition: all 0.2s ease; }
-    .btn:hover { background: var(--bg-main); border-color: #cbd5e1; }
-    .btn-primary { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
-    .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
-    .btn-danger { background: var(--danger); color: white; border-color: var(--danger); }
-    .btn-danger:hover { background: #dc2626; }
-
-    .auth-container { max-width: 520px; margin: 24px auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-md); }
-    .auth-container h2 { font-size: 1.5rem; font-weight: 900; text-align: center; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.5px; }
-    .auth-container p { font-size: 0.86rem; color: var(--text-sub); text-align: center; margin-bottom: 24px; }
-    
-    .form-grid { display: flex; flex-direction: column; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label { font-size: 0.82rem; font-weight: 800; color: var(--text-main); }
-    .form-input, .form-select, .form-textarea { padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.92rem; outline: none; background: #fff; transition: all 0.2s ease; }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
-    .form-textarea { resize: vertical; min-height: 90px; }
-
-    footer { text-align: center; padding: 40px 16px; border-top: 1px solid var(--border); margin-top: 60px; font-size: 0.82rem; color: var(--text-sub); background: var(--card-bg); line-height: 1.8; }
-    .footer-content { display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 850px; margin: 0 auto; }
-    .footer-ceo-row { display: flex; justify-content: center; align-items: center; gap: 20px; font-weight: 700; color: var(--text-main); font-size: 0.9rem; flex-wrap: wrap; }
-
-    .pulse-dot { display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 rgba(16, 185, 129, 0.4); animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-
-    @media (max-width: 768px) {
-      .auth-actions { display: none; }
-      .mobile-menu-btn { display: block; }
-      .mobile-nav.active { display: flex; }
-      .hero h1 { font-size: 1.45rem; }
-      .hero { padding: 32px 14px; }
-      .card-box { padding: 16px; }
-      .footer-ceo-row { flex-direction: column; gap: 4px; }
-    }
-  </style>
-  <script>
-    let currentUser = JSON.parse(localStorage.getItem('hunster_user')) || null;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      checkAuthUI();
-      switchView('view-main');
-    });
-
-    function switchView(viewId) {
-      document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
-      const target = document.getElementById(viewId);
-      if(target) {
-        target.classList.add('active');
-        window.scrollTo(0,0);
-      }
-    }
-
-    function goHome() { switchView('view-main'); }
-
-    function checkAuthUI() {
-      const container = document.getElementById('auth-actions-container');
-      const mobileNav = document.getElementById('mobile-nav');
-      if(!container) return;
-
-      if(currentUser) {
-        container.innerHTML = `<button class="btn btn-danger" onclick="handleLogout()" style="padding:7px 14px; font-size:0.78rem;">로그아웃</button>`;
-        if(mobileNav) mobileNav.innerHTML = `<button class="btn btn-danger" onclick="handleLogout()" style="width:100%;">로그아웃</button>`;
-      } else {
-        container.innerHTML = `
-          <button class="btn" onclick="switchView('view-login')" style="padding:7px 14px; font-size:0.78rem;">로그인</button>
-          <button class="btn btn-primary" onclick="switchView('view-register')" style="padding:7px 14px; font-size:0.78rem;">파트너 회원가입</button>
-        `;
-        if(mobileNav) mobileNav.innerHTML = `
-          <button class="btn" onclick="switchView('view-login')" style="width:100%;">로그인</button>
-          <button class="btn btn-primary" onclick="switchView('view-register')" style="width:100%;">파트너 회원가입</button>
-        `;
-      }
-    }
-
-    function toggleMobileMenu() {
-      const nav = document.getElementById('mobile-nav');
-      if(nav) nav.classList.toggle('active');
-    }
-
-    function handleLogin(event) {
-      event.preventDefault();
-      const id = document.getElementById('login-id').value.trim();
-      const pw = document.getElementById('login-pw').value.trim();
-
-      if(id === 'hun1' && pw === '1234') {
-        currentUser = { id: 'hun1', name: '최고관리자' };
-        localStorage.setItem('hunster_user', JSON.stringify(currentUser));
-        checkAuthUI();
-        alert('최고관리자로 로그인되었습니다.');
-        switchView('view-main');
-        return;
-      }
-      alert('아이디 또는 비밀번호를 확인해주세요. (관리자: hun1 / 1234)');
-    }
-
-    function handleLogout() {
-      currentUser = null;
-      localStorage.removeItem('hunster_user');
-      checkAuthUI();
-      switchView('view-main');
-      alert('로그아웃 되었습니다.');
-    }
-
-    function handleRegister(event) {
-      event.preventDefault();
-      alert('🎉 HUNSTER 파트너 가입 신청이 정상적으로 접수되었습니다!');
-      switchView('view-login');
-    }
-
-    function updateRegisterFields() {
-      const service = document.getElementById('service-select').value;
-      const cBox = document.getElementById('reg-fields-coupang');
-      if(cBox) cBox.style.display = service.includes('쿠팡') ? 'block' : 'none';
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUNSTER - B2B 파트너 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; }
+    </style>
 </head>
-<body>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white">
 
-  <header>
-    <a class="logo-area" onclick="goHome()">
-      <div class="logo-icon">H</div>
-      <div class="logo-text-box">
-        <span class="logo-main-title">HUNSTER</span>
-        <span class="logo-sub-title">TRAFFIC & SLOTS</span>
-      </div>
-    </a>
-    
-    <div class="header-right">
-      <div class="bgm-player-box">
-        <span class="bgm-label">🎵 BGM</span>
-        <a href="https://www.youtube.com/watch?v=YTdupRzvQ5M" target="_blank" class="bgm-btn">Puzzle 시청</a>
-      </div>
-      <div id="auth-actions-container" class="auth-actions"></div>
-      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-    </div>
-    
-    <div id="mobile-nav" class="mobile-nav"></div>
-  </header>
-
-  <!-- 메인 홈 뷰 -->
-  <div id="view-main" class="page-view active wrapper">
-    <section class="hero">
-      <span class="hero-badge">ENTERPRISE TRAFFIC SYSTEM</span>
-      <h1>안정적인 쿠팡 & 네이버 통합 트래픽 솔루션<br>HUNSTER와 함께 비즈니스를 도약시키세요</h1>
-      <p>실시간 가동률 모니터링과 체계적인 파트너 전용 관리를 통해 최고 수준의 마케팅 성과를 실현합니다.</p>
-      <div style="display:flex; justify-content:center; gap:10px;">
-        <button class="btn btn-primary" onclick="switchView('view-register')" style="padding: 11px 22px; font-size: 0.92rem;">파트너 회원가입</button>
-        <button class="btn" onclick="switchView('view-login')" style="padding: 11px 22px; font-size: 0.92rem;">로그인</button>
-      </div>
-    </section>
-
-    <div class="card-box">
-      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main);">🌐 HUNSTER 핵심 서비스 카테고리 안내</h3>
-      <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px;">이용하실 솔루션을 선택하세요. 고도화된 트래픽 라우팅 엔진이 연중무휴 가동됩니다.</p>
-      
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-        <div style="background: var(--primary-light); border: 2px solid var(--primary); border-radius: var(--radius-sm); padding: 18px; text-align: center;">
-          <div style="font-size: 1.6rem; margin-bottom: 6px;">📦</div>
-          <div style="font-weight: 800; font-size: 0.92rem; color: var(--primary); margin-bottom: 4px;">쿠팡 트래픽</div>
-          <span style="font-size: 0.7rem; background: var(--primary); color: white; padding: 3px 10px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
+    <!-- 상단 내비게이션 -->
+    <header class="border-b border-slate-800 bg-[#0b0f19]/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="location.reload()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center font-black text-2xl tracking-tighter shadow-lg shadow-blue-500/30">H</div>
+                <span class="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-200 to-blue-400 bg-clip-text text-transparent">HUNSTER</span>
+            </div>
+            <div id="nav-auth-area">
+                <span class="text-sm text-slate-400">파트너십 오피셜 시스템</span>
+            </div>
         </div>
+    </header>
 
-        <div style="background: #ecfdf5; border: 2px solid var(--success); border-radius: var(--radius-sm); padding: 18px; text-align: center;">
-          <div style="font-size: 1.6rem; margin-bottom: 6px;">⭐</div>
-          <div style="font-weight: 800; font-size: 0.92rem; color: var(--success); margin-bottom: 4px;">네이버 리워드</div>
-          <span style="font-size: 0.7rem; background: var(--success); color: white; padding: 3px 10px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
-        </div>
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10">
 
-        <div style="background: #fffbeb; border: 2px solid #d97706; border-radius: var(--radius-sm); padding: 18px; text-align: center;">
-          <div style="font-size: 1.6rem; margin-bottom: 6px;">📍</div>
-          <div style="font-weight: 800; font-size: 0.92rem; color: #d97706; margin-bottom: 4px;">네이버 플레이스</div>
-          <span style="font-size: 0.7rem; background: #d97706; color: white; padding: 3px 10px; border-radius: 10px; font-weight: 700;">🟢 정상 운영 중</span>
-        </div>
-      </div>
-    </div>
-  </div>
+        <!-- [뷰 1] 로그인 화면 -->
+        <section id="view-login" class="max-w-md mx-auto mt-12 bg-slate-900/60 border border-slate-800 p-8 rounded-3xl shadow-2xl backdrop-blur-xl">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold tracking-tight">Welcome to HUNSTER</h2>
+                <p class="text-sm text-slate-400 mt-2">파트너 전용 로그인 후 시스템을 이용하세요.</p>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">아이디</label>
+                    <input type="text" id="login-id" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" placeholder="아이디를 입력하세요">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">비밀번호</label>
+                    <input type="password" id="login-pw" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" placeholder="비밀번호를 입력하세요">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition-all">로그인</button>
+            </form>
+            <div class="mt-6 text-center text-xs text-slate-500">
+                체험용 아이디: 관리자 (<code class="text-blue-400">admin / 1234</code>) | 파트너 (<code class="text-blue-400">partner1 / 1234</code>)
+            </div>
+        </section>
 
-  <!-- 로그인 뷰 -->
-  <div id="view-login" class="page-view wrapper">
-    <div class="auth-container">
-      <h2>HUNSTER 파트너 로그인</h2>
-      <p>파트너 계정으로 로그인하여 실시간 슬롯 현황을 확인하세요.</p>
-      
-      <form class="form-grid" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label class="form-label">아이디</label>
-          <input type="text" id="login-id" class="form-input" placeholder="아이디를 입력하세요" required>
+        <!-- [뷰 2] 관리자 대시보드 -->
+        <section id="view-admin" class="hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <span class="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-semibold">ADMINISTRATOR</span>
+                    <h1 class="text-3xl font-extrabold mt-2">HUNSTER 통합 관리 오피스</h1>
+                </div>
+                <button onclick="logout()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm transition-colors">로그아웃</button>
+            </div>
+
+            <!-- 탭 네비게이션 -->
+            <div class="flex space-x-2 border-b border-slate-800 pb-4 overflow-x-auto">
+                <button onclick="switchTab('admin-ledger')" id="btn-admin-ledger" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">📖 장부 관리</button>
+                <button onclick="switchTab('admin-deposit')" id="btn-admin-deposit" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/80 text-slate-400 hover:text-white transition-all">💰 입금 승인 관리</button>
+                <button onclick="switchTab('admin-tax')" id="btn-admin-tax" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/80 text-slate-400 hover:text-white transition-all">📄 세금계산서 관리</button>
+                <button onclick="switchTab('admin-notice')" id="btn-admin-notice" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/80 text-slate-400 hover:text-white transition-all">📢 공지사항 등록</button>
+                <button onclick="switchTab('admin-logs')" id="btn-admin-logs" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/80 text-slate-400 hover:text-white transition-all">🔍 IP 접속 로그</button>
+            </div>
+
+            <!-- 탭 1: 장부 관리 -->
+            <div id="tab-admin-ledger" class="admin-tab-content space-y-6">
+                <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">➕ 장부 내역 수기 입력</h3>
+                    <form onsubmit="addLedger(event)" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <input type="date" id="ledger-date" required class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
+                        <input type="text" id="ledger-partner" placeholder="파트너명" required class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
+                        <select id="ledger-type" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
+                            <option value="충전">충전</option>
+                            <option value="조정">조정</option>
+                            <option value="차감">차감</option>
+                        </select>
+                        <input type="number" id="ledger-amount" placeholder="금액 (원)" required class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
+                        <input type="text" id="ledger-memo" placeholder="비고 / 메모" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm">
+                        <button type="submit" class="md:col-span-5 bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-600/20">장부 기록 저장</button>
+                    </form>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-slate-800"><h3 class="text-lg font-bold">📊 전체 장부 리스트</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                                    <th class="p-4">날짜</th>
+                                    <th class="p-4">파트너</th>
+                                    <th class="p-4">구분</th>
+                                    <th class="p-4">금액</th>
+                                    <th class="p-4">메모</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-ledger-table" class="divide-y divide-slate-800/60"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 탭 2: 입금 승인 관리 -->
+            <div id="tab-admin-deposit" class="admin-tab-content hidden space-y-6">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-slate-800"><h3 class="text-lg font-bold">💰 파트너 입금 신청 내역</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                                    <th class="p-4">신청 일시</th>
+                                    <th class="p-4">파트너</th>
+                                    <th class="p-4">입금자명</th>
+                                    <th class="p-4">금액</th>
+                                    <th class="p-4">상태</th>
+                                    <th class="p-4">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-deposit-table" class="divide-y divide-slate-800/60"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 탭 3: 세금계산서 관리 -->
+            <div id="tab-admin-tax" class="admin-tab-content hidden space-y-6">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-slate-800"><h3 class="text-lg font-bold">📄 파트너별 세금계산서 발행 체크</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                                    <th class="p-4">파트너명</th>
+                                    <th class="p-4">대상 월</th>
+                                    <th class="p-4">발행 상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-tax-table" class="divide-y divide-slate-800/60"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 탭 4: 공지사항 등록 -->
+            <div id="tab-admin-notice" class="admin-tab-content hidden space-y-6">
+                <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">📢 신규 공지사항 작성</h3>
+                    <form onsubmit="addNotice(event)" class="space-y-4">
+                        <input type="text" id="notice-title" placeholder="공지사항 제목" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm">
+                        <textarea id="notice-content" rows="4" placeholder="내용을 입력하세요..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm"></textarea>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-semibold text-sm transition-all">공지 등록</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 탭 5: IP 로그 -->
+            <div id="tab-admin-logs" class="admin-tab-content hidden space-y-6">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-slate-800"><h3 class="text-lg font-bold">🔍 실시간 접속 IP 모니터링</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                                    <th class="p-4">접속 시간</th>
+                                    <th class="p-4">IP 주소</th>
+                                    <th class="p-4">요청 경로</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-logs-table" class="divide-y divide-slate-800/60"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [뷰 3] 파트너 마이페이지 -->
+        <section id="view-partner" class="hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-semibold">PARTNER CENTER</span>
+                    <h1 id="partner-welcome-title" class="text-3xl font-extrabold mt-2">파트너 대시보드</h1>
+                </div>
+                <button onclick="logout()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm transition-colors">로그아웃</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 입금 신청 카드 -->
+                <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">💳 입금 신청하기</h3>
+                    <form onsubmit="requestDeposit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">입금자명</label>
+                            <input type="text" id="dep-depositor" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm" placeholder="입금하시는 분 성함">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">신청 금액 (원)</label>
+                            <input type="number" id="dep-amount" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm" placeholder="금액 입력">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-600/20">입금 신청 전송</button>
+                    </form>
+                </div>
+
+                <!-- 세금계산서 상태 -->
+                <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">📄 세금계산서 발행 현황</h3>
+                        <div id="partner-tax-status" class="text-sm text-slate-300 space-y-2"></div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-4">* 세금계산서 발행 관련 문의는 관리자에게 연락 바랍니다.</p>
+                </div>
+            </div>
+
+            <!-- 공지사항 (읽기 전용) -->
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+                <h3 class="text-lg font-bold mb-4">📢 운영진 공지사항</h3>
+                <div id="partner-notice-list" class="space-y-4"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 하단 푸터 (Footer) -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-8 mt-20">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div class="flex items-center space-x-3">
+                <span class="font-bold text-slate-300">HUNSTER</span>
+                <span>|</span>
+                <span>대표이사: 김종훈</span>
+                <span>|</span>
+                <span>전화번호: 010-3672-7807</span>
+            </div>
+            <div>
+                Copyright ⓒ 2026 HUNSTER. All rights reserved.
+            </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">비밀번호</label>
-          <input type="password" id="login-pw" class="form-input" placeholder="비밀번호를 입력하세요" required>
-        </div>
-        <button type="submit" class="btn btn-primary" style="padding: 13px; margin
+    </footer>
+
+    <!-- 프론트엔드 스크립트 -->
+    <script>
+        let currentUser = null;
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const id = document.getElementById('login-id').value;
+            const pw = document.getElementById('login-pw').value;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, pw })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentUser = data.user;
+                renderApp();
+            } else {
+                alert(data.message);
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            renderApp();
+        }
+
+        async function renderApp() {
+            const loginView = document.getElementById('view-login');
+            const adminView = document.getElementById('view-admin');
+            const partnerView = document.getElementById('view-partner');
+
+            loginView.classList.add('hidden');
+            adminView.classList.add('hidden');
+            partnerView.classList.add('hidden');
+
+            if (!currentUser) {
+                loginView.classList.remove('hidden');
+                return;
+            }
+
+            // 데이터 동기화
+            const res = await fetch('/api/data');
+            const db = await res.json();
+
+            if (currentUser.role === 'admin') {
+                adminView.classList.remove('hidden');
+                renderAdminData(db);
+            } else {
+                partnerView.classList.remove('hidden');
+                renderPartnerData(db);
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[id^="btn-admin-"]').forEach(el => {
+                el.className = "px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/80 text-slate-400 hover:text-white transition-all";
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).className = "px-5 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all";
+        }
+
+        function renderAdminData(db) {
+            // 장부 테이블
+            const ledgerTbody = document.getElementById('admin-ledger-table');
+            ledgerTbody.innerHTML = db.ledger.map(l => `
+                <tr class="hover:bg-slate-800/30">
+                    <td class="p-4 text-slate-400">${l.date}</td>
+                    <td class="p-4 font-medium">${l.partner}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 rounded-md text-xs bg-blue-500/10 text-blue-400">${l.type}</span></td>
+                    <td class="p-4 font-bold text-white">${l.amount.toLocaleString()}원</td>
+                    <td class="p-4 text-slate-400">${l.memo || '-'}</td>
+                </tr>
+            `).join('');
+
+            // 입금 신청 테이블
+            const depositTbody = document.getElementById('admin-deposit-table');
+            depositTbody.innerHTML = db.deposits.map(d => `
+                <tr class="hover:bg-slate-800/30">
+                    <td class="p-4 text-slate-400">${d.date}</td>
+                    <td class="p-4 font-medium">${d.partner}</td>
+                    <td class="p-4">${d.depositor}</td>
+                    <td class="p-4 font-bold">${d.amount.toLocaleString()}원</td>
+                    <td class="p-4"><span class="px-2.5 py-1 rounded-md text-xs ${d.status === '승인완료' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${d.status}</span></td>
+                    <td class="p-4">
+                        ${d.status === '대기중' ? `<button onclick="approveDeposit(${d.id})" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold transition-colors">승인</button>` : '<span class="text-xs text-slate-500">완료됨</span>'}
+                    </td>
+                </tr>
+            `).join('');
+
+            // 세금계산서 테이블
+            const taxTbody = document.getElementById('admin-tax-table');
+            taxTbody.innerHTML = db.taxInvoices.map(t => `
+                <tr class="hover:bg-slate-800/30">
+                    <td class="p-4 font-medium">${t.partner}</td>
+                    <td class="p-4 text-slate-400">${t.month}</td>
+                    <td class="p-4">
+                        <button onclick="toggleTax('${t.partner}', '${t.month}')" class="px-3 py-1 rounded-md text-xs font-semibold ${t.issued ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400'}">
+                            ${t.issued ? '✔ 발행완료 (클릭시 취소)' : '미발행 (클릭시 완료처리)'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // IP 로그 테이블
+            const logsTbody = document.getElementById('admin-logs-table');
+            logsTbody.innerHTML = db.ipLogs.map(log => `
+                <tr class="hover:bg-slate-800/30">
+                    <td class="p-4 text-slate-400">${log.time}</td>
+                    <td class="p-4 font-mono text-blue-400">${log.ip}</td>
+                    <td class="p-4 text-slate-300">${log.path}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderPartnerData(db) {
+            document.getElementById('partner-welcome-title').innerText = `${currentUser.name} 님 환영합니다`;
+
+            // 세금계산서 현황
+            const myTaxes = db.taxInvoices.filter(t => t.partner === currentUser.name);
+            document.getElementById('partner-tax-status').innerHTML = myTaxes.length > 0 ? myTaxes.map(t => `
+                <div class="flex justify-between items-center bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <span>${t.month}월 세금계산서</span>
+                    <span class="px-2.5 py-1 rounded text-xs ${t.issued ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${t.issued ? '발행완료' : '발행 대기중'}</span>
+                </div>
+            `).join('') : '<p class="text-slate-500">조회된 세금계산서 내역이 없습니다.</p>';
+
+            // 공지사항 리스트 (읽기 전용)
+            const noticeList = document.getElementById('partner-notice-list');
+            noticeList.innerHTML = db.notices.map(n => `
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span class="font-bold text-blue-400">${n.title}</span>
+                        <span>${n.date}</span>
+                    </div>
+                    <p class="text-sm text-slate-300 mt-2">${n.content}</p>
+                </div>
+            `).join('');
+        }
+
+        async function addLedger(e) {
+            e.preventDefault();
+            const body = {
+                date: document.getElementById('ledger-date').value,
+                partner: document.getElementById('ledger-partner').value,
+                type: document.getElementById('ledger-type').value,
+                amount: document.getElementById('ledger-amount').value,
+                memo: document.getElementById('ledger-memo').value
+            };
+            await fetch('/api/ledger/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            alert('장부가 성공적으로 기록되었습니다.');
+            e.target.reset();
+            renderApp();
+        }
+
+        async function requestDeposit(e) {
+            e.preventDefault();
+            const body = {
+                partner: currentUser.name,
+                depositor: document.getElementById('dep-depositor').value,
+                amount: document.getElementById('dep-amount').value
+            };
+            await fetch('/api/deposit/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            alert('입금 신청이 완료되었습니다.');
+            e.target.reset();
+            renderApp();
+        }
+
+        async function approveDeposit(id) {
+            await fetch('/api/deposit/approve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+            renderApp();
+        }
+
+        async function toggleTax(partner, month) {
+            await fetch('/api/tax/toggle', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ partner, month }) });
+            renderApp();
+        }
+
+        async function addNotice(e) {
+            e.preventDefault();
+            const body = {
+                title: document.getElementById('notice-title').value,
+                content: document.getElementById('notice-content').value
+            };
+            await fetch('/api/notice/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            alert('공지사항이 등록되었습니다.');
+            e.target.reset();
+            renderApp();
+        }
+    </script>
+</body>
+</html>
